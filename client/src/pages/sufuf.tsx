@@ -4,25 +4,9 @@ import { Check, X, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
-import { PiMosqueDuotone, PiUsersThree } from "react-icons/pi";
+import { PiMosqueDuotone } from "react-icons/pi";
 import { auth } from "@/lib/firebase";
 import { useLocation } from "wouter";
-
-// Hadieth Component - Verkleinde versie
-const HadiethCard = () => (
-  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
-    <CardContent className="p-4">
-      <blockquote className="space-y-2">
-        <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
-          "Houd de rijen recht, want het recht houden van de rijen is deel van het perfect verrichten van het gebed."
-        </p>
-        <footer className="text-xs text-[#963E56]/80">
-          — Overgeleverd door Bukhari & Muslim
-        </footer>
-      </blockquote>
-    </CardContent>
-  </Card>
-);
 
 // Room type definitie blijft hetzelfde
 type Room = {
@@ -56,10 +40,8 @@ export function SufufPage() {
 
   useEffect(() => {
     if (!socket || !isConnected) return;
-    console.log("Sufuf: WebSocket connected");
     const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
-      console.log("Sufuf received message:", data);
       if (data.type === "initialStatus") {
         const updatedRooms = { ...rooms };
         Object.entries(data.data).forEach(([key, value]: [string, any]) => {
@@ -83,16 +65,12 @@ export function SufufPage() {
     if (socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: "getInitialStatus" }));
     }
-    return () => {
-      socket.removeEventListener('message', handleMessage);
-    };
+    return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected]);
 
   const sendSocketMessage = (room: string, status: "OK" | "NOK" | "OFF") => {
     if (socket && isConnected && socket.readyState === WebSocket.OPEN) {
-      const message = JSON.stringify({ type: "updateStatus", room, status });
-      console.log("Sending WebSocket message:", message);
-      socket.send(message);
+      socket.send(JSON.stringify({ type: "updateStatus", room, status }));
     }
   };
 
@@ -115,8 +93,6 @@ export function SufufPage() {
             </h1>
           </div>
         </div>
-
-        <HadiethCard />
 
         <div className="space-y-4">
           <div className="flex items-center gap-3 bg-white p-4 rounded-lg shadow-sm border border-[#963E56]/10">
@@ -193,14 +169,15 @@ export function SufufPage() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Button
-                        variant="outline"
+                        variant="default"
+                        size="lg"
                         className={`
-                          h-20 relative group transition-all duration-300
+                          h-24 relative group transition-all duration-300 rounded-xl
                           ${room.status === 'green' 
-                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 text-white border-0'
-                            : 'border-[#6BB85C] text-[#6BB85C] hover:bg-[#6BB85C]/10'
+                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90'
+                            : 'bg-[#6BB85C]/10 hover:bg-[#6BB85C]/20 text-[#6BB85C]'
                           }
                         `}
                         onClick={() => {
@@ -211,26 +188,29 @@ export function SufufPage() {
                           }
                         }}
                       >
-                        <div className="flex flex-col items-center gap-2">
-                          <Check className={`h-6 w-6 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
-                          <span className={`font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
-                            Rijen Goed
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="bg-white/10 p-2 rounded-full">
+                            <Check className={`h-8 w-8 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                          </div>
+                          <span className={`font-medium text-lg ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
+                            Rijen In Orde
                           </span>
                         </div>
                         {room.status === 'green' && (
-                          <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                            <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
+                          <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-lg">
+                            <div className="h-4 w-4 rounded-full bg-[#6BB85C] animate-pulse" />
                           </div>
                         )}
                       </Button>
 
                       <Button
-                        variant="outline"
+                        variant="default"
+                        size="lg"
                         className={`
-                          h-20 relative group transition-all duration-300
+                          h-24 relative group transition-all duration-300 rounded-xl
                           ${room.status === 'red'
-                            ? 'bg-red-500 hover:bg-red-500/90 text-white border-0'
-                            : 'border-red-500 text-red-500 hover:bg-red-500/10'
+                            ? 'bg-red-500 hover:bg-red-500/90'
+                            : 'bg-red-500/10 hover:bg-red-500/20 text-red-500'
                           }
                         `}
                         onClick={() => {
@@ -241,15 +221,17 @@ export function SufufPage() {
                           }
                         }}
                       >
-                        <div className="flex flex-col items-center gap-2">
-                          <X className={`h-6 w-6 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
-                          <span className={`font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
-                            Rijen Niet Goed
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="bg-white/10 p-2 rounded-full">
+                            <X className={`h-8 w-8 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                          </div>
+                          <span className={`font-medium text-lg ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
+                            Rijen Niet In Orde
                           </span>
                         </div>
                         {room.status === 'red' && (
-                          <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                            <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+                          <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-lg">
+                            <div className="h-4 w-4 rounded-full bg-red-500 animate-pulse" />
                           </div>
                         )}
                       </Button>
