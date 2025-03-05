@@ -13,9 +13,7 @@
 
   body {
     @apply font-sans antialiased h-full;
-    background: 
-      linear-gradient(135deg, rgba(150, 62, 86, 0.05), rgba(150, 62, 86, 0.1)),
-      url('/static/123.jpg');
+    background: url('/static/123.jpg');
     background-size: cover;
     background-attachment: fixed;
   }
@@ -24,7 +22,7 @@
     @apply min-h-screen w-full;
   }
 
-  /* Login page specific background - only pattern */
+  /* Login page specific background */
   body.login-page {
     background: url('/static/123.jpg');
     background-size: cover;

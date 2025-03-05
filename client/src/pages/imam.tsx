@@ -4,6 +4,8 @@ import { Check, X, House } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
 import { useState, useEffect } from "react";
+import { auth } from "@/lib/firebase";
+import { useLocation } from "wouter";
 
 // Room type definition
 type Room = {
@@ -14,6 +16,7 @@ type Room = {
 
 export default function ImamDashboard() {
   const { socket, isConnected } = useSocket();
+  const [_, setLocation] = useLocation();
   const [rooms, setRooms] = useState<Record<string, Room>>({
     'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
     'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
@@ -21,10 +24,23 @@ export default function ImamDashboard() {
   });
 
   useEffect(() => {
+    // Check authentication
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        setLocation("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, [setLocation]);
+
+  useEffect(() => {
     if (!socket || !isConnected) return;
 
-    socket.onmessage = (event) => {
+    console.log("Imam Dashboard: WebSocket connected");
+
+    const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
+      console.log("Imam Dashboard received message:", data);
 
       if (data.type === "initialStatus") {
         const updatedRooms = { ...rooms };
@@ -37,21 +53,24 @@ export default function ImamDashboard() {
       } else if (data.type === "statusUpdated") {
         setRooms(prev => ({
           ...prev,
-          [data.room]: { 
-            ...prev[data.room], 
+          [data.room]: {
+            ...prev[data.room],
             status: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
           }
         }));
       }
     };
 
+    socket.addEventListener('message', handleMessage);
+
     // Request initial status when connecting
     if (socket.readyState === WebSocket.OPEN) {
+      console.log("Requesting initial status");
       socket.send(JSON.stringify({ type: "getInitialStatus" }));
     }
 
     return () => {
-      socket.onmessage = null;
+      socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected]);
 
