@@ -18,7 +18,6 @@ function Router() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [location] = useLocation();
 
-  // Close sidebar on mobile when route changes
   useEffect(() => {
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
@@ -33,14 +32,10 @@ function Router() {
     return () => unsubscribe();
   }, []);
 
-  // Don't show sidebar on login page or public imam dashboard
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
   return (
     <div className="min-h-screen w-full relative">
-      {/* Content overlay for better readability */}
-      <div className="fixed inset-0 bg-white/50 z-0" />
-
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
