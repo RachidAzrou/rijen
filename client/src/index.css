@@ -60,7 +60,7 @@
   }
 
   /* Niet-login pagina's met gradient overlay */
-  #root:not(:has(.login-page))::before {
+  #root > *:not(.login-page)::before {
     content: '';
     position: fixed;
     top: 0;
