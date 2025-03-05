@@ -11,7 +11,12 @@ export default function DelenPage() {
   const publicDashboardUrl = `${currentUrl}/public-imam`;
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
+    <div 
+      className="min-h-screen w-full"
+      style={{
+        background: `linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed`
+      }}
+    >
       <div className="container mx-auto px-4 pt-4 pb-8 space-y-8">
         {/* Header - aangepaste padding */}
         <div className="bg-white rounded-xl shadow-lg p-4 border border-[#963E56]/10">

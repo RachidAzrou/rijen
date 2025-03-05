@@ -108,7 +108,12 @@ export default function PublicImamDashboard() {
   const t = translations[language];
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
+    <div 
+      className="min-h-screen w-full"
+      style={{
+        background: `linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed`
+      }}
+    >
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
