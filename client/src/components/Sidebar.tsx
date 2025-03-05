@@ -37,13 +37,15 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       {/* Logo Section */}
       <div className="pt-8 pb-4">
-        <div className="w-full p-2 flex justify-center items-center">
-          <img
-            src={isOpen ? "/static/Naamloos2.png" : "/static/icon-512x512.png"}
-            alt="MEFEN"
-            className={isOpen ? "h-32 w-auto object-contain" : "h-12 w-12 object-contain"}
-          />
-        </div>
+        {isOpen && (
+          <div className="w-full p-2 flex justify-center items-center">
+            <img
+              src="/static/Naamloos2.png"
+              alt="MEFEN Logo"
+              className="h-32 w-auto object-contain"
+            />
+          </div>
+        )}
       </div>
 
       {/* Navigation Links */}
