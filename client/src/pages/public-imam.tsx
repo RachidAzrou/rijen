@@ -1,44 +1,68 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, House } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
-import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { translations, type Language } from "@/lib/translations";
 
-// Hadieth Component
-const HadiethCard = () => (
-  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
-    <CardContent className="p-4">
-      <div className="space-y-4 text-center" dir="rtl">
-        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
-          قال رسول الله ﷺ
-        </p>
-        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
-          سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ
-        </p>
-        <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
-          رواه البخاري ومسلم
-        </p>
-      </div>
-    </CardContent>
-  </Card>
-);
-
+// Room type definition remains the same
 type Room = {
   id: string;
   title: string;
   status: 'green' | 'red' | 'grey';
 };
 
+// Language Switcher Component
+const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
+  <div className="absolute top-4 right-4 flex gap-2">
+    <Button
+      variant={language === 'nl' ? 'default' : 'outline'}
+      onClick={() => setLanguage('nl')}
+      className="w-12 h-8"
+    >
+      NL
+    </Button>
+    <Button
+      variant={language === 'ar' ? 'default' : 'outline'}
+      onClick={() => setLanguage('ar')}
+      className="w-12 h-8"
+    >
+      AR
+    </Button>
+  </div>
+);
+
+// Hadieth Component
+const HadiethCard = ({ t }: { t: typeof translations.nl }) => (
+  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
+    <CardContent className="p-4">
+      <div className="space-y-4 text-center" dir="rtl">
+        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+          {t.hadithTitle}
+        </p>
+        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+          {t.hadithText}
+        </p>
+        <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
+          {t.hadithSource}
+        </p>
+      </div>
+    </CardContent>
+  </Card>
+);
+
 export default function PublicImamDashboard() {
   const { socket, isConnected } = useSocket();
+  const [language, setLanguage] = useState<Language>('nl');
   const [rooms, setRooms] = useState<Record<string, Room>>({
     'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
     'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
     'garage': { id: 'garage', title: 'Garage', status: 'grey' }
   });
 
-  useEffect(() => {
+  // WebSocket effect remains the same
+  React.useEffect(() => {
     if (!socket || !isConnected) return;
 
     const handleMessage = (event: MessageEvent) => {
@@ -67,23 +91,26 @@ export default function PublicImamDashboard() {
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected]);
 
+  const t = translations[language];
+
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10 relative">
+          <LanguageSwitcher language={language} setLanguage={setLanguage} />
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              Gebedsruimtes
+              {t.pageTitle}
             </h1>
           </div>
         </div>
 
         {/* Hadieth Card */}
-        <HadiethCard />
+        <HadiethCard t={t} />
 
         {/* Rooms Grid */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
@@ -125,9 +152,9 @@ export default function PublicImamDashboard() {
                       room.status === 'red' ? 'bg-red-500/10 text-red-500' :
                       'bg-gray-100 text-gray-500'}
                   `}>
-                    {room.status === 'green' ? 'Beschikbaar' :
-                     room.status === 'red' ? 'Niet Beschikbaar' :
-                     'Onbekend'}
+                    {room.status === 'green' ? t.available :
+                     room.status === 'red' ? t.unavailable :
+                     t.unknown}
                   </span>
                 </div>
               </CardContent>
@@ -137,7 +164,7 @@ export default function PublicImamDashboard() {
 
         {/* Footer met timestamp */}
         <div className="text-center text-sm text-gray-500 mt-8">
-          Laatste update: {new Date().toLocaleTimeString('nl-NL')}
+          {t.lastUpdate}: {new Date().toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
       </div>
     </div>
