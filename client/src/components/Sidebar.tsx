@@ -49,7 +49,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 flex flex-col justify-start pt-20 p-4 space-y-2">
+      <div className="flex-1 flex flex-col justify-start pt-8 p-4 space-y-2">
         <Link href="/">
           <a className={`
             flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
@@ -57,7 +57,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           `}>
             <Home className="h-5 w-5 shrink-0" />
             <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-              Dashboard
+              Home
             </span>
           </a>
         </Link>

@@ -12,16 +12,16 @@ export default function DelenPage() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-[#963E56]/10">
+      <div className="container mx-auto px-4 pt-4 pb-8 space-y-8">
+        {/* Header - aangepaste padding */}
+        <div className="bg-white rounded-xl shadow-lg p-4 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-3 rounded-full">
               <Share2 className="h-8 w-8 text-[#963E56]" />
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
-                Dashboard delen
+                Delen
               </h1>
               <p className="text-gray-600 mt-1">
                 Deel het publieke dashboard met QR code of link
