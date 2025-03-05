@@ -67,7 +67,12 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 login-page">
+    <div 
+      className="min-h-screen w-full flex items-center justify-center p-4"
+      style={{
+        background: `url('/static/123.jpg') center center/cover no-repeat fixed`
+      }}
+    >
       <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
         <CardContent className="pt-8 px-6">
           <div className="text-center mb-8">
