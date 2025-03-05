@@ -4,44 +4,37 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { auth } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 import { LockKeyhole, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
-import { apiRequest } from "@/lib/queryClient";
 
 const loginSchema = z.object({
   email: z.string().email("Ongeldig e-mailadres"),
   password: z.string().min(6, "Wachtwoord moet minimaal 6 tekens bevatten"),
-  rememberMe: z.boolean().optional()
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const { toast } = useToast();
+  const [_, setLocation] = useLocation();
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: false
-    }
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await apiRequest('POST', '/api/auth/login', data);
-      toast({
-        title: "Succesvol ingelogd",
-        duration: 3000,
-      });
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      setLocation("/");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -65,12 +58,19 @@ export default function Login() {
           opacity: 0.15
         }}
       />
-      
+
       <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
         <CardContent className="pt-8 px-6">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Welkom terug
+            <div className="w-full flex justify-center items-center">
+              <img
+                src="/moskee.png"
+                alt="Sufuf"
+                className="h-20 sm:h-24 mx-auto mb-6"
+              />
+            </div>
+            <h1 className="text-2xl font-bold text-[#963E56] mb-2">
+              Sufuf
             </h1>
             <p className="text-gray-600">
               Log in om door te gaan
@@ -85,11 +85,11 @@ export default function Login() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
                       <FormControl>
                         <Input
                           placeholder="E-mailadres"
-                          className="h-11 pl-10 bg-white/50"
+                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
                           {...field}
                         />
                       </FormControl>
@@ -105,12 +105,12 @@ export default function Login() {
                 render={({ field }) => (
                   <FormItem>
                     <div className="relative">
-                      <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
                       <FormControl>
                         <Input
                           type="password"
                           placeholder="Wachtwoord"
-                          className="h-11 pl-10 bg-white/50"
+                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
                           {...field}
                         />
                       </FormControl>
@@ -120,31 +120,11 @@ export default function Login() {
                 )}
               />
 
-              <div className="flex items-center justify-between">
-                <FormField
-                  control={form.control}
-                  name="rememberMe"
-                  render={({ field }) => (
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="rememberMe"
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                      />
-                      <label
-                        htmlFor="rememberMe"
-                        className="text-sm text-gray-600"
-                      >
-                        Onthoud mij
-                      </label>
-                    </div>
-                  )}
-                />
-
+              <div className="text-right">
                 <button
                   type="button"
                   onClick={() => setResetDialogOpen(true)}
-                  className="text-sm text-primary hover:underline"
+                  className="text-[#963E56] hover:text-[#6BB85C] transition-colors"
                 >
                   Wachtwoord vergeten?
                 </button>
@@ -152,7 +132,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full h-11"
+                className="w-full h-11 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
                 disabled={isLoading}
               >
                 {isLoading ? "Bezig met inloggen..." : "Inloggen"}
@@ -165,16 +145,16 @@ export default function Login() {
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Wachtwoord resetten</DialogTitle>
+            <DialogTitle className="text-[#963E56]">Wachtwoord resetten</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             <Input
               type="email"
               placeholder="Voer je e-mailadres in"
-              className="w-full"
+              className="w-full border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
             />
             <Button
-              className="w-full"
+              className="w-full bg-[#963E56] hover:bg-[#6BB85C]"
               onClick={() => {
                 toast({
                   title: "Reset link verzonden",
