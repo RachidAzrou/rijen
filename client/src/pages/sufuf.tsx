@@ -207,7 +207,16 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'green'}
-                        onChange={() => handleOkChange(room.id)}
+                        onChange={() => {
+                          if (room.status === 'green') {
+                            handleOkChange(room.id);
+                          } else {
+                            if (room.status === 'red') {
+                              handleNokChange(room.id); // Turn off NOK first
+                            }
+                            handleOkChange(room.id);
+                          }
+                        }}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
@@ -229,7 +238,16 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'red'}
-                        onChange={() => handleNokChange(room.id)}
+                        onChange={() => {
+                          if (room.status === 'red') {
+                            handleNokChange(room.id);
+                          } else {
+                            if (room.status === 'green') {
+                              handleOkChange(room.id); // Turn off OK first
+                            }
+                            handleNokChange(room.id);
+                          }
+                        }}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
