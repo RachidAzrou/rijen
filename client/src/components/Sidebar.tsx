@@ -62,32 +62,27 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <div className="flex-1 p-4 space-y-6">
         {/* Logo Section */}
         {isOpen && (
-          <div className="rounded-lg border border-[#963E56]/10 bg-white p-4 shadow-sm">
+          <div className="rounded-lg border border-[#963E56]/10 bg-white p-3 shadow-sm">
             <img 
               src="/static/moskee.png"
               alt="MEFEN Logo" 
-              className="w-48 h-48 mx-auto object-contain" 
+              className="w-32 h-32 mx-auto object-contain" 
             />
           </div>
         )}
 
         {/* Profile Section */}
         <div className={`
-          rounded-lg border border-[#963E56]/10 bg-white p-4 shadow-sm
+          rounded-lg border border-[#963E56]/10 bg-white p-3 shadow-sm
           ${isOpen ? 'block' : 'hidden'}
         `}>
           <div className="flex items-center gap-3">
-            <div className="bg-[#963E56]/10 p-3 rounded-full">
+            <div className="bg-[#963E56]/10 p-2 rounded-full">
               <User className="h-5 w-5 text-[#963E56]" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-medium text-[#963E56]">
-                {profileName}
-              </span>
-              <span className="text-sm text-gray-500">
-                Actieve sessie
-              </span>
-            </div>
+            <span className="font-medium text-[#963E56]">
+              {profileName}
+            </span>
           </div>
         </div>
 
