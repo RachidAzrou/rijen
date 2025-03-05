@@ -1,0 +1,194 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
+import { LockKeyhole, Mail } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { apiRequest } from "@/lib/queryClient";
+
+const loginSchema = z.object({
+  email: z.string().email("Ongeldig e-mailadres"),
+  password: z.string().min(6, "Wachtwoord moet minimaal 6 tekens bevatten"),
+  rememberMe: z.boolean().optional()
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+export default function Login() {
+  const { toast } = useToast();
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false
+    }
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    try {
+      await apiRequest('POST', '/api/auth/login', data);
+      toast({
+        title: "Succesvol ingelogd",
+        duration: 3000,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Fout",
+        description: "Ongeldig e-mailadres of wachtwoord",
+        duration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: `url('/123.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          opacity: 0.15
+        }}
+      />
+      
+      <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
+        <CardContent className="pt-8 px-6">
+          <div className="text-center mb-8">
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              Welkom terug
+            </h1>
+            <p className="text-gray-600">
+              Log in om door te gaan
+            </p>
+          </div>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <FormControl>
+                        <Input
+                          placeholder="E-mailadres"
+                          className="h-11 pl-10 bg-white/50"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Wachtwoord"
+                          className="h-11 pl-10 bg-white/50"
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex items-center justify-between">
+                <FormField
+                  control={form.control}
+                  name="rememberMe"
+                  render={({ field }) => (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="rememberMe"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                      <label
+                        htmlFor="rememberMe"
+                        className="text-sm text-gray-600"
+                      >
+                        Onthoud mij
+                      </label>
+                    </div>
+                  )}
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setResetDialogOpen(true)}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Wachtwoord vergeten?
+                </button>
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11"
+                disabled={isLoading}
+              >
+                {isLoading ? "Bezig met inloggen..." : "Inloggen"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+
+      <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Wachtwoord resetten</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              type="email"
+              placeholder="Voer je e-mailadres in"
+              className="w-full"
+            />
+            <Button
+              className="w-full"
+              onClick={() => {
+                toast({
+                  title: "Reset link verzonden",
+                  description: "Check je e-mail voor verdere instructies",
+                  duration: 3000,
+                });
+                setResetDialogOpen(false);
+              }}
+            >
+              Verstuur reset link
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
