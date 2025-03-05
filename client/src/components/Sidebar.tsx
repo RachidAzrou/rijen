@@ -60,25 +60,35 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       {/* Main Content */}
       <div className="flex-1 p-4 space-y-6">
-        {/* Logo */}
+        {/* Logo Section */}
         {isOpen && (
-          <div className="px-4">
+          <div className="rounded-lg border border-[#963E56]/10 bg-white p-4 shadow-sm">
             <img 
               src="/static/moskee.png"
               alt="MEFEN Logo" 
-              className="w-full h-auto object-contain" 
+              className="w-48 h-48 mx-auto object-contain" 
             />
           </div>
         )}
 
         {/* Profile Section */}
-        <div className={`flex items-center gap-2 transition-all duration-300 ${isOpen ? 'px-4' : 'justify-center'}`}>
-          <div className="bg-[#963E56]/10 p-2 rounded-full shrink-0">
-            <User className="h-4 w-4 text-[#963E56]" />
+        <div className={`
+          rounded-lg border border-[#963E56]/10 bg-white p-4 shadow-sm
+          ${isOpen ? 'block' : 'hidden'}
+        `}>
+          <div className="flex items-center gap-3">
+            <div className="bg-[#963E56]/10 p-3 rounded-full">
+              <User className="h-5 w-5 text-[#963E56]" />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-medium text-[#963E56]">
+                {profileName}
+              </span>
+              <span className="text-sm text-gray-500">
+                Actieve sessie
+              </span>
+            </div>
           </div>
-          <span className={`font-medium text-[#963E56] truncate transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            {profileName}
-          </span>
         </div>
 
         {/* Navigation */}

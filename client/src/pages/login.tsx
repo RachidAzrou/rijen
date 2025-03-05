@@ -52,13 +52,6 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-
-      toast({
-        title: "Succesvol ingelogd",
-        description: "U wordt doorgestuurd naar het dashboard...",
-        duration: 3000,
-      });
-
       setLocation("/");
     } catch (error: any) {
       console.error("Login error:", error.code, error.message);
