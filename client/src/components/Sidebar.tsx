@@ -38,11 +38,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <div className="flex-1 p-4 space-y-6">
         {/* Logo Section */}
         {isOpen && (
-          <div className="w-full flex justify-center items-center mb-4">
+          <div className="w-full p-2 flex justify-center items-center">
             <img
               src="/static/moskee.png"
               alt="MEFEN Logo"
-              className="h-20 w-20 object-contain"
+              className="h-32 w-40 object-contain"
             />
           </div>
         )}
