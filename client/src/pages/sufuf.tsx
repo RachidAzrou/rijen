@@ -58,7 +58,7 @@ export function SufufPage() {
   }, [setLocation]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !isConnected) return;
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -85,45 +85,41 @@ export function SufufPage() {
     return () => {
       socket.onmessage = null;
     };
-  }, [socket]);
+  }, [socket, isConnected]);
 
-  const handleOkChange = (room: string) => {
-    if (!socket) return;
+  const handleOkChange = (e: React.ChangeEvent<HTMLInputElement>, room: string) => {
+    if (!socket || !isConnected) return;
 
-    if (rooms[room].status === 'green') {
-      // Als OK aan is, zet hem uit
-      setRooms(prev => ({
-        ...prev,
-        [room]: { ...prev[room], status: 'grey' }
-      }));
-      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
-    } else {
-      // Als OK uit is, zet hem aan en NOK uit
+    if (e.target.checked) {
       setRooms(prev => ({
         ...prev,
         [room]: { ...prev[room], status: 'green' }
       }));
       socket.send(JSON.stringify({ type: "updateStatus", room, status: "OK" }));
-    }
-  };
-
-  const handleNokChange = (room: string) => {
-    if (!socket) return;
-
-    if (rooms[room].status === 'red') {
-      // Als NOK aan is, zet hem uit
+    } else {
       setRooms(prev => ({
         ...prev,
         [room]: { ...prev[room], status: 'grey' }
       }));
       socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
-    } else {
-      // Als NOK uit is, zet hem aan en OK uit
+    }
+  };
+
+  const handleNokChange = (e: React.ChangeEvent<HTMLInputElement>, room: string) => {
+    if (!socket || !isConnected) return;
+
+    if (e.target.checked) {
       setRooms(prev => ({
         ...prev,
         [room]: { ...prev[room], status: 'red' }
       }));
       socket.send(JSON.stringify({ type: "updateStatus", room, status: "NOK" }));
+    } else {
+      setRooms(prev => ({
+        ...prev,
+        [room]: { ...prev[room], status: 'grey' }
+      }));
+      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
     }
   };
 
@@ -225,7 +221,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'green'}
-                        onChange={() => handleOkChange(room.id)}
+                        onChange={(e) => handleOkChange(e, room.id)}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
@@ -247,7 +243,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'red'}
-                        onChange={() => handleNokChange(room.id)}
+                        onChange={(e) => handleNokChange(e, room.id)}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
