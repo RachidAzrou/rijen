@@ -18,6 +18,13 @@ function Router() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [location] = useLocation();
 
+  // Close sidebar on mobile when route changes
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [location]);
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
@@ -34,7 +41,13 @@ function Router() {
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
-      <main className={`transition-all duration-300 ${showSidebar ? (isSidebarOpen ? 'ml-64' : 'ml-16') : ''}`}>
+      <main className={`transition-all duration-300 
+        ${showSidebar ? (
+          isSidebarOpen ? 
+            'ml-0 md:ml-64' : 
+            'ml-0 md:ml-16'
+        ) : ''}`}
+      >
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/" component={SufufPage} />

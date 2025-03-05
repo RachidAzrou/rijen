@@ -8,15 +8,15 @@ import { PiUsersThree } from "react-icons/pi";
 import { auth } from "@/lib/firebase";
 import { useLocation } from "wouter";
 
-// Hadieth Component - Verbeterde versie
+// Hadieth Component - Verkleinde versie
 const HadiethCard = () => (
-  <Card className="bg-gradient-to-br from-[#963E56]/10 to-transparent border-0 shadow-lg">
-    <CardContent className="p-6">
-      <blockquote className="space-y-3">
-        <p className="text-lg text-[#963E56] leading-relaxed font-medium italic">
+  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
+    <CardContent className="p-4">
+      <blockquote className="space-y-2">
+        <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
           "Houd de rijen recht, want het recht houden van de rijen is deel van het perfect verrichten van het gebed."
         </p>
-        <footer className="text-sm text-[#963E56]/80 font-medium">
+        <footer className="text-xs text-[#963E56]/80">
           — Overgeleverd door Bukhari & Muslim
         </footer>
       </blockquote>
@@ -105,21 +105,16 @@ export function SufufPage() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-4 py-6 md:py-8 space-y-4 md:space-y-6">
         {/* Verbeterde Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-[#963E56]/10">
+        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
-            <div className="bg-[#963E56]/10 p-3 rounded-full">
-              <PiUsersThree className="h-8 w-8 text-[#963E56]" />
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <PiUsersThree className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
-                Sufuf (Gebedsrijen)
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Beheer en monitor de status van de gebedsruimtes
-              </p>
-            </div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              Sufuf
+            </h1>
           </div>
         </div>
 

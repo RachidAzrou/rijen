@@ -46,13 +46,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <div className={`
-      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col border-r border-[#963E56]/10
+      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
       ${isOpen ? 'w-64' : 'w-16'}
     `}>
       <Button
         variant="ghost"
         size="icon"
-        className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md"
+        className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-100"
         onClick={onToggle}
       >
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -62,11 +62,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <div className="flex-1 p-4 space-y-6">
         {/* Logo Section */}
         {isOpen && (
-          <div className="rounded-lg border border-[#963E56]/10 bg-white p-3 shadow-sm">
+          <div className="rounded-lg border border-[#963E56]/10 bg-white p-3 shadow-sm flex items-center justify-center">
             <img 
-              src="/static/moskee.png"
+              src="/static/moskee.png" 
               alt="MEFEN Logo" 
-              className="w-32 h-32 mx-auto object-contain" 
+              className="w-24 h-24 object-cover" 
             />
           </div>
         )}
@@ -90,7 +90,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <nav className="space-y-2">
           <Link href="/">
             <a className={`
-              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
               ${isOpen ? 'justify-start px-4' : 'justify-center'}
             `}>
               <Home className="h-5 w-5 shrink-0" />
@@ -99,9 +99,10 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </span>
             </a>
           </Link>
+
           <Link href="/delen">
             <a className={`
-              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
               ${isOpen ? 'justify-start px-4' : 'justify-center'}
             `}>
               <Share2 className="h-5 w-5 shrink-0" />
@@ -115,7 +116,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <button
             onClick={() => setLanguage(language === 'nl' ? 'ar' : 'nl')}
             className={`
-              w-full flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
               ${isOpen ? 'justify-start px-4' : 'justify-center'}
             `}
           >
