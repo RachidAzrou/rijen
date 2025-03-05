@@ -12,12 +12,7 @@
   }
 
   body {
-    @apply font-sans antialiased h-full;
-    background: url('/static/123.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    @apply font-sans antialiased h-full bg-gray-50;
   }
 
   #root {

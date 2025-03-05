@@ -38,10 +38,23 @@ function Router() {
 
   return (
     <div className="min-h-screen w-full">
+      {/* Background Image */}
+      {location !== '/login' && (
+        <div 
+          className="fixed inset-0 z-0"
+          style={{
+            backgroundImage: 'url("/static/123.jpg")',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: 0.7
+          }}
+        />
+      )}
+
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
-      <main className={`transition-all duration-300 
+      <main className={`transition-all duration-300 relative z-10
         ${showSidebar ? (
           isSidebarOpen ? 
             'ml-0 md:ml-64' : 
