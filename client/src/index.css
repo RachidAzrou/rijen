@@ -20,8 +20,15 @@
     background-attachment: fixed;
   }
 
-  #root {
+  /* Add gradient overlay for all pages except login */
+  #root:not(:has(.login-page)) {
     @apply min-h-screen w-full;
-    background-color: rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7));
+  }
+
+  /* For login page, keep it transparent */
+  #root:has(.login-page) {
+    @apply min-h-screen w-full;
+    background-color: transparent;
   }
 }
