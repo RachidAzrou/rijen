@@ -52,7 +52,7 @@
 @layer base {
   body {
     @apply min-h-screen;
-    background-image: url('../public/static/123.jpg');
+    background-image: url('/static/123.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
