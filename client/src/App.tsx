@@ -37,24 +37,20 @@ function Router() {
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
   return (
-    <div className="min-h-screen w-full">
-      {/* Background Image */}
-      {location !== '/login' && (
-        <div 
-          className="fixed inset-0 z-0"
-          style={{
-            backgroundImage: 'url("/static/123.jpg")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: 0.7
-          }}
-        />
-      )}
+    <div className="min-h-screen w-full relative">
+      {/* Background Image for all pages */}
+      <div 
+        className="fixed inset-0 z-0 bg-cover bg-center"
+        style={{
+          backgroundImage: 'url("/static/123.jpg")',
+          opacity: 0.7
+        }}
+      />
 
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
-      <main className={`transition-all duration-300 relative z-10
+      <main className={`relative z-10 transition-all duration-300
         ${showSidebar ? (
           isSidebarOpen ? 
             'ml-0 md:ml-64' : 
