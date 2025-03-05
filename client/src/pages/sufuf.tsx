@@ -137,17 +137,17 @@ export function SufufPage() {
             onClick={() => setIsVolunteerSectionOpen(!isVolunteerSectionOpen)}
           >
             <div className="flex items-center gap-3">
-              <User className="h-6 w-6" />
+              <User className="h-5 w-5" />
               <span>Vrijwilliger Acties</span>
             </div>
             <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isVolunteerSectionOpen ? 'transform rotate-180' : ''}`} />
           </Button>
 
           {isVolunteerSectionOpen && (
-            <div className="grid gap-6 grid-cols-1">
+            <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {volunteerRooms.map((room) => (
                 <div key={room.id} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex gap-4">
                     <button
                       onClick={() => {
                         if (room.status !== 'green') {
@@ -157,11 +157,11 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-2xl transition-all duration-300
-                        active:scale-95 touch-manipulation
+                        relative flex-1 h-32 rounded-xl transition-all duration-300
+                        active:scale-95 touch-manipulation overflow-hidden
                         ${room.status === 'green'
-                          ? 'bg-[#6BB85C] shadow-lg'
-                          : 'bg-white hover:bg-[#6BB85C]/10 border-2 border-[#6BB85C]'
+                          ? 'bg-gradient-to-br from-[#6BB85C] to-[#5a9b4d] shadow-lg border border-[#6BB85C]'
+                          : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]/50 hover:border-[#6BB85C]'
                         }
                       `}
                     >
@@ -171,16 +171,16 @@ export function SufufPage() {
                           ${room.status === 'green' ? 'scale-110' : 'scale-100'}
                         `}>
                           <Check className={`
-                            w-16 h-16
+                            w-16 h-16 transition-all duration-300
                             ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
                           `} />
                         </div>
                       </div>
                       {room.status === 'green' && (
                         <div className="absolute top-2 right-2">
-                          <span className="flex h-3 w-3">
+                          <span className="flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                           </span>
                         </div>
                       )}
@@ -195,11 +195,11 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-2xl transition-all duration-300
-                        active:scale-95 touch-manipulation
+                        relative flex-1 h-32 rounded-xl transition-all duration-300
+                        active:scale-95 touch-manipulation overflow-hidden
                         ${room.status === 'red'
-                          ? 'bg-red-500 shadow-lg'
-                          : 'bg-white hover:bg-red-500/10 border-2 border-red-500'
+                          ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg border border-red-500'
+                          : 'bg-white hover:bg-red-500/5 border-2 border-red-500/50 hover:border-red-500'
                         }
                       `}
                     >
@@ -209,16 +209,16 @@ export function SufufPage() {
                           ${room.status === 'red' ? 'scale-110' : 'scale-100'}
                         `}>
                           <X className={`
-                            w-16 h-16
+                            w-16 h-16 transition-all duration-300
                             ${room.status === 'red' ? 'text-white' : 'text-red-500'}
                           `} />
                         </div>
                       </div>
                       {room.status === 'red' && (
                         <div className="absolute top-2 right-2">
-                          <span className="flex h-3 w-3">
+                          <span className="flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                           </span>
                         </div>
                       )}
