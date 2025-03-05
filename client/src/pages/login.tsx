@@ -31,7 +31,7 @@ const getFirebaseErrorMessage = (error: AuthError) => {
     case 'auth/wrong-password':
       return 'Onjuist wachtwoord';
     default:
-      return 'Er is een fout opgetreden bij het inloggen';
+      return `Er is een fout opgetreden bij het inloggen: ${error.message}`;
   }
 };
 
@@ -50,18 +50,28 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log("Attempting login with:", { email: data.email });
     setIsLoading(true);
+
     try {
+      console.log("Calling Firebase signInWithEmailAndPassword...");
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       console.log("Login successful", userCredential.user.email);
+
+      toast({
+        title: "Succesvol ingelogd",
+        description: "U wordt doorgestuurd...",
+        duration: 3000,
+      });
+
       setLocation("/");
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Login error:", error.code, error.message);
       toast({
         variant: "destructive",
         title: "Inloggen mislukt",
         description: getFirebaseErrorMessage(error),
-        duration: 3000,
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
@@ -80,7 +90,7 @@ export default function Login() {
         }}
       />
 
-      <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
+      <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl relative z-10">
         <CardContent className="pt-8 px-6">
           <div className="text-center mb-8">
             <div className="w-full flex justify-center items-center">
