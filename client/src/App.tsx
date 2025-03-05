@@ -33,9 +33,10 @@ function Router() {
   }, []);
 
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
+  const isLoginPage = location === '/login';
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className={`min-h-screen w-full relative ${!isLoginPage ? 'main-content' : ''}`}>
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
