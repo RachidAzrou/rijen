@@ -48,12 +48,6 @@ export default function PublicImamDashboard() {
 
     socket.addEventListener('message', handleMessage);
 
-    // Request initial status when connecting
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log("Requesting initial status");
-      socket.send(JSON.stringify({ type: "getInitialStatus" }));
-    }
-
     return () => {
       socket.removeEventListener('message', handleMessage);
     };
