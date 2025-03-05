@@ -107,14 +107,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </a>
           </Link>
         </nav>
-
-        {/* QR Code */}
-        <div className={`flex flex-col items-center transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="bg-white p-2 rounded-lg shadow-sm">
-            <QRCodeSVG value={imamDashboardUrl} size={128} level="H" />
-          </div>
-          <p className="text-xs text-center mt-2 text-gray-600">Imam Dashboard</p>
-        </div>
       </div>
 
       {/* Logout Button - Fixed at Bottom */}
