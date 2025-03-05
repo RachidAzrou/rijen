@@ -66,7 +66,7 @@ export function SufufPage() {
         const updatedRooms = { ...rooms };
         Object.entries(data.data).forEach(([key, value]: [string, any]) => {
           if (updatedRooms[key]) {
-            updatedRooms[key].status = value.status;
+            updatedRooms[key].status = value as 'green' | 'red' | 'grey';
           }
         });
         setRooms(updatedRooms);
@@ -87,7 +87,7 @@ export function SufufPage() {
 
   const handleOkChange = (room: string) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      // If OK is checked, set to grey, if unchecked, set to green
+      // If already green, set to grey, otherwise set to green and turn off red
       const newStatus = rooms[room].status === 'green' ? 'grey' : 'green';
       socket.send(JSON.stringify({ 
         type: "updateStatus", 
@@ -99,7 +99,7 @@ export function SufufPage() {
 
   const handleNokChange = (room: string) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      // If NOK is checked, set to grey, if unchecked, set to red
+      // If already red, set to grey, otherwise set to red and turn off green
       const newStatus = rooms[room].status === 'red' ? 'grey' : 'red';
       socket.send(JSON.stringify({ 
         type: "updateStatus", 
