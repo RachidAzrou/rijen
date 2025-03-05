@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, AuthError } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { LockKeyhole, Mail } from "lucide-react";
@@ -20,6 +20,21 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
+const getFirebaseErrorMessage = (error: AuthError) => {
+  switch (error.code) {
+    case 'auth/invalid-email':
+      return 'Ongeldig e-mailadres formaat';
+    case 'auth/user-disabled':
+      return 'Dit account is uitgeschakeld';
+    case 'auth/user-not-found':
+      return 'Geen account gevonden met dit e-mailadres';
+    case 'auth/wrong-password':
+      return 'Onjuist wachtwoord';
+    default:
+      return 'Er is een fout opgetreden bij het inloggen';
+  }
+};
+
 export default function Login() {
   const { toast } = useToast();
   const [_, setLocation] = useLocation();
@@ -28,18 +43,24 @@ export default function Login() {
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: ""
+    }
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      console.log("Login successful", userCredential.user.email);
       setLocation("/");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Login error:", error);
       toast({
         variant: "destructive",
-        title: "Fout",
-        description: "Ongeldig e-mailadres of wachtwoord",
+        title: "Inloggen mislukt",
+        description: getFirebaseErrorMessage(error),
         duration: 3000,
       });
     } finally {
@@ -88,8 +109,10 @@ export default function Login() {
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
                       <FormControl>
                         <Input
+                          type="email"
                           placeholder="E-mailadres"
                           className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -111,6 +134,7 @@ export default function Login() {
                           type="password"
                           placeholder="Wachtwoord"
                           className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -125,6 +149,7 @@ export default function Login() {
                   type="button"
                   onClick={() => setResetDialogOpen(true)}
                   className="text-[#963E56] hover:text-[#6BB85C] transition-colors"
+                  disabled={isLoading}
                 >
                   Wachtwoord vergeten?
                 </button>
