@@ -10,10 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { LockKeyhole, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
-import { getFirestore } from "firebase/firestore";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.string().email("Ongeldig e-mailadres"),
@@ -40,15 +37,7 @@ const getFirebaseErrorMessage = (error: AuthError) => {
 export default function Login() {
   const { toast } = useToast();
   const [_, setLocation] = useLocation();
-  const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    document.body.classList.add('login-page');
-    return () => {
-      document.body.classList.remove('login-page');
-    };
-  }, []);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -59,40 +48,10 @@ export default function Login() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log("Attempting login with:", { email: data.email });
     setIsLoading(true);
 
     try {
-      const db = getFirestore();
-      const activeSessionRef = doc(db, "activeSessions", data.email);
-      const activeSessionDoc = await getDoc(activeSessionRef);
-
-      if (activeSessionDoc.exists()) {
-        const lastActivity = activeSessionDoc.data().timestamp;
-        const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-
-        if (lastActivity > fiveMinutesAgo) {
-          toast({
-            variant: "destructive",
-            title: "Inloggen mislukt",
-            description: "Deze gebruiker is al ingelogd op een ander apparaat.",
-            duration: 5000,
-          });
-          setIsLoading(false);
-          return;
-        } else {
-          await deleteDoc(activeSessionRef);
-        }
-      }
-
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-
-      await setDoc(activeSessionRef, {
-        userId: userCredential.user.uid,
-        timestamp: Date.now()
-      });
-
-      console.log("Login successful", userCredential.user.email);
+      await signInWithEmailAndPassword(auth, data.email, data.password);
 
       toast({
         title: "Succesvol ingelogd",
@@ -190,17 +149,6 @@ export default function Login() {
                 )}
               />
 
-              <div className="text-right">
-                <button
-                  type="button"
-                  onClick={() => setResetDialogOpen(true)}
-                  className="text-[#963E56] hover:text-[#6BB85C] transition-colors"
-                  disabled={isLoading}
-                >
-                  Wachtwoord vergeten?
-                </button>
-              </div>
-
               <Button
                 type="submit"
                 className="w-full h-11 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
@@ -212,34 +160,6 @@ export default function Login() {
           </Form>
         </CardContent>
       </Card>
-
-      <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-[#963E56]">Wachtwoord resetten</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <Input
-              type="email"
-              placeholder="Voer je e-mailadres in"
-              className="w-full border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
-            />
-            <Button
-              className="w-full bg-[#963E56] hover:bg-[#6BB85C]"
-              onClick={() => {
-                toast({
-                  title: "Reset link verzonden",
-                  description: "Check je e-mail voor verdere instructies",
-                  duration: 3000,
-                });
-                setResetDialogOpen(false);
-              }}
-            >
-              Verstuur reset link
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
