@@ -99,19 +99,26 @@ export function SufufPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-6 space-y-6">
+    <div 
+      className="min-h-screen w-full px-4 py-6 space-y-6"
+      style={{
+        background: 'linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7))'
+      }}
+    >
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="container mx-auto flex items-center gap-4">
         <PiUsersThree className="h-8 w-8 text-[#963E56]" />
         <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
           Sufuf (Gebedsrijen)
         </h1>
       </div>
 
-      <HadiethCard />
+      <div className="container mx-auto">
+        <HadiethCard />
+      </div>
 
       {/* Imam Dashboard */}
-      <div className="space-y-4">
+      <div className="container mx-auto space-y-4">
         <h2 className="text-xl font-semibold text-[#963E56] flex items-center gap-2">
           <FaPray className="h-5 w-5" />
           Imam Dashboard
@@ -130,7 +137,7 @@ export function SufufPage() {
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
                   ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
-                    room.status === 'red' ? 'bg-[#963E56] animate-pulse shadow-lg shadow-[#963E56]/50' :
+                    room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
                     'bg-gray-300'}
                 `}>
                   {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
@@ -142,7 +149,7 @@ export function SufufPage() {
                   <div
                     className={`h-full transition-all duration-500 ${
                       room.status === 'green' ? 'w-full bg-[#6BB85C]' :
-                      room.status === 'red' ? 'w-full bg-[#963E56]' :
+                      room.status === 'red' ? 'w-full bg-red-500' :
                       'w-0'
                     }`}
                   />
@@ -154,7 +161,7 @@ export function SufufPage() {
       </div>
 
       {/* Vrijwilligers Sectie */}
-      <div className="space-y-4">
+      <div className="container mx-auto space-y-4">
         <Button
           variant="ghost"
           className="w-full flex items-center justify-between p-2 text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5"
@@ -219,7 +226,7 @@ export function SufufPage() {
                   </div>
                   <div className="mt-4 flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
                     <div className="flex items-center gap-3">
-                      <X className={`w-5 h-5 ${room.status === 'red' ? 'text-[#963E56]' : 'text-gray-300'}`} />
+                      <X className={`w-5 h-5 ${room.status === 'red' ? 'text-red-500' : 'text-gray-300'}`} />
                       <span className="font-medium text-[#963E56]">NOK</span>
                     </div>
                     <label className="relative inline-block w-12 h-6">
@@ -245,7 +252,7 @@ export function SufufPage() {
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
-                        ${room.status === 'red' ? 'bg-[#963E56]' : 'bg-gray-200'}
+                        ${room.status === 'red' ? 'bg-red-500' : 'bg-gray-200'}
                       `} />
                       <span className={`
                         absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300
