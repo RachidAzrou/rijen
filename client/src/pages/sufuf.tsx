@@ -158,31 +158,23 @@ export function SufufPage() {
                       }}
                       className={`
                         relative h-28 rounded-xl transition-all duration-300
-                        hover:shadow-lg active:scale-[0.98] touch-manipulation
+                        hover:shadow-xl active:scale-[0.98] touch-manipulation
                         ${room.status === 'green'
-                          ? 'bg-white shadow-md border-2 border-[#6BB85C]'
-                          : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]/30'
+                          ? 'bg-gradient-to-br from-[#6BB85C] to-[#5a9b4d] shadow-lg'
+                          : 'bg-white hover:bg-[#6BB85C]/5'
                         }
+                        ${room.status !== 'green' && 'hover:border-[#6BB85C] border-2 border-gray-200'}
                       `}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          transform transition-all duration-300
-                          p-4 rounded-full
+                          w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
                           ${room.status === 'green'
-                            ? 'bg-[#6BB85C]'
+                            ? 'bg-white/20'
                             : 'bg-[#6BB85C]/10'
                           }
                         `}>
-                          <div className="w-8 h-8 relative">
-                            <Check className={`
-                              absolute inset-0 w-full h-full stroke-[2.5] transition-all duration-300
-                              ${room.status === 'green' 
-                                ? 'text-white transform scale-110' 
-                                : 'text-[#6BB85C]'
-                              }
-                            `} />
-                          </div>
+                          <Check className={`w-8 h-8 stroke-[2.5] ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
                         </div>
                       </div>
                       {room.status === 'green' && (
@@ -202,31 +194,23 @@ export function SufufPage() {
                       }}
                       className={`
                         relative h-28 rounded-xl transition-all duration-300
-                        hover:shadow-lg active:scale-[0.98] touch-manipulation
+                        hover:shadow-xl active:scale-[0.98] touch-manipulation
                         ${room.status === 'red'
-                          ? 'bg-white shadow-md border-2 border-red-500'
-                          : 'bg-white hover:bg-red-500/5 border-2 border-red-500/30'
+                          ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg'
+                          : 'bg-white hover:bg-red-500/5'
                         }
+                        ${room.status !== 'red' && 'hover:border-red-500 border-2 border-gray-200'}
                       `}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          transform transition-all duration-300
-                          p-4 rounded-full
+                          w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
                           ${room.status === 'red'
-                            ? 'bg-red-500'
+                            ? 'bg-white/20'
                             : 'bg-red-500/10'
                           }
                         `}>
-                          <div className="w-8 h-8 relative">
-                            <X className={`
-                              absolute inset-0 w-full h-full stroke-[2.5] transition-all duration-300
-                              ${room.status === 'red' 
-                                ? 'text-white transform scale-110' 
-                                : 'text-red-500'
-                              }
-                            `} />
-                          </div>
+                          <X className={`w-8 h-8 stroke-[2.5] ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
                         </div>
                       </div>
                       {room.status === 'red' && (
