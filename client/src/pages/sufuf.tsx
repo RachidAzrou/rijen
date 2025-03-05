@@ -36,8 +36,8 @@ export function SufufPage() {
   const { socket, isConnected } = useSocket();
   const [_, setLocation] = useLocation();
   const [rooms, setRooms] = useState<Record<string, Room>>({
-    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey', email: 'boven@mefen.be' },
     'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey', email: 'beneden@mefen.be' },
+    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey', email: 'boven@mefen.be' },
     'garage': { id: 'garage', title: 'Garage', status: 'grey', email: 'garage@mefen.be' }
   });
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
@@ -106,12 +106,12 @@ export function SufufPage() {
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <PiUsersThree className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+              <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              Sufuf - {currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' : 
-                      currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' : 
-                      currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
+              {currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' : 
+               currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' : 
+               currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
             </h1>
           </div>
         </div>

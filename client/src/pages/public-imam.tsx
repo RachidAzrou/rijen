@@ -71,8 +71,8 @@ export default function PublicImamDashboard() {
   const { socket, isConnected } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [rooms, setRooms] = useState<Record<string, Room>>({
-    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
     'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
+    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
     'garage': { id: 'garage', title: 'Garage', status: 'grey' }
   });
 
