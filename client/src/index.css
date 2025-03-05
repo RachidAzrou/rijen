@@ -50,8 +50,13 @@
 }
 
 @layer base {
+  /* Basislayout voor alle pagina's */
   body {
     @apply min-h-screen;
+  }
+
+  /* Login pagina specifiek */
+  .login-page {
     background-image: url('/static/123.jpg');
     background-size: cover;
     background-position: center;
@@ -60,6 +65,15 @@
   }
 
   /* Niet-login pagina's met gradient overlay */
+  #root > div:not(.login-page) {
+    @apply min-h-screen w-full;
+    background-image: url('/static/123.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
   #root > div:not(.login-page)::before {
     content: '';
     position: fixed;
