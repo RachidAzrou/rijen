@@ -13,9 +13,14 @@
 
   body {
     @apply font-sans antialiased h-full;
+    background-image: url('/static/123.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
   }
 
   #root {
-    @apply min-h-screen w-full;
+    @apply min-h-screen w-full bg-white/50;
   }
 }

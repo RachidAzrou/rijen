@@ -38,17 +38,8 @@ function Router() {
 
   return (
     <div className="min-h-screen w-full relative">
-      {/* Background Image for all pages */}
-      <div 
-        className="fixed inset-0 z-0"
-        style={{
-          backgroundImage: "url('/static/123.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          opacity: 0.7
-        }}
-      />
+      {/* Content overlay for better readability */}
+      <div className="fixed inset-0 bg-white/50 z-0" />
 
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
