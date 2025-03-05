@@ -9,8 +9,8 @@ import { useState, useEffect } from "react";
 const HadiethCard = () => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
     <CardContent className="p-4">
-      <div className="space-y-4 text-right" dir="rtl">
-        <p className="text-base text-[#963E56] font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+      <div className="space-y-4 text-center" dir="rtl">
+        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
           قال رسول الله ﷺ
         </p>
         <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
