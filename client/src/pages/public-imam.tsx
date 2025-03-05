@@ -111,7 +111,7 @@ export default function PublicImamDashboard() {
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center justify-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
