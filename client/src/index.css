@@ -60,7 +60,7 @@
   }
 
   /* Niet-login pagina's met gradient overlay */
-  #root > *:not(.login-page)::before {
+  #root > div:not(.login-page)::before {
     content: '';
     position: fixed;
     top: 0;
@@ -71,7 +71,7 @@
     z-index: 0;
   }
 
-  #root > * {
+  #root > div {
     position: relative;
     z-index: 1;
   }
