@@ -23,26 +23,26 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   return (
     <>
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-50">
-        <div className="flex items-center justify-around p-2">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-100 z-50">
+        <div className="flex items-center justify-around py-1">
           <Link href="/">
-            <a className="flex flex-col items-center p-3 text-[#963E56]">
-              <Home className="h-6 w-6" />
-              <span className="text-xs mt-1">Home</span>
+            <a className="flex flex-col items-center py-2 px-4">
+              <Home className="h-5 w-5 text-[#963E56]" />
+              <span className="text-[10px] mt-0.5 text-[#963E56]">Home</span>
             </a>
           </Link>
           <Link href="/delen">
-            <a className="flex flex-col items-center p-3 text-[#963E56]">
-              <Share2 className="h-6 w-6" />
-              <span className="text-xs mt-1">Delen</span>
+            <a className="flex flex-col items-center py-2 px-4">
+              <Share2 className="h-5 w-5 text-[#963E56]" />
+              <span className="text-[10px] mt-0.5 text-[#963E56]">Delen</span>
             </a>
           </Link>
           <button
             onClick={handleLogout}
-            className="flex flex-col items-center p-3 text-[#963E56]"
+            className="flex flex-col items-center py-2 px-4"
           >
-            <LogOut className="h-6 w-6" />
-            <span className="text-xs mt-1">Afmelden</span>
+            <LogOut className="h-5 w-5 text-[#963E56]" />
+            <span className="text-[10px] mt-0.5 text-[#963E56]">Afmelden</span>
           </button>
         </div>
       </div>

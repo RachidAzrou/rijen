@@ -11,7 +11,7 @@ export default function DelenPage() {
   const publicDashboardUrl = `${currentUrl}/public-imam`;
 
   return (
-    <div className="min-h-screen w-full pb-20 md:pb-0"> {/* Added bottom padding for mobile nav */}
+    <div className="min-h-screen w-full pb-16 md:pb-0"> 
       <div className="container mx-auto px-4 pt-4 pb-8 space-y-6 md:space-y-8">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">

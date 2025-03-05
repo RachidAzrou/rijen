@@ -79,7 +79,7 @@ export function SufufPage() {
   );
 
   return (
-    <div className="min-h-screen w-full pb-20 md:pb-0"> {/* Added bottom padding for mobile nav */}
+    <div className="min-h-screen w-full pb-16 md:pb-0">
       <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-3 md:gap-4">
@@ -159,8 +159,8 @@ export function SufufPage() {
                       className={`
                         relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
                         active:scale-95 touch-manipulation
-                        ${room.status === 'green' 
-                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg' 
+                        ${room.status === 'green'
+                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg'
                           : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
                         }
                       `}
@@ -195,8 +195,8 @@ export function SufufPage() {
                       className={`
                         relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
                         active:scale-95 touch-manipulation
-                        ${room.status === 'red' 
-                          ? 'bg-red-500 hover:bg-red-500/90 shadow-lg' 
+                        ${room.status === 'red'
+                          ? 'bg-red-500 hover:bg-red-500/90 shadow-lg'
                           : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
                         }
                       `}
