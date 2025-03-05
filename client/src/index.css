@@ -7,9 +7,15 @@
     @apply border-border;
   }
 
+  html, body, #root {
+    @apply min-h-screen w-full;
+  }
+
   body {
     @apply font-sans antialiased;
+  }
+
+  #root {
     background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7));
-    min-height: 100vh;
   }
 }
