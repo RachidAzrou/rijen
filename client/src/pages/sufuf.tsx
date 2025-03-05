@@ -60,74 +60,70 @@ export function SufufPage() {
   useEffect(() => {
     if (!socket) return;
 
-    const handleMessage = (event: MessageEvent) => {
+    socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+
       if (data.type === "initialStatus") {
         const updatedRooms = { ...rooms };
         Object.entries(data.data).forEach(([key, value]: [string, any]) => {
           if (updatedRooms[key]) {
-            updatedRooms[key].status = value as 'green' | 'red' | 'grey';
+            updatedRooms[key].status = value === 'OK' ? 'green' : value === 'NOK' ? 'red' : 'grey';
           }
         });
         setRooms(updatedRooms);
       } else if (data.type === "statusUpdated") {
         setRooms(prev => ({
           ...prev,
-          [data.data.room]: { ...prev[data.data.room], status: data.data.status }
+          [data.room]: { 
+            ...prev[data.room], 
+            status: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+          }
         }));
       }
     };
 
-    socket.addEventListener('message', handleMessage);
-
     return () => {
-      socket.removeEventListener('message', handleMessage);
+      socket.onmessage = null;
     };
   }, [socket]);
 
   const handleOkChange = (room: string) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      // If already green, set to grey, otherwise set to green
-      const newStatus = rooms[room].status === 'green' ? 'grey' : 'green';
+    if (!socket) return;
 
-      // Update local state immediately for responsiveness
+    if (rooms[room].status === 'green') {
+      // Als OK aan is, zet hem uit
       setRooms(prev => ({
         ...prev,
-        [room]: { 
-          ...prev[room], 
-          status: newStatus
-        }
+        [room]: { ...prev[room], status: 'grey' }
       }));
-
-      // Send socket message
-      socket.send(JSON.stringify({ 
-        type: "updateStatus", 
-        room, 
-        status: newStatus === 'green' ? 'OK' : 'OFF'
+      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
+    } else {
+      // Als OK uit is, zet hem aan en NOK uit
+      setRooms(prev => ({
+        ...prev,
+        [room]: { ...prev[room], status: 'green' }
       }));
+      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OK" }));
     }
   };
 
   const handleNokChange = (room: string) => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      // If already red, set to grey, otherwise set to red
-      const newStatus = rooms[room].status === 'red' ? 'grey' : 'red';
+    if (!socket) return;
 
-      // Update local state immediately for responsiveness
+    if (rooms[room].status === 'red') {
+      // Als NOK aan is, zet hem uit
       setRooms(prev => ({
         ...prev,
-        [room]: { 
-          ...prev[room], 
-          status: newStatus
-        }
+        [room]: { ...prev[room], status: 'grey' }
       }));
-
-      // Send socket message
-      socket.send(JSON.stringify({ 
-        type: "updateStatus", 
-        room, 
-        status: newStatus === 'red' ? 'NOK' : 'OFF'
+      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
+    } else {
+      // Als NOK uit is, zet hem aan en OK uit
+      setRooms(prev => ({
+        ...prev,
+        [room]: { ...prev[room], status: 'red' }
       }));
+      socket.send(JSON.stringify({ type: "updateStatus", room, status: "NOK" }));
     }
   };
 
