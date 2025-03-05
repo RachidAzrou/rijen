@@ -55,7 +55,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <div className={`
-      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
+      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col border-r border-[#963E56]/10
       ${isOpen ? 'w-64' : 'w-16'}
     `}>
       <Button
@@ -81,13 +81,13 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Profile Section */}
-        <div className={`text-center transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="flex flex-col items-center gap-2">
-            <div className="bg-[#963E56]/10 p-3 rounded-full">
-              <User className="h-6 w-6 text-[#963E56]" />
-            </div>
-            <h3 className="text-lg font-semibold text-[#963E56]">{profileName}</h3>
+        <div className={`flex items-center gap-2 transition-all duration-300 ${isOpen ? 'px-4' : 'justify-center'}`}>
+          <div className="bg-[#963E56]/10 p-2 rounded-full shrink-0">
+            <User className="h-4 w-4 text-[#963E56]" />
           </div>
+          <span className={`font-medium text-[#963E56] truncate transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+            {profileName}
+          </span>
         </div>
 
         {/* Navigation */}
