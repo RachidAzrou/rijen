@@ -6,20 +6,39 @@ import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import { SufufPage } from "@/pages/sufuf";
 import ImamDashboard from "@/pages/imam";
+import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { auth } from "@/lib/firebase";
+import { useLocation } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [location] = useLocation();
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(!!user);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Don't show sidebar on login page
+  const showSidebar = isLoggedIn && location !== '/login';
 
   return (
     <div className="min-h-screen w-full">
-      <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
-      <main className={`transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-16'}`}>
+      {showSidebar && (
+        <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+      )}
+      <main className={`transition-all duration-300 ${showSidebar ? (isSidebarOpen ? 'ml-64' : 'ml-16') : ''}`}>
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/" component={SufufPage} />
           <Route path="/imam" component={ImamDashboard} />
+          <Route path="/delen" component={DelenPage} />
           <Route component={NotFound} />
         </Switch>
       </main>

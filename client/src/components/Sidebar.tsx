@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, LogOut } from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
+import { ChevronLeft, ChevronRight, LogOut, Share2, Home } from "lucide-react";
+import { Link } from "wouter";
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
 
 interface SidebarProps {
@@ -19,7 +19,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user?.email) {
-        switch(user.email) {
+        switch (user.email) {
           case 'beneden@mefen.be':
             setProfileName('Moskee +0');
             break;
@@ -58,7 +58,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   return (
     <div className={`
-      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50
+      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
       ${isOpen ? 'w-64' : 'w-16'}
     `}>
       <Button
@@ -70,7 +70,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
       </Button>
 
-      <div className="p-4 space-y-6">
+      {/* Main Content */}
+      <div className="flex-1 p-4 space-y-6">
         {/* Logo */}
         <div className={`flex justify-center transition-all duration-300 ${isOpen ? 'scale-100' : 'scale-0'}`}>
           <img src="/static/logo.png" alt="MEFEN Logo" className="h-16" />
@@ -81,6 +82,32 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <h3 className="text-lg font-semibold text-[#963E56]">{profileName}</h3>
         </div>
 
+        {/* Navigation */}
+        <nav className="space-y-2">
+          <Link href="/">
+            <a className={`
+              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}>
+              <Home className="h-5 w-5 shrink-0" />
+              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                Dashboard
+              </span>
+            </a>
+          </Link>
+          <Link href="/delen">
+            <a className={`
+              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}>
+              <Share2 className="h-5 w-5 shrink-0" />
+              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                Delen
+              </span>
+            </a>
+          </Link>
+        </nav>
+
         {/* QR Code */}
         <div className={`flex flex-col items-center transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
           <div className="bg-white p-2 rounded-lg shadow-sm">
@@ -88,18 +115,23 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           </div>
           <p className="text-xs text-center mt-2 text-gray-600">Imam Dashboard</p>
         </div>
+      </div>
 
-        {/* Logout Button */}
-        <div className={`transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-          <Button
-            variant="ghost"
-            className="w-full flex items-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50"
-            onClick={handleLogout}
-          >
-            <LogOut className="h-4 w-4" />
-            <span>Afmelden</span>
-          </Button>
-        </div>
+      {/* Logout Button - Fixed at Bottom */}
+      <div className="p-4">
+        <Button
+          variant="ghost"
+          className={`
+            w-full flex items-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50
+            ${isOpen ? 'justify-start px-4' : 'justify-center'}
+          `}
+          onClick={handleLogout}
+        >
+          <LogOut className="h-4 w-4 shrink-0" />
+          <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+            Afmelden
+          </span>
+        </Button>
       </div>
     </div>
   );
