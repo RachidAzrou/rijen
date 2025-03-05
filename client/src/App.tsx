@@ -40,9 +40,12 @@ function Router() {
     <div className="min-h-screen w-full relative">
       {/* Background Image for all pages */}
       <div 
-        className="fixed inset-0 z-0 bg-cover bg-center"
+        className="fixed inset-0 z-0"
         style={{
-          backgroundImage: 'url("/static/123.jpg")',
+          backgroundImage: "url('/static/123.jpg')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
           opacity: 0.7
         }}
       />
