@@ -37,12 +37,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       {/* Logo Section */}
       <div className="pt-8 pb-4">
-        {isOpen && (
+        {isOpen ? (
           <div className="w-full p-2 flex justify-center items-center">
             <img
               src="/static/Naamloos2.png"
               alt="MEFEN Logo"
               className="h-32 w-auto object-contain"
+            />
+          </div>
+        ) : (
+          <div className="w-full p-2 flex justify-center items-center">
+            <img
+              src="/static/icon-512x512.png"
+              alt="MEFEN Icon"
+              className="h-12 w-12 object-contain"
             />
           </div>
         )}
