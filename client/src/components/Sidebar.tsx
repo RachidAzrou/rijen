@@ -64,9 +64,9 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           <div className="rounded-lg border border-[#963E56]/10 bg-white p-2 shadow-sm">
             <div className="flex items-center justify-center aspect-square overflow-hidden">
               <img 
-                src="/static/moskee.png" 
+                src="/static/icon-512x512.png" 
                 alt="MEFEN Logo" 
-                className="w-full h-full object-contain transform scale-150" 
+                className="w-full h-full object-contain transform scale-125" 
               />
             </div>
           </div>
