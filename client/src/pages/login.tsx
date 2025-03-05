@@ -60,11 +60,11 @@ export default function Login() {
 
       toast({
         title: "Succesvol ingelogd",
-        description: "U wordt doorgestuurd...",
+        description: "U wordt doorgestuurd naar het dashboard...",
         duration: 3000,
       });
 
-      setLocation("/");
+      setLocation("/"); // This will now redirect to the SufufPage
     } catch (error: any) {
       console.error("Login error:", error.code, error.message);
       toast({
