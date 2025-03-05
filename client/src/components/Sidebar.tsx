@@ -16,6 +16,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [_, setLocation] = useLocation();
   const [profileName, setProfileName] = useState("");
   const [language, setLanguage] = useState<'nl' | 'ar'>('nl');
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -41,6 +42,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true);
       const user = auth.currentUser;
       if (user?.email) {
         const db = getFirestore();
@@ -51,6 +53,8 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       setLocation('/login');
     } catch (error) {
       console.error('Logout error:', error);
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -93,7 +97,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="space-y-2">
-          <Link href="/">
+          <Link href="/sufuf">
             <a className={`
               flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
               ${isOpen ? 'justify-start px-4' : 'justify-center'}
@@ -137,14 +141,15 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <Button
           variant="ghost"
           className={`
-            w-full flex items-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50
+            w-full flex items-center gap-2 text-red-500 hover:text-white hover:bg-red-500 transition-all duration-300
             ${isOpen ? 'justify-start px-4' : 'justify-center'}
           `}
           onClick={handleLogout}
+          disabled={isLoggingOut}
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            {language === 'nl' ? 'Afmelden' : 'تسجيل خروج'}
+            {isLoggingOut ? 'Bezig...' : (language === 'nl' ? 'Afmelden' : 'تسجيل خروج')}
           </span>
         </Button>
       </div>
