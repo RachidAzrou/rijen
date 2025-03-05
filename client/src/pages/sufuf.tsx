@@ -155,119 +155,75 @@ export function SufufPage() {
           {isVolunteerSectionOpen && (
             <div className="grid gap-6 grid-cols-1">
               {volunteerRooms.map((room) => (
-                <Card
-                  key={room.id}
-                  className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center gap-3">
-                        <div className="bg-[#963E56]/10 p-2 rounded-full">
-                          <FaPray className="h-5 w-5 text-[#963E56]" />
-                        </div>
-                        <span className="font-medium text-[#963E56] text-lg">{room.title}</span>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
+                    <div className="flex items-center gap-3">
+                      <div className={`
+                        p-3 rounded-full transition-colors duration-300
+                        ${room.status === 'green' ? 'bg-[#6BB85C]/20' : 'bg-gray-100'}
+                      `}>
+                        <Check className={`w-6 h-6 ${room.status === 'green' ? 'text-[#6BB85C]' : 'text-gray-400'}`} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-[#963E56]">Rijen In Orde</p>
+                        <p className="text-sm text-gray-500">Klik om de status te veranderen</p>
                       </div>
                     </div>
+                    <button
+                      onClick={() => {
+                        if (room.status !== 'green') {
+                          sendSocketMessage(room.id, "OK");
+                        } else {
+                          sendSocketMessage(room.id, "OFF");
+                        }
+                      }}
+                      className={`
+                        relative w-16 h-8 rounded-full transition-colors duration-300
+                        ${room.status === 'green' ? 'bg-[#6BB85C]' : 'bg-gray-200'}
+                      `}
+                    >
+                      <span className={`
+                        absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md
+                        transition-transform duration-300 ease-in-out
+                        ${room.status === 'green' ? 'translate-x-8' : 'translate-x-0'}
+                      `} />
+                    </button>
+                  </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Card
-                        className={`
-                          cursor-pointer transition-all duration-300 overflow-hidden
-                          ${room.status === 'green' 
-                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg'
-                            : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
-                          }
-                        `}
-                        onClick={() => {
-                          if (room.status !== 'green') {
-                            sendSocketMessage(room.id, "OK");
-                          } else {
-                            sendSocketMessage(room.id, "OFF");
-                          }
-                        }}
-                      >
-                        <CardContent className="p-6 flex flex-col items-center justify-center gap-4">
-                          <div className={`
-                            p-4 rounded-full
-                            ${room.status === 'green' 
-                              ? 'bg-white/20' 
-                              : 'bg-[#6BB85C]/10'
-                            }
-                          `}>
-                            <Check className={`
-                              h-8 w-8
-                              ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
-                            `} />
-                          </div>
-                          <div className="text-center">
-                            <p className={`
-                              font-semibold text-lg
-                              ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
-                            `}>
-                              Rijen In Orde
-                            </p>
-                          </div>
-                          {room.status === 'green' && (
-                            <div className="absolute top-3 right-3">
-                              <span className="flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                              </span>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-
-                      <Card
-                        className={`
-                          cursor-pointer transition-all duration-300 overflow-hidden
-                          ${room.status === 'red' 
-                            ? 'bg-red-500 hover:bg-red-500/90 shadow-lg'
-                            : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
-                          }
-                        `}
-                        onClick={() => {
-                          if (room.status !== 'red') {
-                            sendSocketMessage(room.id, "NOK");
-                          } else {
-                            sendSocketMessage(room.id, "OFF");
-                          }
-                        }}
-                      >
-                        <CardContent className="p-6 flex flex-col items-center justify-center gap-4">
-                          <div className={`
-                            p-4 rounded-full
-                            ${room.status === 'red' 
-                              ? 'bg-white/20' 
-                              : 'bg-red-500/10'
-                            }
-                          `}>
-                            <X className={`
-                              h-8 w-8
-                              ${room.status === 'red' ? 'text-white' : 'text-red-500'}
-                            `} />
-                          </div>
-                          <div className="text-center">
-                            <p className={`
-                              font-semibold text-lg
-                              ${room.status === 'red' ? 'text-white' : 'text-red-500'}
-                            `}>
-                              Rijen Niet In Orde
-                            </p>
-                          </div>
-                          {room.status === 'red' && (
-                            <div className="absolute top-3 right-3">
-                              <span className="flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                              </span>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
+                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
+                    <div className="flex items-center gap-3">
+                      <div className={`
+                        p-3 rounded-full transition-colors duration-300
+                        ${room.status === 'red' ? 'bg-red-500/20' : 'bg-gray-100'}
+                      `}>
+                        <X className={`w-6 h-6 ${room.status === 'red' ? 'text-red-500' : 'text-gray-400'}`} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-[#963E56]">Rijen Niet In Orde</p>
+                        <p className="text-sm text-gray-500">Klik om de status te veranderen</p>
+                      </div>
                     </div>
-                  </CardContent>
-                </Card>
+                    <button
+                      onClick={() => {
+                        if (room.status !== 'red') {
+                          sendSocketMessage(room.id, "NOK");
+                        } else {
+                          sendSocketMessage(room.id, "OFF");
+                        }
+                      }}
+                      className={`
+                        relative w-16 h-8 rounded-full transition-colors duration-300
+                        ${room.status === 'red' ? 'bg-red-500' : 'bg-gray-200'}
+                      `}
+                    >
+                      <span className={`
+                        absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md
+                        transition-transform duration-300 ease-in-out
+                        ${room.status === 'red' ? 'translate-x-8' : 'translate-x-0'}
+                      `} />
+                    </button>
+                  </div>
+                </div>
               ))}
             </div>
           )}
