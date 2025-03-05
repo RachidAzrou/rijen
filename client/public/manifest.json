@@ -1,0 +1,23 @@
+{
+  "name": "MEFEN Sufuf App",
+  "short_name": "MEFEN",
+  "description": "Moskee El Fath En Nassr gebedsruimte management",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#963E56",
+  "icons": [
+    {
+      "src": "/static/guest_2031475.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/static/guest_2031475.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

@@ -4,13 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <meta name="theme-color" content="#963E56" />
-    <meta name="description" content="Sufuf - Prayer Rows Management" />
-    <link rel="icon" href="/static/moskee.png" />
-    <link rel="apple-touch-icon" href="/static/moskee.png" />
-    <title>Sufuf</title>
+    <meta name="description" content="MEFEN Sufuf - Prayer Rows Management" />
+    <link rel="icon" href="/static/guest_2031475.png" />
+    <link rel="apple-touch-icon" href="/static/guest_2031475.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>MEFEN</title>
   </head>
   <body class="h-full">
     <div id="root" class="min-h-screen w-full"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
