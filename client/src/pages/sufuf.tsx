@@ -175,7 +175,7 @@ export function SufufPage() {
                           }
                         `}>
                           <Check className={`
-                            w-12 h-12
+                            w-8 h-8 stroke-[2.5]
                             ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
                           `} />
                         </div>
@@ -217,7 +217,7 @@ export function SufufPage() {
                           }
                         `}>
                           <X className={`
-                            w-12 h-12
+                            w-8 h-8 stroke-[2.5]
                             ${room.status === 'red' ? 'text-white' : 'text-red-500'}
                           `} />
                         </div>
