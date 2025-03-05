@@ -87,6 +87,12 @@ export function SufufPage() {
     };
   }, [socket, isConnected]);
 
+  const sendSocketMessage = (room: string, status: "OK" | "NOK" | "OFF") => {
+    if (socket && isConnected && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: "updateStatus", room, status }));
+    }
+  };
+
   // Filter rooms for volunteer dashboard based on user email
   const volunteerRooms = Object.values(rooms).filter(room => 
     currentUserEmail === room.email
@@ -191,13 +197,13 @@ export function SufufPage() {
                               ...prev,
                               [room.id]: { ...prev[room.id], status: 'green' }
                             }));
-                            socket?.send(JSON.stringify({ type: "updateStatus", room: room.id, status: "OK" }));
+                            sendSocketMessage(room.id, "OK");
                           } else {
                             setRooms(prev => ({
                               ...prev,
                               [room.id]: { ...prev[room.id], status: 'grey' }
                             }));
-                            socket?.send(JSON.stringify({ type: "updateStatus", room: room.id, status: "OFF" }));
+                            sendSocketMessage(room.id, "OFF");
                           }
                         }}
                       />
@@ -227,13 +233,13 @@ export function SufufPage() {
                               ...prev,
                               [room.id]: { ...prev[room.id], status: 'red' }
                             }));
-                            socket?.send(JSON.stringify({ type: "updateStatus", room: room.id, status: "NOK" }));
+                            sendSocketMessage(room.id, "NOK");
                           } else {
                             setRooms(prev => ({
                               ...prev,
                               [room.id]: { ...prev[room.id], status: 'grey' }
                             }));
-                            socket?.send(JSON.stringify({ type: "updateStatus", room: room.id, status: "OFF" }));
+                            sendSocketMessage(room.id, "OFF");
                           }
                         }}
                       />
