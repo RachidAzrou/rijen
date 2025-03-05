@@ -73,7 +73,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <div className={`transition-all duration-300 ${isOpen ? 'px-4' : 'px-2'}`}>
           <div className={`transition-all duration-300 ${isOpen ? 'scale-100 w-full' : 'scale-0 w-0'}`}>
             <img 
-              src="/static/moskee.png" 
+              src="/static/Naamloos.png" 
               alt="MEFEN Logo" 
               className="max-w-full h-auto object-contain min-h-[120px]" 
             />
