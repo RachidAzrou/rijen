@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, LogOut, Share2, Home } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Share2, Home, User } from "lucide-react";
 import { Link } from "wouter";
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
 
@@ -53,9 +53,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
     }
   };
 
-  const currentUrl = window.location.origin;
-  const imamDashboardUrl = `${currentUrl}/imam`;
-
   return (
     <div className={`
       fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
@@ -79,7 +76,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Profile Section */}
         <div className={`text-center transition-all duration-300 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
-          <h3 className="text-lg font-semibold text-[#963E56]">{profileName}</h3>
+          <div className="flex flex-col items-center gap-2">
+            <div className="bg-[#963E56]/10 p-3 rounded-full">
+              <User className="h-6 w-6 text-[#963E56]" />
+            </div>
+            <h3 className="text-lg font-semibold text-[#963E56]">{profileName}</h3>
+          </div>
         </div>
 
         {/* Navigation */}

@@ -23,4 +23,11 @@
   #root {
     @apply min-h-screen w-full;
   }
+
+  /* Login page specific background - override the gradient */
+  body.login-page {
+    background: url('/static/123.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+  }
 }

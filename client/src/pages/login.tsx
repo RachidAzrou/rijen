@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { LockKeyhole, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
@@ -43,6 +43,13 @@ export default function Login() {
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    document.body.classList.add('login-page');
+    return () => {
+      document.body.classList.remove('login-page');
+    };
+  }, []);
+
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -56,7 +63,6 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      // Check if user is already logged in
       const db = getFirestore();
       const activeSessionRef = doc(db, "activeSessions", data.email);
       const activeSessionDoc = await getDoc(activeSessionRef);
@@ -75,14 +81,12 @@ export default function Login() {
           setIsLoading(false);
           return;
         } else {
-          // Session is stale, delete it
           await deleteDoc(activeSessionRef);
         }
       }
 
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
 
-      // Create active session
       await setDoc(activeSessionRef, {
         userId: userCredential.user.uid,
         timestamp: Date.now()
