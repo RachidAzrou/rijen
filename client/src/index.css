@@ -51,10 +51,28 @@
 
 @layer base {
   body {
-    background-image: url('/static/123.jpg');
+    @apply min-h-screen;
+    background-image: url('../public/static/123.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+  }
+
+  /* Niet-login pagina's met gradient overlay */
+  #root:not(:has(.login-page))::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7));
+    z-index: 0;
+  }
+
+  #root > * {
+    position: relative;
+    z-index: 1;
   }
 }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, User, House, ChevronDown } from "lucide-react";
+import { Check, X, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
-import { PiUsersThree } from "react-icons/pi";
+import { PiMosqueDuotone, PiUsersThree } from "react-icons/pi";
 import { auth } from "@/lib/firebase";
 import { useLocation } from "wouter";
 
@@ -33,7 +33,6 @@ type Room = {
 };
 
 export function SufufPage() {
-  // State en hooks blijven hetzelfde
   const { socket, isConnected } = useSocket();
   const [_, setLocation] = useLocation();
   const [rooms, setRooms] = useState<Record<string, Room>>({
@@ -44,7 +43,6 @@ export function SufufPage() {
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // useEffect hooks blijven hetzelfde
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -56,7 +54,6 @@ export function SufufPage() {
     return () => unsubscribe();
   }, [setLocation]);
 
-  // WebSocket logica blijft hetzelfde
   useEffect(() => {
     if (!socket || !isConnected) return;
     console.log("Sufuf: WebSocket connected");
@@ -106,7 +103,6 @@ export function SufufPage() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-4 md:space-y-6">
-        {/* Verbeterde Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -122,12 +118,11 @@ export function SufufPage() {
 
         <HadiethCard />
 
-        {/* Imam Dashboard Section */}
         <div className="space-y-4">
           <div className="flex items-center gap-3 bg-white p-4 rounded-lg shadow-sm border border-[#963E56]/10">
-            <FaPray className="h-6 w-6 text-[#963E56]" />
+            <PiMosqueDuotone className="h-6 w-6 text-[#963E56]" />
             <h2 className="text-xl font-semibold text-[#963E56]">
-              Imam Dashboard
+              Ruimtes
             </h2>
           </div>
 
@@ -139,7 +134,7 @@ export function SufufPage() {
               >
                 <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="flex items-center gap-3 text-lg font-semibold text-[#963E56]">
-                    <House className="h-5 w-5" />
+                    <FaPray className="h-5 w-5" />
                     {room.title}
                   </CardTitle>
                   <div className={`
@@ -168,7 +163,6 @@ export function SufufPage() {
           </div>
         </div>
 
-        {/* Vrijwilligers Sectie */}
         <div className="space-y-4">
           <Button
             variant="ghost"
@@ -177,7 +171,7 @@ export function SufufPage() {
           >
             <div className="flex items-center gap-3">
               <User className="h-6 w-6" />
-              <span>Vrijwilliger Dashboard</span>
+              <span>Vrijwilliger Acties</span>
             </div>
             <ChevronDown className={`h-5 w-5 transition-transform duration-200 ${isVolunteerSectionOpen ? 'transform rotate-180' : ''}`} />
           </Button>
@@ -193,7 +187,7 @@ export function SufufPage() {
                     <div className="flex items-center justify-between mb-6">
                       <div className="flex items-center gap-3">
                         <div className="bg-[#963E56]/10 p-2 rounded-full">
-                          <House className="h-5 w-5 text-[#963E56]" />
+                          <FaPray className="h-5 w-5 text-[#963E56]" />
                         </div>
                         <span className="font-medium text-[#963E56] text-lg">{room.title}</span>
                       </div>
