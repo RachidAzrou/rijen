@@ -15,17 +15,11 @@
     @apply font-sans antialiased h-full;
     background: url('/static/123.jpg');
     background-size: cover;
+    background-position: center;
     background-attachment: fixed;
   }
 
   #root {
     @apply min-h-screen w-full;
-  }
-
-  /* Login page specific background */
-  body.login-page {
-    background: url('/static/123.jpg');
-    background-size: cover;
-    background-attachment: fixed;
   }
 }

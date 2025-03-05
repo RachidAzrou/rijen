@@ -35,21 +35,21 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
       </Button>
 
-      {/* Logo Section */}
-      <div className="flex-1">
+      {/* Logo Section - Vergroot */}
+      <div className="pt-8 pb-4">
         {isOpen && (
           <div className="w-full p-2 flex justify-center items-center">
             <img
               src="/static/moskee.png"
               alt="MEFEN Logo"
-              className="h-32 w-40 object-contain"
+              className="h-40 w-48 object-contain"
             />
           </div>
         )}
       </div>
 
-      {/* Navigation en Logout Section - Verplaatst naar beneden */}
-      <div className="p-4 space-y-2">
+      {/* Navigation Links - Verplaatst naar het midden */}
+      <div className="flex-1 flex flex-col justify-center p-4 space-y-2">
         <Link href="/">
           <a className={`
             flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
@@ -73,7 +73,10 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </span>
           </a>
         </Link>
+      </div>
 
+      {/* Logout Button */}
+      <div className="p-4">
         <Button
           variant="ghost"
           className={`

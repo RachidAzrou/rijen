@@ -92,7 +92,7 @@ export default function Login() {
               Sufuf
             </h1>
             <p className="text-gray-600">
-              Log in om door te gaan
+              Beheer je gebedsruimtes
             </p>
           </div>
 
