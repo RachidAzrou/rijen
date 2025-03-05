@@ -157,29 +157,43 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
-                        active:scale-95 touch-manipulation
+                        relative h-32 md:h-40 rounded-2xl transition-all duration-300
+                        active:scale-[0.98] touch-manipulation overflow-hidden group
                         ${room.status === 'green'
-                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg'
-                          : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
+                          ? 'bg-gradient-to-br from-[#6BB85C] to-[#5a9b4d] shadow-lg'
+                          : 'bg-white hover:bg-[#6BB85C]/5'
                         }
+                        ${room.status !== 'green' && 'hover:border-[#6BB85C] border-2 border-gray-200'}
                       `}
                     >
-                      <div className={`
-                        w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 flex items-center justify-center
-                        ${room.status === 'green'
-                          ? 'bg-white/20'
-                          : 'bg-[#6BB85C]/10'
-                        }
-                      `}>
-                        <Check className={`w-8 h-8 md:w-10 md:h-10 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative flex flex-col items-center justify-center h-full gap-3">
+                        <div className={`
+                          w-14 h-14 md:w-16 md:h-16 rounded-xl transition-all duration-300
+                          flex items-center justify-center
+                          ${room.status === 'green'
+                            ? 'bg-white/20'
+                            : 'bg-[#6BB85C]/10'
+                          }
+                        `}>
+                          <Check className={`
+                            w-8 h-8 md:w-10 md:h-10 transform transition-all duration-300
+                            ${room.status === 'green' ? 'text-white scale-110' : 'text-[#6BB85C] group-hover:scale-110'}
+                          `} />
+                        </div>
+                        <span className={`
+                          text-base md:text-lg font-medium text-center transition-all duration-300
+                          ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
+                        `}>
+                          Rijen<br />In Orde
+                        </span>
                       </div>
-                      <span className={`text-base md:text-lg font-medium text-center ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
-                        Rijen<br />In Orde
-                      </span>
                       {room.status === 'green' && (
-                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                          <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
+                        <div className="absolute top-3 right-3">
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                          </span>
                         </div>
                       )}
                     </button>
@@ -193,29 +207,43 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
-                        active:scale-95 touch-manipulation
+                        relative h-32 md:h-40 rounded-2xl transition-all duration-300
+                        active:scale-[0.98] touch-manipulation overflow-hidden group
                         ${room.status === 'red'
-                          ? 'bg-red-500 hover:bg-red-500/90 shadow-lg'
-                          : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
+                          ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg'
+                          : 'bg-white hover:bg-red-500/5'
                         }
+                        ${room.status !== 'red' && 'hover:border-red-500 border-2 border-gray-200'}
                       `}
                     >
-                      <div className={`
-                        w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 flex items-center justify-center
-                        ${room.status === 'red'
-                          ? 'bg-white/20'
-                          : 'bg-red-500/10'
-                        }
-                      `}>
-                        <X className={`w-8 h-8 md:w-10 md:h-10 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="relative flex flex-col items-center justify-center h-full gap-3">
+                        <div className={`
+                          w-14 h-14 md:w-16 md:h-16 rounded-xl transition-all duration-300
+                          flex items-center justify-center
+                          ${room.status === 'red'
+                            ? 'bg-white/20'
+                            : 'bg-red-500/10'
+                          }
+                        `}>
+                          <X className={`
+                            w-8 h-8 md:w-10 md:h-10 transform transition-all duration-300
+                            ${room.status === 'red' ? 'text-white scale-110' : 'text-red-500 group-hover:scale-110'}
+                          `} />
+                        </div>
+                        <span className={`
+                          text-base md:text-lg font-medium text-center transition-all duration-300
+                          ${room.status === 'red' ? 'text-white' : 'text-red-500'}
+                        `}>
+                          Rijen<br />Niet In Orde
+                        </span>
                       </div>
-                      <span className={`text-base md:text-lg font-medium text-center ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
-                        Rijen<br />Niet In Orde
-                      </span>
                       {room.status === 'red' && (
-                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+                        <div className="absolute top-3 right-3">
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                          </span>
                         </div>
                       )}
                     </button>
