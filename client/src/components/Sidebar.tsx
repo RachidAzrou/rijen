@@ -25,13 +25,17 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
       ${isOpen ? 'w-64' : 'w-16'}
     `}>
+      {/* Toggle Button - Verbeterde styling */}
       <Button
         variant="ghost"
         size="icon"
-        className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-100"
+        className="absolute -right-6 top-4 h-12 w-12 rounded-full bg-white shadow-lg hover:bg-[#963E56]/5 hover:scale-110 transition-all duration-300 border border-[#963E56]/10"
         onClick={onToggle}
       >
-        {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        {isOpen ? 
+          <ChevronLeft className="h-6 w-6 text-[#963E56]" /> : 
+          <ChevronRight className="h-6 w-6 text-[#963E56]" />
+        }
       </Button>
 
       {/* Main Content */}
