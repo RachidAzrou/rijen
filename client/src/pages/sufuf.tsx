@@ -41,7 +41,6 @@ export function SufufPage() {
     'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey', email: 'beneden@mefen.be' },
     'garage': { id: 'garage', title: 'Garage', status: 'grey', email: 'garage@mefen.be' }
   });
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
@@ -86,7 +85,7 @@ export function SufufPage() {
     };
   }, [socket]);
 
-  const handleStatusUpdate = (room: string, status: "OK" | "NOK" | "RESET") => {
+  const handleStatusUpdate = (room: string, status: "OK" | "NOK") => {
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: "updateStatus", room, status }));
     }
@@ -153,7 +152,7 @@ export function SufufPage() {
         </div>
       </div>
 
-      {/* Vrijwilligers Sectie - Now Collapsible */}
+      {/* Vrijwilligers Sectie */}
       <div className="space-y-4">
         <Button
           variant="ghost"
@@ -172,11 +171,7 @@ export function SufufPage() {
             {volunteerRooms.map((room) => (
               <Card
                 key={room.id}
-                className={`
-                  overflow-hidden bg-white hover:shadow-lg transition-all duration-300 cursor-pointer
-                  ${selectedRoom === room.id ? 'ring-2 ring-[#963E56] ring-offset-2' : ''}
-                `}
-                onClick={() => setSelectedRoom(room.id)}
+                className="overflow-hidden bg-white hover:shadow-lg transition-all duration-300"
               >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
@@ -185,27 +180,49 @@ export function SufufPage() {
                       <span className="font-medium text-[#963E56]">{room.title}</span>
                     </div>
                   </div>
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        onClick={() => handleStatusUpdate(room.id, "OK")}
-                        className="bg-[#6BB85C] hover:bg-[#6BB85C]/90"
-                      >
-                        OK
-                      </Button>
-                      <Button
-                        onClick={() => handleStatusUpdate(room.id, "NOK")}
-                        className="bg-[#963E56] hover:bg-[#963E56]/90"
-                      >
-                        NOK
-                      </Button>
-                      <Button
-                        onClick={() => handleStatusUpdate(room.id, "RESET")}
-                        className="bg-[#D9A347] hover:bg-[#D9A347]/90"
-                      >
-                        Reset
-                      </Button>
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <Check className={`w-5 h-5 ${room.status === 'green' ? 'text-[#6BB85C]' : 'text-gray-300'}`} />
+                      <span className="font-medium text-[#963E56]">OK</span>
                     </div>
+                    <label className="relative inline-block w-12 h-6">
+                      <input
+                        type="checkbox"
+                        className="opacity-0 w-0 h-0"
+                        checked={room.status === 'green'}
+                        onChange={(e) => handleStatusUpdate(room.id, e.target.checked ? "OK" : "NOK")}
+                      />
+                      <span className={`
+                        absolute cursor-pointer inset-0 rounded-full transition-all duration-300
+                        ${room.status === 'green' ? 'bg-[#6BB85C]' : 'bg-gray-200'}
+                      `} />
+                      <span className={`
+                        absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300
+                        ${room.status === 'green' ? 'transform translate-x-6' : ''}
+                      `} />
+                    </label>
+                  </div>
+                  <div className="mt-4 flex items-center justify-between p-3 bg-white rounded-lg shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <X className={`w-5 h-5 ${room.status === 'red' ? 'text-[#963E56]' : 'text-gray-300'}`} />
+                      <span className="font-medium text-[#963E56]">NOK</span>
+                    </div>
+                    <label className="relative inline-block w-12 h-6">
+                      <input
+                        type="checkbox"
+                        className="opacity-0 w-0 h-0"
+                        checked={room.status === 'red'}
+                        onChange={(e) => handleStatusUpdate(room.id, e.target.checked ? "NOK" : "OK")}
+                      />
+                      <span className={`
+                        absolute cursor-pointer inset-0 rounded-full transition-all duration-300
+                        ${room.status === 'red' ? 'bg-[#963E56]' : 'bg-gray-200'}
+                      `} />
+                      <span className={`
+                        absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300
+                        ${room.status === 'red' ? 'transform translate-x-6' : ''}
+                      `} />
+                    </label>
                   </div>
                 </CardContent>
               </Card>
