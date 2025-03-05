@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, LogOut, Share2, Home, Languages } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Share2, Home } from "lucide-react";
 import { Link } from "wouter";
 
 interface SidebarProps {
@@ -13,7 +13,6 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [_, setLocation] = useLocation();
-  const [language, setLanguage] = useState<'nl' | 'ar'>('nl');
 
   const handleLogout = () => {
     signOut(auth)
@@ -44,7 +43,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               <img 
                 src="/static/Naamloos.png" 
                 alt="MEFEN Logo" 
-                className="w-full h-full object-contain transform scale-125" 
+                className="w-full h-full object-contain transform scale-100" 
               />
             </div>
           </div>
@@ -75,20 +74,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </span>
             </a>
           </Link>
-
-          {/* Language Selector */}
-          <button
-            onClick={() => setLanguage(language === 'nl' ? 'ar' : 'nl')}
-            className={`
-              w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-              ${isOpen ? 'justify-start px-4' : 'justify-center'}
-            `}
-          >
-            <Languages className="h-5 w-5 shrink-0" />
-            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-              {language === 'nl' ? 'العربية' : 'Nederlands'}
-            </span>
-          </button>
         </nav>
       </div>
 
@@ -97,14 +82,14 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         <Button
           variant="ghost"
           className={`
-            w-full flex items-center gap-2 text-red-500 hover:text-white hover:bg-red-500 transition-all duration-300
+            w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
             ${isOpen ? 'justify-start px-4' : 'justify-center'}
           `}
           onClick={handleLogout}
         >
-          <LogOut className="h-4 w-4 shrink-0" />
+          <LogOut className="h-5 w-5 shrink-0" />
           <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            {language === 'nl' ? 'Afmelden' : 'تسجيل خروج'}
+            Afmelden
           </span>
         </Button>
       </div>

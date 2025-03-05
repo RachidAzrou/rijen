@@ -70,24 +70,15 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
-        {/* Header met Logo */}
+        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex flex-col md:flex-row items-center gap-4 justify-between">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-              </div>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                Imam Dashboard
-              </h1>
+          <div className="flex items-center gap-4">
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
-            <div className="shrink-0">
-              <img 
-                src="/static/Naamloos.png" 
-                alt="MEFEN Logo" 
-                className="h-12 md:h-16 object-contain" 
-              />
-            </div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              Gebedsruimtes
+            </h1>
           </div>
         </div>
 
