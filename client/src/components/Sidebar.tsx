@@ -97,7 +97,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="space-y-2">
-          <Link href="/sufuf">
+          <Link href="/">
             <a className={`
               flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
               ${isOpen ? 'justify-start px-4' : 'justify-center'}
