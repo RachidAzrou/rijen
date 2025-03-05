@@ -89,7 +89,7 @@ export default function Login() {
               />
             </div>
             <h1 className="text-2xl font-bold text-[#963E56] mb-2">
-              Sufuf
+              Sufuf App
             </h1>
             <p className="text-gray-600">
               Beheer je gebedsruimtes

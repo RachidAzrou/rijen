@@ -49,7 +49,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       </div>
 
       {/* Navigation Links - Verplaatst naar het midden */}
-      <div className="flex-1 flex flex-col justify-center p-4 space-y-2">
+      <div className="flex-1 flex flex-col justify-start pt-20 p-4 space-y-2">
         <Link href="/">
           <a className={`
             flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
