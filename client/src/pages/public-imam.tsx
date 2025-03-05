@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
-import { FaPray, FaMosque } from "react-icons/fa";
+import { FaPray } from "react-icons/fa";
+import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
@@ -112,7 +113,7 @@ export default function PublicImamDashboard() {
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <FaMosque className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               {t.pageTitle}
