@@ -90,37 +90,39 @@ export function SufufPage() {
   const handleOkChange = (e: React.ChangeEvent<HTMLInputElement>, room: string) => {
     if (!socket || !isConnected) return;
 
-    if (e.target.checked) {
-      setRooms(prev => ({
-        ...prev,
-        [room]: { ...prev[room], status: 'green' }
-      }));
-      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OK" }));
-    } else {
-      setRooms(prev => ({
-        ...prev,
-        [room]: { ...prev[room], status: 'grey' }
-      }));
-      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
-    }
+    const newStatus = e.target.checked ? "OK" : "OFF";
+    socket.send(JSON.stringify({ 
+      type: "updateStatus", 
+      room, 
+      status: newStatus 
+    }));
+
+    setRooms(prev => ({
+      ...prev,
+      [room]: { 
+        ...prev[room], 
+        status: newStatus === "OK" ? 'green' : 'grey'
+      }
+    }));
   };
 
   const handleNokChange = (e: React.ChangeEvent<HTMLInputElement>, room: string) => {
     if (!socket || !isConnected) return;
 
-    if (e.target.checked) {
-      setRooms(prev => ({
-        ...prev,
-        [room]: { ...prev[room], status: 'red' }
-      }));
-      socket.send(JSON.stringify({ type: "updateStatus", room, status: "NOK" }));
-    } else {
-      setRooms(prev => ({
-        ...prev,
-        [room]: { ...prev[room], status: 'grey' }
-      }));
-      socket.send(JSON.stringify({ type: "updateStatus", room, status: "OFF" }));
-    }
+    const newStatus = e.target.checked ? "NOK" : "OFF";
+    socket.send(JSON.stringify({ 
+      type: "updateStatus", 
+      room, 
+      status: newStatus 
+    }));
+
+    setRooms(prev => ({
+      ...prev,
+      [room]: { 
+        ...prev[room], 
+        status: newStatus === "NOK" ? 'red' : 'grey'
+      }
+    }));
   };
 
   // Filter rooms for volunteer dashboard based on user email
@@ -221,7 +223,17 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'green'}
-                        onChange={(e) => handleOkChange(e, room.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            // Turn off NOK if it's on
+                            if (room.status === 'red') {
+                              handleNokChange({ target: { checked: false } } as React.ChangeEvent<HTMLInputElement>, room.id);
+                            }
+                            handleOkChange(e, room.id);
+                          } else {
+                            handleOkChange(e, room.id);
+                          }
+                        }}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
@@ -243,7 +255,17 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'red'}
-                        onChange={(e) => handleNokChange(e, room.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            // Turn off OK if it's on
+                            if (room.status === 'green') {
+                              handleOkChange({ target: { checked: false } } as React.ChangeEvent<HTMLInputElement>, room.id);
+                            }
+                            handleNokChange(e, room.id);
+                          } else {
+                            handleNokChange(e, room.id);
+                          }
+                        }}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
