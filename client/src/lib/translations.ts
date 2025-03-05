@@ -2,9 +2,8 @@
 export const translations = {
   nl: {
     pageTitle: 'Gebedsruimtes',
-    available: 'In orde',
-    unavailable: 'Niet in orde',
-    unknown: 'Onbekend',
+    available: 'Rijen zijn goed',
+    unavailable: 'Rijen zijn niet goed',
     lastUpdate: 'Laatste update',
     hadithTitle: 'Hadieth',
     hadithText: "Houd de rijen recht, want het recht houden van de rijen is deel van het perfect verrichten van het gebed.",
@@ -16,10 +15,9 @@ export const translations = {
     }
   },
   ar: {
-    pageTitle: 'قاعات الصلاة',
-    available: 'متاح',
-    unavailable: 'غير متاح',
-    unknown: 'غير معروف',
+    pageTitle: 'مصليات',
+    available: 'الصفوف منتظمة',
+    unavailable: 'الصفوف غير منتظمة',
     lastUpdate: 'آخر تحديث',
     hadithTitle: 'قال رسول الله ﷺ',
     hadithText: 'سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ',

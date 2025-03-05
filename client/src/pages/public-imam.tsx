@@ -154,16 +154,18 @@ export default function PublicImamDashboard() {
                   />
                 </div>
                 <div className="mt-4 text-center">
-                  <span className={`
-                    inline-block px-4 py-1 rounded-full text-sm font-medium
-                    ${room.status === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
-                      room.status === 'red' ? 'bg-red-500/10 text-red-500' :
-                      'bg-gray-100 text-gray-500'}
-                  `}>
-                    {room.status === 'green' ? t.available :
-                     room.status === 'red' ? t.unavailable :
-                     t.unknown}
-                  </span>
+                  {room.status !== 'grey' && (
+                    <span className={`
+                      inline-block px-4 py-1 rounded-full text-sm font-medium
+                      ${room.status === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
+                        room.status === 'red' ? 'bg-red-500/10 text-red-500' :
+                        'bg-gray-100 text-gray-500'}
+                    `}>
+                      {room.status === 'green' ? t.available :
+                       room.status === 'red' ? t.unavailable :
+                       ''}
+                    </span>
+                  )}
                 </div>
               </CardContent>
             </Card>
