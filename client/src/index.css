@@ -52,32 +52,13 @@
 @layer base {
   /* Login page specific */
   .login-page {
-    background-image: url('/static/123.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: url('/static/123.jpg') center center/cover no-repeat fixed;
   }
 
   /* Other pages */
   #root > div:not(.login-page) {
     min-height: 100vh;
     width: 100%;
-    background-image: url('/static/123.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    position: relative;
-  }
-
-  #root > div:not(.login-page)::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7));
+    background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed;
   }
 }
