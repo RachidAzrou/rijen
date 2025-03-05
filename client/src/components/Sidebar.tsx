@@ -42,7 +42,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <img
               src="/static/moskee.png"
               alt="MEFEN Logo"
-              className="h-16 w-16 object-contain"
+              className="h-20 w-20 object-contain"
             />
           </div>
         )}
