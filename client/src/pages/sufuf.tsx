@@ -87,40 +87,46 @@ export function SufufPage() {
 
   const handleOkChange = (room: string) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      // If already green, set to grey, otherwise set to green and turn off red
-      socket.send(JSON.stringify({ 
-        type: "updateStatus", 
-        room, 
-        status: rooms[room].status === 'green' ? 'grey' : 'green'
-      }));
+      // If already green, set to grey, otherwise set to green
+      const newStatus = rooms[room].status === 'green' ? 'grey' : 'green';
 
-      // Update local state immediately
+      // Update local state immediately for responsiveness
       setRooms(prev => ({
         ...prev,
         [room]: { 
           ...prev[room], 
-          status: prev[room].status === 'green' ? 'grey' : 'green'
+          status: newStatus
         }
+      }));
+
+      // Send socket message
+      socket.send(JSON.stringify({ 
+        type: "updateStatus", 
+        room, 
+        status: newStatus === 'green' ? 'OK' : 'OFF'
       }));
     }
   };
 
   const handleNokChange = (room: string) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      // If already red, set to grey, otherwise set to red and turn off green
-      socket.send(JSON.stringify({ 
-        type: "updateStatus", 
-        room, 
-        status: rooms[room].status === 'red' ? 'grey' : 'red'
-      }));
+      // If already red, set to grey, otherwise set to red
+      const newStatus = rooms[room].status === 'red' ? 'grey' : 'red';
 
-      // Update local state immediately
+      // Update local state immediately for responsiveness
       setRooms(prev => ({
         ...prev,
         [room]: { 
           ...prev[room], 
-          status: prev[room].status === 'red' ? 'grey' : 'red'
+          status: newStatus
         }
+      }));
+
+      // Send socket message
+      socket.send(JSON.stringify({ 
+        type: "updateStatus", 
+        room, 
+        status: newStatus === 'red' ? 'NOK' : 'OFF'
       }));
     }
   };
