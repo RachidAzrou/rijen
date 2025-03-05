@@ -6,6 +6,7 @@ import { useLocation } from "wouter";
 import { ChevronLeft, ChevronRight, LogOut, Share2, Home, User, Languages } from "lucide-react";
 import { Link } from "wouter";
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
+import { useToast } from "@/hooks/use-toast";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [profileName, setProfileName] = useState("");
   const [language, setLanguage] = useState<'nl' | 'ar'>('nl');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -50,9 +52,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         await deleteDoc(activeSessionRef);
       }
       await signOut(auth);
+      toast({
+        title: "Uitgelogd",
+        description: "U bent succesvol uitgelogd.",
+        duration: 3000,
+      });
       setLocation('/login');
     } catch (error) {
       console.error('Logout error:', error);
+      toast({
+        variant: "destructive",
+        title: "Fout bij uitloggen",
+        description: "Er is een fout opgetreden bij het uitloggen. Probeer het opnieuw.",
+        duration: 5000,
+      });
     } finally {
       setIsLoggingOut(false);
     }
@@ -78,7 +91,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen && (
           <div className="px-4">
             <img 
-              src="/static/Naamloos.png" 
+              src="/static/123.jpg"
               alt="MEFEN Logo" 
               className="w-full h-auto object-contain" 
             />
@@ -149,7 +162,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            {isLoggingOut ? 'Bezig...' : (language === 'nl' ? 'Afmelden' : 'تسجيل خروج')}
+            {isLoggingOut ? 'Bezig met afmelden...' : (language === 'nl' ? 'Afmelden' : 'تسجيل خروج')}
           </span>
         </Button>
       </div>
