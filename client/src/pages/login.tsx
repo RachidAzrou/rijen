@@ -73,7 +73,7 @@ export default function Login() {
           <div className="text-center mb-8">
             <div className="w-full flex justify-center items-center">
               <img
-                src="/static/Naamloos2.png"
+                src="/static/Naamloos2.png"  // Assuming the logo is now in /client/public/static/
                 alt="MEFEN"
                 className="h-32 sm:h-40 mx-auto mb-6"
               />
