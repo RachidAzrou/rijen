@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import { SufufPage } from "@/pages/sufuf";
 import ImamDashboard from "@/pages/imam";
+import PublicImamDashboard from "@/pages/public-imam";
 import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
 import { useState, useEffect } from "react";
@@ -25,8 +26,8 @@ function Router() {
     return () => unsubscribe();
   }, []);
 
-  // Don't show sidebar on login page
-  const showSidebar = isLoggedIn && location !== '/login';
+  // Don't show sidebar on login page or public imam dashboard
+  const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
   return (
     <div className="min-h-screen w-full">
@@ -38,6 +39,7 @@ function Router() {
           <Route path="/login" component={Login} />
           <Route path="/" component={SufufPage} />
           <Route path="/imam" component={ImamDashboard} />
+          <Route path="/public-imam" component={PublicImamDashboard} />
           <Route path="/delen" component={DelenPage} />
           <Route component={NotFound} />
         </Switch>
