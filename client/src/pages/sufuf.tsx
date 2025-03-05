@@ -170,14 +170,12 @@ export function SufufPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <Button
-                        variant="default"
-                        size="lg"
+                      <Card
                         className={`
-                          h-24 relative group transition-all duration-300 rounded-xl
+                          cursor-pointer transition-all duration-300 overflow-hidden
                           ${room.status === 'green' 
-                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90'
-                            : 'bg-[#6BB85C]/10 hover:bg-[#6BB85C]/20 text-[#6BB85C]'
+                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg'
+                            : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
                           }
                         `}
                         onClick={() => {
@@ -188,29 +186,44 @@ export function SufufPage() {
                           }
                         }}
                       >
-                        <div className="flex flex-col items-center gap-3">
-                          <div className="bg-white/10 p-2 rounded-full">
-                            <Check className={`h-8 w-8 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                        <CardContent className="p-6 flex flex-col items-center justify-center gap-4">
+                          <div className={`
+                            p-4 rounded-full
+                            ${room.status === 'green' 
+                              ? 'bg-white/20' 
+                              : 'bg-[#6BB85C]/10'
+                            }
+                          `}>
+                            <Check className={`
+                              h-8 w-8
+                              ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
+                            `} />
                           </div>
-                          <span className={`font-medium text-lg ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
-                            Rijen In Orde
-                          </span>
-                        </div>
-                        {room.status === 'green' && (
-                          <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-lg">
-                            <div className="h-4 w-4 rounded-full bg-[#6BB85C] animate-pulse" />
+                          <div className="text-center">
+                            <p className={`
+                              font-semibold text-lg
+                              ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
+                            `}>
+                              Rijen In Orde
+                            </p>
                           </div>
-                        )}
-                      </Button>
+                          {room.status === 'green' && (
+                            <div className="absolute top-3 right-3">
+                              <span className="flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                              </span>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
 
-                      <Button
-                        variant="default"
-                        size="lg"
+                      <Card
                         className={`
-                          h-24 relative group transition-all duration-300 rounded-xl
-                          ${room.status === 'red'
-                            ? 'bg-red-500 hover:bg-red-500/90'
-                            : 'bg-red-500/10 hover:bg-red-500/20 text-red-500'
+                          cursor-pointer transition-all duration-300 overflow-hidden
+                          ${room.status === 'red' 
+                            ? 'bg-red-500 hover:bg-red-500/90 shadow-lg'
+                            : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
                           }
                         `}
                         onClick={() => {
@@ -221,20 +234,37 @@ export function SufufPage() {
                           }
                         }}
                       >
-                        <div className="flex flex-col items-center gap-3">
-                          <div className="bg-white/10 p-2 rounded-full">
-                            <X className={`h-8 w-8 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                        <CardContent className="p-6 flex flex-col items-center justify-center gap-4">
+                          <div className={`
+                            p-4 rounded-full
+                            ${room.status === 'red' 
+                              ? 'bg-white/20' 
+                              : 'bg-red-500/10'
+                            }
+                          `}>
+                            <X className={`
+                              h-8 w-8
+                              ${room.status === 'red' ? 'text-white' : 'text-red-500'}
+                            `} />
                           </div>
-                          <span className={`font-medium text-lg ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
-                            Rijen Niet In Orde
-                          </span>
-                        </div>
-                        {room.status === 'red' && (
-                          <div className="absolute -top-2 -right-2 bg-white rounded-full p-1.5 shadow-lg">
-                            <div className="h-4 w-4 rounded-full bg-red-500 animate-pulse" />
+                          <div className="text-center">
+                            <p className={`
+                              font-semibold text-lg
+                              ${room.status === 'red' ? 'text-white' : 'text-red-500'}
+                            `}>
+                              Rijen Niet In Orde
+                            </p>
                           </div>
-                        )}
-                      </Button>
+                          {room.status === 'red' && (
+                            <div className="absolute top-3 right-3">
+                              <span className="flex h-3 w-3">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                              </span>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                     </div>
                   </CardContent>
                 </Card>
