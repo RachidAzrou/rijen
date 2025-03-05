@@ -45,6 +45,11 @@ export default function ImamDashboard() {
       }
     };
 
+    // Request initial status when connecting
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify({ type: "getInitialStatus" }));
+    }
+
     return () => {
       socket.onmessage = null;
     };

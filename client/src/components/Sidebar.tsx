@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, LogOut, Share2, Home, User } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Share2, Home, User, Languages } from "lucide-react";
 import { Link } from "wouter";
 import { doc, deleteDoc, getFirestore } from "firebase/firestore";
 
@@ -15,6 +15,7 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [_, setLocation] = useLocation();
   const [profileName, setProfileName] = useState("");
+  const [language, setLanguage] = useState<'nl' | 'ar'>('nl');
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -73,7 +74,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen && (
           <div className="px-4">
             <img 
-              src="/static/Naamloos.png" 
+              src="/static/mefen.png" 
               alt="MEFEN Logo" 
               className="max-w-full h-auto object-contain min-h-[120px]" 
             />
@@ -114,10 +115,24 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
               </span>
             </a>
           </Link>
+
+          {/* Language Selector */}
+          <button
+            onClick={() => setLanguage(language === 'nl' ? 'ar' : 'nl')}
+            className={`
+              w-full flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}
+          >
+            <Languages className="h-5 w-5 shrink-0" />
+            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+              {language === 'nl' ? 'العربية' : 'Nederlands'}
+            </span>
+          </button>
         </nav>
       </div>
 
-      {/* Logout Button - Fixed at Bottom */}
+      {/* Logout Button */}
       <div className="p-4">
         <Button
           variant="ghost"
@@ -129,7 +144,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         >
           <LogOut className="h-4 w-4 shrink-0" />
           <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            Afmelden
+            {language === 'nl' ? 'Afmelden' : 'تسجيل خروج'}
           </span>
         </Button>
       </div>
