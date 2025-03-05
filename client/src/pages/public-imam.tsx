@@ -110,28 +110,14 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full bg-gray-50" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
-        {/* Header met aangepaste layout voor Arabisch */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className={`flex items-center justify-between gap-4`}>
-            {language === 'ar' ? (
-              <>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                  {t.pageTitle}
-                </h1>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-                </div>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                  {t.pageTitle}
-                </h1>
-              </>
-            )}
+          <div className={`flex items-center gap-4 ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+            </div>
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              {t.pageTitle}
+            </h1>
           </div>
         </div>
 
@@ -143,29 +129,21 @@ export default function PublicImamDashboard() {
               key={room.id}
               className="overflow-hidden bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
-              <CardHeader className="p-4 md:p-6 pb-4">
-                <div className="flex items-center justify-between">
-                  {/* Status Indicator (links) */}
-                  <div className={`
-                    relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                    ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
-                      room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
-                      'bg-gray-300'}
-                  `}>
-                    {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
-                    {room.status === 'red' && <X className="w-6 h-6 text-white" />}
-                  </div>
-
-                  {/* Ruimte Titel */}
-                  <CardTitle className="text-base md:text-lg font-semibold text-[#963E56]">
-                    {t.rooms[room.id as keyof typeof t.rooms]}
-                  </CardTitle>
-
-                  {/* Gebed Icoon (rechts) */}
-                  <div className="w-10 h-10 flex items-center justify-center">
-                    <FaPray className="h-5 w-5 text-[#963E56]" />
-                  </div>
+              <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
+                <div className={`
+                  relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
+                  ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
+                    room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
+                    'bg-gray-300'}
+                  ${language === 'ar' ? 'order-first' : 'order-last'}
+                `}>
+                  {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
+                  {room.status === 'red' && <X className="w-6 h-6 text-white" />}
                 </div>
+                <CardTitle className={`flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
+                  <FaPray className="h-5 w-5" />
+                  {t.rooms[room.id as keyof typeof t.rooms]}
+                </CardTitle>
               </CardHeader>
               <CardContent className="p-4 md:p-6 pt-2">
                 <div className="mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
