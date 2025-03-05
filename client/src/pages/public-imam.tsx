@@ -8,13 +8,16 @@ import { useState, useEffect } from "react";
 // Hadieth Component
 const HadiethCard = () => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
-    <CardContent className="p-4 text-center">
-      <div className="space-y-4 rtl">
+    <CardContent className="p-4">
+      <div className="space-y-4 text-right" dir="rtl">
         <p className="text-base text-[#963E56] font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
           قال رسول الله ﷺ
         </p>
         <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
           سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ
+        </p>
+        <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
+          رواه البخاري ومسلم
         </p>
       </div>
     </CardContent>
