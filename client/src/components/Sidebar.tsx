@@ -70,15 +70,15 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {/* Main Content */}
       <div className="flex-1 p-4 space-y-6">
         {/* Logo */}
-        <div className={`transition-all duration-300 ${isOpen ? 'px-4' : 'px-2'}`}>
-          <div className={`transition-all duration-300 ${isOpen ? 'scale-100 w-full' : 'scale-0 w-0'}`}>
+        {isOpen && (
+          <div className="px-4">
             <img 
               src="/static/Naamloos.png" 
               alt="MEFEN Logo" 
               className="max-w-full h-auto object-contain min-h-[120px]" 
             />
           </div>
-        </div>
+        )}
 
         {/* Profile Section */}
         <div className={`flex items-center gap-2 transition-all duration-300 ${isOpen ? 'px-4' : 'justify-center'}`}>
