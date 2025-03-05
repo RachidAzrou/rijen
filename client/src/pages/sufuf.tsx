@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
 import { PiUsersThree } from "react-icons/pi";
+import { auth } from "@/lib/firebase";
+import { useLocation } from "wouter";
 
 // Hadieth Component - Smaller version
 const HadiethCard = () => (
@@ -27,20 +29,34 @@ type Room = {
   id: string;
   title: string;
   status: 'green' | 'red' | 'grey';
+  email?: string;
 };
 
 // Main Component
 export function SufufPage() {
   const { socket, isConnected } = useSocket();
+  const [_, setLocation] = useLocation();
   const [rooms, setRooms] = useState<Record<string, Room>>({
-    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
-    'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
-    'garage': { id: 'garage', title: 'Garage', status: 'grey' }
+    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey', email: 'boven@mefen.be' },
+    'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey', email: 'beneden@mefen.be' },
+    'garage': { id: 'garage', title: 'Garage', status: 'grey', email: 'garage@mefen.be' }
   });
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
-  const [okChecked, setOkChecked] = useState(false);
-  const [nokChecked, setNokChecked] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
+
+  useEffect(() => {
+    // Check authentication status
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setCurrentUserEmail(user.email);
+      } else {
+        setLocation("/login");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [setLocation]);
 
   useEffect(() => {
     if (!socket) return;
@@ -70,19 +86,16 @@ export function SufufPage() {
     };
   }, [socket]);
 
-  useEffect(() => {
-    if (!socket || !selectedRoom) return;
-
-    // Reset toggles when room changes
-    setOkChecked(rooms[selectedRoom].status === 'green');
-    setNokChecked(rooms[selectedRoom].status === 'red');
-  }, [selectedRoom, rooms]);
-
   const handleStatusUpdate = (room: string, status: "OK" | "NOK" | "RESET") => {
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify({ type: "updateStatus", room, status }));
     }
   };
+
+  // Filter rooms for volunteer dashboard based on user email
+  const volunteerRooms = Object.values(rooms).filter(room => 
+    currentUserEmail === room.email
+  );
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-6">
@@ -155,8 +168,8 @@ export function SufufPage() {
         </Button>
 
         {isVolunteerSectionOpen && (
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.values(rooms).map((room) => (
+          <div className="grid gap-4 grid-cols-1">
+            {volunteerRooms.map((room) => (
               <Card
                 key={room.id}
                 className={`
@@ -172,30 +185,28 @@ export function SufufPage() {
                       <span className="font-medium text-[#963E56]">{room.title}</span>
                     </div>
                   </div>
-                  {selectedRoom === room.id && (
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-3 gap-2">
-                        <Button
-                          onClick={() => handleStatusUpdate(room.id, "OK")}
-                          className="bg-[#6BB85C] hover:bg-[#6BB85C]/90"
-                        >
-                          OK
-                        </Button>
-                        <Button
-                          onClick={() => handleStatusUpdate(room.id, "NOK")}
-                          className="bg-[#963E56] hover:bg-[#963E56]/90"
-                        >
-                          NOK
-                        </Button>
-                        <Button
-                          onClick={() => handleStatusUpdate(room.id, "RESET")}
-                          className="bg-[#D9A347] hover:bg-[#D9A347]/90"
-                        >
-                          Reset
-                        </Button>
-                      </div>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        onClick={() => handleStatusUpdate(room.id, "OK")}
+                        className="bg-[#6BB85C] hover:bg-[#6BB85C]/90"
+                      >
+                        OK
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusUpdate(room.id, "NOK")}
+                        className="bg-[#963E56] hover:bg-[#963E56]/90"
+                      >
+                        NOK
+                      </Button>
+                      <Button
+                        onClick={() => handleStatusUpdate(room.id, "RESET")}
+                        className="bg-[#D9A347] hover:bg-[#D9A347]/90"
+                      >
+                        Reset
+                      </Button>
                     </div>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
             ))}
