@@ -60,8 +60,11 @@ export function SufufPage() {
   useEffect(() => {
     if (!socket || !isConnected) return;
 
-    socket.onmessage = (event) => {
+    console.log("Sufuf: WebSocket connected");
+
+    const handleMessage = (event: MessageEvent) => {
       const data = JSON.parse(event.data);
+      console.log("Sufuf received message:", data);
 
       if (data.type === "initialStatus") {
         const updatedRooms = { ...rooms };
@@ -82,14 +85,26 @@ export function SufufPage() {
       }
     };
 
+    socket.addEventListener('message', handleMessage);
+
+    // Request initial status when connecting
+    if (socket.readyState === WebSocket.OPEN) {
+      console.log("Requesting initial status");
+      socket.send(JSON.stringify({ type: "getInitialStatus" }));
+    }
+
     return () => {
-      socket.onmessage = null;
+      socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected]);
 
   const sendSocketMessage = (room: string, status: "OK" | "NOK" | "OFF") => {
     if (socket && isConnected && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ type: "updateStatus", room, status }));
+      const message = JSON.stringify({ type: "updateStatus", room, status });
+      console.log("Sending WebSocket message:", message);
+      socket.send(message);
+    } else {
+      console.log("WebSocket not ready:", { isConnected, readyState: socket?.readyState });
     }
   };
 
