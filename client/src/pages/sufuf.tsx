@@ -101,12 +101,7 @@ export function SufufPage() {
   );
 
   return (
-    <div 
-      className="min-h-screen w-full"
-      style={{
-        background: `linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed`
-      }}
-    >
+    <div className="min-h-screen w-full">
       <div className="container mx-auto px-4 py-6 space-y-4 md:space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
@@ -114,9 +109,9 @@ export function SufufPage() {
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              {currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' : 
-               currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' : 
-               currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
+              {currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' :
+                currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' :
+                  currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
             </h1>
           </div>
         </div>
@@ -146,7 +141,7 @@ export function SufufPage() {
                     relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
                     ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
                       room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
-                      'bg-gray-300'}
+                        'bg-gray-300'}
                   `}>
                     {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
                     {room.status === 'red' && <X className="w-6 h-6 text-white" />}
@@ -157,9 +152,9 @@ export function SufufPage() {
                     <div
                       className={`h-full transition-all duration-500 ${
                         room.status === 'green' ? 'w-full bg-[#6BB85C]' :
-                        room.status === 'red' ? 'w-full bg-red-500' :
-                        'w-0'
-                      }`}
+                          room.status === 'red' ? 'w-full bg-red-500' :
+                            'w-0'
+                        }`}
                     />
                   </div>
                 </CardContent>

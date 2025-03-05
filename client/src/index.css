@@ -50,6 +50,10 @@
 }
 
 @layer base {
+  html, body, #root {
+    height: 100%;
+  }
+
   /* Login page specific */
   .login-page {
     background: url('/static/123.jpg') center center/cover no-repeat fixed;

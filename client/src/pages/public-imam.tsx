@@ -52,13 +52,13 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
         </blockquote>
       ) : (
         <div className="space-y-4 text-center" dir="rtl">
-          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
             {t.hadithTitle}
           </p>
-          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
             {t.hadithText}
           </p>
-          <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
+          <p className="text-sm text-[#963E56]/80">
             {t.hadithSource}
           </p>
         </div>
@@ -108,11 +108,8 @@ export default function PublicImamDashboard() {
   const t = translations[language];
 
   return (
-    <div 
-      className="min-h-screen w-full"
-      style={{
-        background: `linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed`
-      }}
+    <div
+      className="min-h-screen w-full bg-cover bg-no-repeat bg-center bg-[url('/static/123.jpg')]"
     >
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
@@ -168,8 +165,8 @@ export default function PublicImamDashboard() {
                         'bg-gray-100 text-gray-500'}
                     `}>
                       {room.status === 'green' ? t.available :
-                       room.status === 'red' ? t.unavailable :
-                       ''}
+                        room.status === 'red' ? t.unavailable :
+                        ''}
                     </span>
                   )}
                 </div>
