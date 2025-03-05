@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, House } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
-import { FaPray } from "react-icons/fa";
+import { FaPray, FaMosque } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
@@ -112,7 +112,7 @@ export default function PublicImamDashboard() {
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+              <FaMosque className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               {t.pageTitle}
@@ -130,7 +130,7 @@ export default function PublicImamDashboard() {
             >
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
-                  <House className="h-5 w-5" />
+                  <FaPray className="h-5 w-5" />
                   {t.rooms[room.id as keyof typeof t.rooms]}
                 </CardTitle>
                 <div className={`
