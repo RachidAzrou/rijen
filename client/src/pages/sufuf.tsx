@@ -113,7 +113,9 @@ export function SufufPage() {
               <PiUsersThree className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              Sufuf
+              Sufuf - {currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' : 
+                      currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' : 
+                      currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
             </h1>
           </div>
         </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/firebase";
 import { signOut } from "firebase/auth";
 import { useLocation } from "wouter";
-import { ChevronLeft, ChevronRight, LogOut, Share2, Home, User, Languages } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Share2, Home, Languages } from "lucide-react";
 import { Link } from "wouter";
 
 interface SidebarProps {
@@ -13,29 +13,7 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [_, setLocation] = useLocation();
-  const [profileName, setProfileName] = useState("");
   const [language, setLanguage] = useState<'nl' | 'ar'>('nl');
-
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user?.email) {
-        switch (user.email) {
-          case 'beneden@mefen.be':
-            setProfileName('Moskee +0');
-            break;
-          case 'boven@mefen.be':
-            setProfileName('Moskee +1');
-            break;
-          case 'garage@mefen.be':
-            setProfileName('Garage');
-            break;
-          default:
-            setProfileName('Gebruiker');
-        }
-      }
-    });
-    return () => unsubscribe();
-  }, []);
 
   const handleLogout = () => {
     signOut(auth)
@@ -71,21 +49,6 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
             </div>
           </div>
         )}
-
-        {/* Profile Section */}
-        <div className={`
-          rounded-lg border border-[#963E56]/10 bg-white p-3 shadow-sm
-          ${isOpen ? 'block' : 'hidden'}
-        `}>
-          <div className="flex items-center gap-3">
-            <div className="bg-[#963E56]/10 p-2 rounded-full">
-              <User className="h-5 w-5 text-[#963E56]" />
-            </div>
-            <span className="font-medium text-[#963E56]">
-              {profileName}
-            </span>
-          </div>
-        </div>
 
         {/* Navigation */}
         <nav className="space-y-2">
