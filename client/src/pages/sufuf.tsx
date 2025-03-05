@@ -79,14 +79,14 @@ export function SufufPage() {
   );
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="container mx-auto px-4 py-6 space-y-4 md:space-y-6">
+    <div className="min-h-screen w-full pb-20 md:pb-0"> {/* Added bottom padding for mobile nav */}
+      <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+            <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               {currentUserEmail === 'beneden@mefen.be' ? 'Moskee +0' :
                 currentUserEmail === 'boven@mefen.be' ? 'Moskee +1' :
                   currentUserEmail === 'garage@mefen.be' ? 'Garage' : 'Dashboard'}
@@ -94,55 +94,46 @@ export function SufufPage() {
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 bg-white p-4 rounded-lg shadow-sm border border-[#963E56]/10">
-            <PiMosqueDuotone className="h-6 w-6 text-[#963E56]" />
-            <h2 className="text-xl font-semibold text-[#963E56]">
-              Ruimtes
-            </h2>
-          </div>
-
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.values(rooms).map((room) => (
-              <Card
-                key={room.id}
-                className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-              >
-                <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
-                  <CardTitle className="flex items-center gap-3 text-lg font-semibold text-[#963E56]">
-                    <FaPray className="h-5 w-5" />
-                    {room.title}
-                  </CardTitle>
-                  <div className={`
-                    relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                    ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
-                      room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
-                        'bg-gray-300'}
-                  `}>
-                    {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
-                    {room.status === 'red' && <X className="w-6 h-6 text-white" />}
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 pt-2">
-                  <div className="mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full transition-all duration-500 ${
-                        room.status === 'green' ? 'w-full bg-[#6BB85C]' :
-                          room.status === 'red' ? 'w-full bg-red-500' :
-                            'w-0'
-                        }`}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+          {Object.values(rooms).map((room) => (
+            <Card
+              key={room.id}
+              className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+            >
+              <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
+                  <FaPray className="h-5 w-5" />
+                  {room.title}
+                </CardTitle>
+                <div className={`
+                  relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
+                  ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
+                    room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
+                      'bg-gray-300'}
+                `}>
+                  {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
+                  {room.status === 'red' && <X className="w-6 h-6 text-white" />}
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 md:p-6 pt-2">
+                <div className="mt-2 md:mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ${
+                      room.status === 'green' ? 'w-full bg-[#6BB85C]' :
+                        room.status === 'red' ? 'w-full bg-red-500' :
+                          'w-0'
+                    }`}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         <div className="space-y-4">
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-between p-4 text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white rounded-lg shadow-sm border border-[#963E56]/10"
+            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white rounded-lg shadow-sm border border-[#963E56]/10"
             onClick={() => setIsVolunteerSectionOpen(!isVolunteerSectionOpen)}
           >
             <div className="flex items-center gap-3">
@@ -166,7 +157,8 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
+                        relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
+                        active:scale-95 touch-manipulation
                         ${room.status === 'green' 
                           ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg' 
                           : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
@@ -174,16 +166,16 @@ export function SufufPage() {
                       `}
                     >
                       <div className={`
-                        w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                        w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 flex items-center justify-center
                         ${room.status === 'green'
                           ? 'bg-white/20'
                           : 'bg-[#6BB85C]/10'
                         }
                       `}>
-                        <Check className={`w-8 h-8 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                        <Check className={`w-8 h-8 md:w-10 md:h-10 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
                       </div>
-                      <span className={`text-lg font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
-                        Rijen In Orde
+                      <span className={`text-base md:text-lg font-medium text-center ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
+                        Rijen<br />In Orde
                       </span>
                       {room.status === 'green' && (
                         <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
@@ -201,7 +193,8 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
+                        relative h-32 md:h-40 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
+                        active:scale-95 touch-manipulation
                         ${room.status === 'red' 
                           ? 'bg-red-500 hover:bg-red-500/90 shadow-lg' 
                           : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
@@ -209,16 +202,16 @@ export function SufufPage() {
                       `}
                     >
                       <div className={`
-                        w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                        w-12 h-12 md:w-16 md:h-16 rounded-full transition-all duration-300 flex items-center justify-center
                         ${room.status === 'red'
                           ? 'bg-white/20'
                           : 'bg-red-500/10'
                         }
                       `}>
-                        <X className={`w-8 h-8 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                        <X className={`w-8 h-8 md:w-10 md:h-10 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
                       </div>
-                      <span className={`text-lg font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
-                        Rijen Niet In Orde
+                      <span className={`text-base md:text-lg font-medium text-center ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
+                        Rijen<br />Niet In Orde
                       </span>
                       {room.status === 'red' && (
                         <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">

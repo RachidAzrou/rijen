@@ -21,76 +21,104 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
   };
 
   return (
-    <div className={`
-      fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
-      ${isOpen ? 'w-64' : 'w-16'}
-    `}>
-      {/* Toggle Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-100"
-        onClick={onToggle}
-      >
-        {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      </Button>
-
-      {/* Logo Section */}
-      <div className="pt-8 pb-4">
-        {isOpen && (
-          <div className="w-full p-2 flex justify-center items-center">
-            <img
-              src="/static/Naamloos2.png"
-              alt="MEFEN Logo"
-              className="h-32 w-auto object-contain"
-            />
-          </div>
-        )}
+    <>
+      {/* Mobile Bottom Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-4px_10px_rgba(0,0,0,0.1)] z-50">
+        <div className="flex items-center justify-around p-2">
+          <Link href="/">
+            <a className="flex flex-col items-center p-3 text-[#963E56]">
+              <Home className="h-6 w-6" />
+              <span className="text-xs mt-1">Home</span>
+            </a>
+          </Link>
+          <Link href="/delen">
+            <a className="flex flex-col items-center p-3 text-[#963E56]">
+              <Share2 className="h-6 w-6" />
+              <span className="text-xs mt-1">Delen</span>
+            </a>
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex flex-col items-center p-3 text-[#963E56]"
+          >
+            <LogOut className="h-6 w-6" />
+            <span className="text-xs mt-1">Afmelden</span>
+          </button>
+        </div>
       </div>
 
-      {/* Navigation Links */}
-      <div className="flex-1 flex flex-col justify-start pt-8 p-4 space-y-2">
-        <Link href="/">
-          <a className={`
-            flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-            ${isOpen ? 'justify-start px-4' : 'justify-center'}
-          `}>
-            <Home className="h-5 w-5 shrink-0" />
-            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-              Home
-            </span>
-          </a>
-        </Link>
-
-        <Link href="/delen">
-          <a className={`
-            flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-            ${isOpen ? 'justify-start px-4' : 'justify-center'}
-          `}>
-            <Share2 className="h-5 w-5 shrink-0" />
-            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-              Delen
-            </span>
-          </a>
-        </Link>
-      </div>
-
-      {/* Logout Button */}
-      <div className="p-4">
+      {/* Desktop Sidebar */}
+      <div className={`
+        hidden md:flex fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex-col
+        ${isOpen ? 'w-64' : 'w-16'}
+      `}>
+        {/* Toggle Button */}
         <Button
           variant="ghost"
-          className={`
-            w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-            ${isOpen ? 'justify-start px-4' : 'justify-center'}
-          `}
-          onClick={handleLogout}
+          size="icon"
+          className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-100"
+          onClick={onToggle}
         >
-          <LogOut className="h-5 w-5 shrink-0" />
-          <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
-            Afmelden
-          </span>
+          {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </Button>
+
+        {/* Logo Section */}
+        <div className="pt-8 pb-4">
+          {isOpen && (
+            <div className="w-full p-2 flex justify-center items-center">
+              <img
+                src="/static/Naamloos2.png"
+                alt="MEFEN Logo"
+                className="h-24 w-auto object-contain"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Links */}
+        <div className="flex-1 flex flex-col justify-start pt-8 p-4 space-y-2">
+          <Link href="/">
+            <a className={`
+              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}>
+              <Home className="h-5 w-5 shrink-0" />
+              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                Home
+              </span>
+            </a>
+          </Link>
+
+          <Link href="/delen">
+            <a className={`
+              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}>
+              <Share2 className="h-5 w-5 shrink-0" />
+              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+                Delen
+              </span>
+            </a>
+          </Link>
+        </div>
+
+        {/* Logout Button */}
+        <div className="p-4">
+          <Button
+            variant="ghost"
+            className={`
+              w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+            `}
+            onClick={handleLogout}
+          >
+            <LogOut className="h-5 w-5 shrink-0" />
+            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+              Afmelden
+            </span>
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
