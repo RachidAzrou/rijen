@@ -6,7 +6,7 @@ import { FaPray } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
-// Room type definition remains the same
+// Room type definition
 type Room = {
   id: string;
   title: string;
@@ -15,18 +15,18 @@ type Room = {
 
 // Language Switcher Component
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
-  <div className="absolute top-4 right-4 flex gap-2">
+  <div className="fixed bottom-4 left-4 flex gap-2 z-50">
     <Button
       variant={language === 'nl' ? 'default' : 'outline'}
       onClick={() => setLanguage('nl')}
-      className="w-12 h-8"
+      className={`w-12 h-8 ${language === 'nl' ? 'bg-[#963E56] hover:bg-[#963E56]/90' : 'border-[#963E56] text-[#963E56] hover:bg-[#963E56]/10'}`}
     >
       NL
     </Button>
     <Button
       variant={language === 'ar' ? 'default' : 'outline'}
       onClick={() => setLanguage('ar')}
-      className="w-12 h-8"
+      className={`w-12 h-8 ${language === 'ar' ? 'bg-[#963E56] hover:bg-[#963E56]/90' : 'border-[#963E56] text-[#963E56] hover:bg-[#963E56]/10'}`}
     >
       AR
     </Button>
@@ -37,17 +37,14 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
 const HadiethCard = ({ t }: { t: typeof translations.nl }) => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
     <CardContent className="p-4">
-      <div className="space-y-4 text-center" dir="rtl">
-        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
-          {t.hadithTitle}
-        </p>
-        <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+      <blockquote className="space-y-2">
+        <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
           {t.hadithText}
         </p>
-        <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
-          {t.hadithSource}
-        </p>
-      </div>
+        <footer className="text-xs text-[#963E56]/80">
+          — {t.hadithSource}
+        </footer>
+      </blockquote>
     </CardContent>
   </Card>
 );
@@ -95,8 +92,7 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10 relative">
-          <LanguageSwitcher language={language} setLanguage={setLanguage} />
+        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
@@ -160,6 +156,8 @@ export default function PublicImamDashboard() {
         <div className="text-center text-sm text-gray-500 mt-8">
           {t.lastUpdate}: {new Date().toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
+
+        <LanguageSwitcher language={language} setLanguage={setLanguage} />
       </div>
     </div>
   );
