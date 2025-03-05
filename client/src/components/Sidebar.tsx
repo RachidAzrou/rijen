@@ -38,11 +38,12 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <div className="flex-1 p-4 space-y-6">
         {/* Logo Section */}
         {isOpen && (
-          <div className="w-full flex justify-center items-center bg-white p-4 rounded-lg">
+          <div className="w-full flex justify-center items-center bg-white p-4 rounded-lg border border-[#963E56]/10">
             <img
-              src="./static/icon-512x512.png"
+              src="/static/icon-512x512.png"
               alt="MEFEN Logo"
               className="h-16 w-16 object-contain"
+              onError={(e) => console.error('Logo loading error:', e)}
             />
           </div>
         )}
