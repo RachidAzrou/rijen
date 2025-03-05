@@ -25,7 +25,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex flex-col
       ${isOpen ? 'w-64' : 'w-16'}
     `}>
-      {/* Toggle Button - Originele styling */}
+      {/* Toggle Button */}
       <Button
         variant="ghost"
         size="icon"
@@ -35,20 +35,20 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
       </Button>
 
-      {/* Logo Section - Vergroot */}
+      {/* Logo Section */}
       <div className="pt-8 pb-4">
         {isOpen && (
           <div className="w-full p-2 flex justify-center items-center">
             <img
-              src="/static/moskee.png"
+              src="/static/Naamloos2.png"
               alt="MEFEN Logo"
-              className="h-40 w-48 object-contain"
+              className="h-32 w-auto object-contain"
             />
           </div>
         )}
       </div>
 
-      {/* Navigation Links - Verplaatst naar het midden */}
+      {/* Navigation Links */}
       <div className="flex-1 flex flex-col justify-start pt-20 p-4 space-y-2">
         <Link href="/">
           <a className={`

@@ -73,9 +73,9 @@ export default function Login() {
           <div className="text-center mb-8">
             <div className="w-full flex justify-center items-center">
               <img
-                src="/static/moskee.png"
-                alt="Sufuf"
-                className="h-20 sm:h-24 mx-auto mb-6"
+                src="/static/Naamloos2.png"
+                alt="MEFEN"
+                className="h-32 sm:h-40 mx-auto mb-6"
               />
             </div>
             <h1 className="text-2xl font-bold text-[#963E56] mb-2">
