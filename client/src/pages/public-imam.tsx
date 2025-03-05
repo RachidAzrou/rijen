@@ -34,17 +34,34 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
 );
 
 // Hadieth Component
-const HadiethCard = ({ t }: { t: typeof translations.nl }) => (
+const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
     <CardContent className="p-4">
-      <blockquote className="space-y-2">
-        <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
-          {t.hadithText}
-        </p>
-        <footer className="text-xs text-[#963E56]/80">
-          — {t.hadithSource}
-        </footer>
-      </blockquote>
+      {language === 'nl' ? (
+        <blockquote className="space-y-2 text-center">
+          <p className="text-sm text-[#963E56] font-medium mb-2">
+            De Profeet ﷺ zei:
+          </p>
+          <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
+            {t.hadithText}
+          </p>
+          <footer className="text-xs text-[#963E56]/80">
+            — {t.hadithSource}
+          </footer>
+        </blockquote>
+      ) : (
+        <div className="space-y-4 text-center" dir="rtl">
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+            {t.hadithTitle}
+          </p>
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
+            {t.hadithText}
+          </p>
+          <p className="text-sm text-[#963E56]/80" style={{ fontFamily: 'Arial, sans-serif' }}>
+            {t.hadithSource}
+          </p>
+        </div>
+      )}
     </CardContent>
   </Card>
 );
@@ -103,7 +120,7 @@ export default function PublicImamDashboard() {
           </div>
         </div>
 
-        <HadiethCard t={t} />
+        <HadiethCard t={t} language={language} />
 
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {Object.values(rooms).map((room) => (
