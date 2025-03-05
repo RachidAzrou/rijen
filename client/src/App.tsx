@@ -9,12 +9,14 @@ import ImamDashboard from "@/pages/imam";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/login" component={Login} />
-      <Route path="/" component={SufufPage} />
-      <Route path="/imam" component={ImamDashboard} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="min-h-screen w-full">
+      <Switch>
+        <Route path="/login" component={Login} />
+        <Route path="/" component={SufufPage} />
+        <Route path="/imam" component={ImamDashboard} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
   );
 }
 
