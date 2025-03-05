@@ -52,10 +52,10 @@ export default function Login() {
       <div 
         className="fixed inset-0 z-0"
         style={{
-          backgroundImage: `url('/123.jpg')`,
+          backgroundImage: `url('/static/123.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          opacity: 0.15
+          opacity: 0.7
         }}
       />
 
@@ -64,7 +64,7 @@ export default function Login() {
           <div className="text-center mb-8">
             <div className="w-full flex justify-center items-center">
               <img
-                src="/moskee.png"
+                src="/static/moskee.png"
                 alt="Sufuf"
                 className="h-20 sm:h-24 mx-auto mb-6"
               />
