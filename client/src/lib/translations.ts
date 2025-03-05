@@ -8,7 +8,12 @@ export const translations = {
     lastUpdate: 'Laatste update',
     hadithTitle: 'قال رسول الله ﷺ',
     hadithText: 'سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ',
-    hadithSource: 'رواه البخاري ومسلم'
+    hadithSource: 'رواه البخاري ومسلم',
+    rooms: {
+      'first-floor': 'Moskee +1',
+      'beneden': 'Moskee +0',
+      'garage': 'Garage'
+    }
   },
   ar: {
     pageTitle: 'قاعات الصلاة',
@@ -18,7 +23,12 @@ export const translations = {
     lastUpdate: 'آخر تحديث',
     hadithTitle: 'قال رسول الله ﷺ',
     hadithText: 'سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ',
-    hadithSource: 'رواه البخاري ومسلم'
+    hadithSource: 'رواه البخاري ومسلم',
+    rooms: {
+      'first-floor': 'المسجد +١',
+      'beneden': 'المسجد +٠',
+      'garage': 'المرآب'
+    }
   }
 };
 

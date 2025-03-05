@@ -61,7 +61,6 @@ export default function PublicImamDashboard() {
     'garage': { id: 'garage', title: 'Garage', status: 'grey' }
   });
 
-  // WebSocket effect remains the same
   React.useEffect(() => {
     if (!socket || !isConnected) return;
 
@@ -96,7 +95,6 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full bg-gray-50">
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
-        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10 relative">
           <LanguageSwitcher language={language} setLanguage={setLanguage} />
           <div className="flex items-center gap-4">
@@ -109,10 +107,8 @@ export default function PublicImamDashboard() {
           </div>
         </div>
 
-        {/* Hadieth Card */}
         <HadiethCard t={t} />
 
-        {/* Rooms Grid */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {Object.values(rooms).map((room) => (
             <Card
@@ -122,7 +118,7 @@ export default function PublicImamDashboard() {
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
                   <House className="h-5 w-5" />
-                  {room.title}
+                  {t.rooms[room.id as keyof typeof t.rooms]}
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
@@ -144,7 +140,6 @@ export default function PublicImamDashboard() {
                     }`}
                   />
                 </div>
-                {/* Status Text */}
                 <div className="mt-4 text-center">
                   <span className={`
                     inline-block px-4 py-1 rounded-full text-sm font-medium
@@ -162,7 +157,6 @@ export default function PublicImamDashboard() {
           ))}
         </div>
 
-        {/* Footer met timestamp */}
         <div className="text-center text-sm text-gray-500 mt-8">
           {t.lastUpdate}: {new Date().toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
