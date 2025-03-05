@@ -12,6 +12,8 @@ import { LockKeyhole, Mail } from "lucide-react";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 const loginSchema = z.object({
   email: z.string().email("Ongeldig e-mailadres"),
@@ -54,8 +56,38 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      console.log("Calling Firebase signInWithEmailAndPassword...");
+      // Check if user is already logged in
+      const db = getFirestore();
+      const activeSessionRef = doc(db, "activeSessions", data.email);
+      const activeSessionDoc = await getDoc(activeSessionRef);
+
+      if (activeSessionDoc.exists()) {
+        const lastActivity = activeSessionDoc.data().timestamp;
+        const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+
+        if (lastActivity > fiveMinutesAgo) {
+          toast({
+            variant: "destructive",
+            title: "Inloggen mislukt",
+            description: "Deze gebruiker is al ingelogd op een ander apparaat.",
+            duration: 5000,
+          });
+          setIsLoading(false);
+          return;
+        } else {
+          // Session is stale, delete it
+          await deleteDoc(activeSessionRef);
+        }
+      }
+
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+
+      // Create active session
+      await setDoc(activeSessionRef, {
+        userId: userCredential.user.uid,
+        timestamp: Date.now()
+      });
+
       console.log("Login successful", userCredential.user.email);
 
       toast({
@@ -64,7 +96,7 @@ export default function Login() {
         duration: 3000,
       });
 
-      setLocation("/"); // This will now redirect to the SufufPage
+      setLocation("/");
     } catch (error: any) {
       console.error("Login error:", error.code, error.message);
       toast({
