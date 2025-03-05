@@ -71,7 +71,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
       <div className="flex-1 p-4 space-y-6">
         {/* Logo */}
         <div className={`flex justify-center transition-all duration-300 ${isOpen ? 'scale-100' : 'scale-0'}`}>
-          <img src="/static/moskee.png" alt="MEFEN Logo" className="h-16" />
+          <img src="/static/moskee.png" alt="MEFEN Logo" className="h-24 w-auto" />
         </div>
 
         {/* Profile Section */}
