@@ -87,7 +87,14 @@ export function SufufPage() {
 
   const handleStatusUpdate = (room: string, status: "OK" | "NOK") => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ type: "updateStatus", room, status }));
+      // If we're turning off the current status, set to grey
+      const newStatus = rooms[room].status === (status === "OK" ? 'green' : 'red') ? 'grey' : 
+                       status === "OK" ? 'green' : 'red';
+      socket.send(JSON.stringify({ 
+        type: "updateStatus", 
+        room, 
+        status: newStatus 
+      }));
     }
   };
 
@@ -129,8 +136,7 @@ export function SufufPage() {
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
                   ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
                     room.status === 'red' ? 'bg-[#963E56] animate-pulse shadow-lg shadow-[#963E56]/50' :
-                    'bg-[#D9A347]'
-                  }
+                    'bg-gray-300'}
                 `}>
                   {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
                   {room.status === 'red' && <X className="w-6 h-6 text-white" />}
@@ -190,7 +196,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'green'}
-                        onChange={(e) => handleStatusUpdate(room.id, e.target.checked ? "OK" : "NOK")}
+                        onChange={() => handleStatusUpdate(room.id, "OK")}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
@@ -212,7 +218,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'red'}
-                        onChange={(e) => handleStatusUpdate(room.id, e.target.checked ? "NOK" : "OK")}
+                        onChange={() => handleStatusUpdate(room.id, "NOK")}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
