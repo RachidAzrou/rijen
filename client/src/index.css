@@ -47,9 +47,7 @@
     --input: 240 3.7% 15.9%;
     --ring: 240 4.9% 83.9%;
   }
-}
 
-@layer base {
   /* Login page specific */
   .login-page {
     background: url('/static/123.jpg') center center/cover no-repeat fixed;
