@@ -85,11 +85,22 @@ export function SufufPage() {
     };
   }, [socket]);
 
-  const handleStatusUpdate = (room: string, status: "OK" | "NOK") => {
+  const handleOkChange = (room: string) => {
     if (socket && socket.readyState === WebSocket.OPEN) {
-      // If we're turning off the current status, set to grey
-      const newStatus = rooms[room].status === (status === "OK" ? 'green' : 'red') ? 'grey' : 
-                       status === "OK" ? 'green' : 'red';
+      // If OK is checked, set to grey, if unchecked, set to green
+      const newStatus = rooms[room].status === 'green' ? 'grey' : 'green';
+      socket.send(JSON.stringify({ 
+        type: "updateStatus", 
+        room, 
+        status: newStatus 
+      }));
+    }
+  };
+
+  const handleNokChange = (room: string) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      // If NOK is checked, set to grey, if unchecked, set to red
+      const newStatus = rooms[room].status === 'red' ? 'grey' : 'red';
       socket.send(JSON.stringify({ 
         type: "updateStatus", 
         room, 
@@ -196,7 +207,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'green'}
-                        onChange={() => handleStatusUpdate(room.id, "OK")}
+                        onChange={() => handleOkChange(room.id)}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
@@ -218,7 +229,7 @@ export function SufufPage() {
                         type="checkbox"
                         className="opacity-0 w-0 h-0"
                         checked={room.status === 'red'}
-                        onChange={() => handleStatusUpdate(room.id, "NOK")}
+                        onChange={() => handleNokChange(room.id)}
                       />
                       <span className={`
                         absolute cursor-pointer inset-0 rounded-full transition-all duration-300
