@@ -157,11 +157,11 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-xl transition-all duration-300 border-2
+                        relative h-28 rounded-xl transition-all duration-300
                         hover:shadow-lg active:scale-[0.98] touch-manipulation
                         ${room.status === 'green'
-                          ? 'bg-white border-[#6BB85C] shadow-md'
-                          : 'bg-white hover:bg-[#6BB85C]/5 border-[#6BB85C]/30'
+                          ? 'bg-white shadow-md border-2 border-[#6BB85C]'
+                          : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]/30'
                         }
                       `}
                     >
@@ -174,18 +174,20 @@ export function SufufPage() {
                             : 'bg-[#6BB85C]/10'
                           }
                         `}>
-                          <Check className={`
-                            w-8 h-8 stroke-[2.5]
-                            ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
-                          `} />
+                          <div className="w-8 h-8 relative">
+                            <Check className={`
+                              absolute inset-0 w-full h-full stroke-[2.5] transition-all duration-300
+                              ${room.status === 'green' 
+                                ? 'text-white transform scale-110' 
+                                : 'text-[#6BB85C]'
+                              }
+                            `} />
+                          </div>
                         </div>
                       </div>
                       {room.status === 'green' && (
-                        <div className="absolute top-2 right-2">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6BB85C] opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#6BB85C]"></span>
-                          </span>
+                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                          <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
                         </div>
                       )}
                     </button>
@@ -199,11 +201,11 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-xl transition-all duration-300 border-2
+                        relative h-28 rounded-xl transition-all duration-300
                         hover:shadow-lg active:scale-[0.98] touch-manipulation
                         ${room.status === 'red'
-                          ? 'bg-white border-red-500 shadow-md'
-                          : 'bg-white hover:bg-red-500/5 border-red-500/30'
+                          ? 'bg-white shadow-md border-2 border-red-500'
+                          : 'bg-white hover:bg-red-500/5 border-2 border-red-500/30'
                         }
                       `}
                     >
@@ -216,18 +218,20 @@ export function SufufPage() {
                             : 'bg-red-500/10'
                           }
                         `}>
-                          <X className={`
-                            w-8 h-8 stroke-[2.5]
-                            ${room.status === 'red' ? 'text-white' : 'text-red-500'}
-                          `} />
+                          <div className="w-8 h-8 relative">
+                            <X className={`
+                              absolute inset-0 w-full h-full stroke-[2.5] transition-all duration-300
+                              ${room.status === 'red' 
+                                ? 'text-white transform scale-110' 
+                                : 'text-red-500'
+                              }
+                            `} />
+                          </div>
                         </div>
                       </div>
                       {room.status === 'red' && (
-                        <div className="absolute top-2 right-2">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                          </span>
+                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
                         </div>
                       )}
                     </button>
