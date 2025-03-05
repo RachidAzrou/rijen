@@ -193,64 +193,66 @@ export function SufufPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
-                        <div className="flex items-center gap-3">
-                          <Check className={`w-5 h-5 ${room.status === 'green' ? 'text-[#6BB85C]' : 'text-gray-300'}`} />
-                          <span className="font-medium text-[#963E56]">OK</span>
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button
+                        variant="outline"
+                        className={`
+                          h-20 relative group transition-all duration-300
+                          ${room.status === 'green' 
+                            ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 text-white border-0'
+                            : 'border-[#6BB85C] text-[#6BB85C] hover:bg-[#6BB85C]/10'
+                          }
+                        `}
+                        onClick={() => {
+                          if (room.status !== 'green') {
+                            sendSocketMessage(room.id, "OK");
+                          } else {
+                            sendSocketMessage(room.id, "OFF");
+                          }
+                        }}
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <Check className={`h-6 w-6 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                          <span className={`font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
+                            Rijen Goed
+                          </span>
                         </div>
-                        <label className="relative inline-block w-12 h-6">
-                          <input
-                            type="checkbox"
-                            className="opacity-0 w-0 h-0"
-                            checked={room.status === 'green'}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                sendSocketMessage(room.id, "OK");
-                              } else {
-                                sendSocketMessage(room.id, "OFF");
-                              }
-                            }}
-                          />
-                          <span className={`
-                            absolute cursor-pointer inset-0 rounded-full transition-all duration-300
-                            ${room.status === 'green' ? 'bg-[#6BB85C]' : 'bg-gray-200'}
-                          `} />
-                          <span className={`
-                            absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300
-                            ${room.status === 'green' ? 'transform translate-x-6' : ''}
-                          `} />
-                        </label>
-                      </div>
+                        {room.status === 'green' && (
+                          <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                            <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
+                          </div>
+                        )}
+                      </Button>
 
-                      <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
-                        <div className="flex items-center gap-3">
-                          <X className={`w-5 h-5 ${room.status === 'red' ? 'text-red-500' : 'text-gray-300'}`} />
-                          <span className="font-medium text-[#963E56]">NOK</span>
+                      <Button
+                        variant="outline"
+                        className={`
+                          h-20 relative group transition-all duration-300
+                          ${room.status === 'red'
+                            ? 'bg-red-500 hover:bg-red-500/90 text-white border-0'
+                            : 'border-red-500 text-red-500 hover:bg-red-500/10'
+                          }
+                        `}
+                        onClick={() => {
+                          if (room.status !== 'red') {
+                            sendSocketMessage(room.id, "NOK");
+                          } else {
+                            sendSocketMessage(room.id, "OFF");
+                          }
+                        }}
+                      >
+                        <div className="flex flex-col items-center gap-2">
+                          <X className={`h-6 w-6 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                          <span className={`font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
+                            Rijen Niet Goed
+                          </span>
                         </div>
-                        <label className="relative inline-block w-12 h-6">
-                          <input
-                            type="checkbox"
-                            className="opacity-0 w-0 h-0"
-                            checked={room.status === 'red'}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                sendSocketMessage(room.id, "NOK");
-                              } else {
-                                sendSocketMessage(room.id, "OFF");
-                              }
-                            }}
-                          />
-                          <span className={`
-                            absolute cursor-pointer inset-0 rounded-full transition-all duration-300
-                            ${room.status === 'red' ? 'bg-red-500' : 'bg-gray-200'}
-                          `} />
-                          <span className={`
-                            absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-300
-                            ${room.status === 'red' ? 'transform translate-x-6' : ''}
-                          `} />
-                        </label>
-                      </div>
+                        {room.status === 'red' && (
+                          <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                            <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+                          </div>
+                        )}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
