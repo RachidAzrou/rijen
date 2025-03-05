@@ -155,20 +155,8 @@ export function SufufPage() {
           {isVolunteerSectionOpen && (
             <div className="grid gap-6 grid-cols-1">
               {volunteerRooms.map((room) => (
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
-                    <div className="flex items-center gap-3">
-                      <div className={`
-                        p-3 rounded-full transition-colors duration-300
-                        ${room.status === 'green' ? 'bg-[#6BB85C]/20' : 'bg-gray-100'}
-                      `}>
-                        <Check className={`w-6 h-6 ${room.status === 'green' ? 'text-[#6BB85C]' : 'text-gray-400'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-[#963E56]">Rijen In Orde</p>
-                        <p className="text-sm text-gray-500">Klik om de status te veranderen</p>
-                      </div>
-                    </div>
+                <div key={room.id} className="space-y-4">
+                  <div className="flex flex-col gap-4">
                     <button
                       onClick={() => {
                         if (room.status !== 'green') {
@@ -178,31 +166,42 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative w-16 h-8 rounded-full transition-colors duration-300
-                        ${room.status === 'green' ? 'bg-[#6BB85C]' : 'bg-gray-200'}
+                        relative w-full h-20 rounded-xl transition-all duration-300 flex items-center px-6
+                        ${room.status === 'green' 
+                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90' 
+                          : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
+                        }
                       `}
                     >
-                      <span className={`
-                        absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md
-                        transition-transform duration-300 ease-in-out
-                        ${room.status === 'green' ? 'translate-x-8' : 'translate-x-0'}
-                      `} />
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`
+                          w-8 h-8 rounded-full border-4 transition-all duration-300 flex items-center justify-center
+                          ${room.status === 'green'
+                            ? 'border-white bg-white/20'
+                            : 'border-[#6BB85C] bg-transparent'
+                          }
+                        `}>
+                          {room.status === 'green' && (
+                            <div className="w-4 h-4 bg-white rounded-full" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Check className={`w-6 h-6 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                          <span className={`text-lg font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
+                            Rijen In Orde
+                          </span>
+                        </div>
+                      </div>
+                      {room.status === 'green' && (
+                        <div className="absolute right-4">
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                          </span>
+                        </div>
+                      )}
                     </button>
-                  </div>
 
-                  <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border border-[#963E56]/10">
-                    <div className="flex items-center gap-3">
-                      <div className={`
-                        p-3 rounded-full transition-colors duration-300
-                        ${room.status === 'red' ? 'bg-red-500/20' : 'bg-gray-100'}
-                      `}>
-                        <X className={`w-6 h-6 ${room.status === 'red' ? 'text-red-500' : 'text-gray-400'}`} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-[#963E56]">Rijen Niet In Orde</p>
-                        <p className="text-sm text-gray-500">Klik om de status te veranderen</p>
-                      </div>
-                    </div>
                     <button
                       onClick={() => {
                         if (room.status !== 'red') {
@@ -212,15 +211,40 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative w-16 h-8 rounded-full transition-colors duration-300
-                        ${room.status === 'red' ? 'bg-red-500' : 'bg-gray-200'}
+                        relative w-full h-20 rounded-xl transition-all duration-300 flex items-center px-6
+                        ${room.status === 'red' 
+                          ? 'bg-red-500 hover:bg-red-500/90' 
+                          : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
+                        }
                       `}
                     >
-                      <span className={`
-                        absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md
-                        transition-transform duration-300 ease-in-out
-                        ${room.status === 'red' ? 'translate-x-8' : 'translate-x-0'}
-                      `} />
+                      <div className="flex items-center gap-4 flex-1">
+                        <div className={`
+                          w-8 h-8 rounded-full border-4 transition-all duration-300 flex items-center justify-center
+                          ${room.status === 'red'
+                            ? 'border-white bg-white/20'
+                            : 'border-red-500 bg-transparent'
+                          }
+                        `}>
+                          {room.status === 'red' && (
+                            <div className="w-4 h-4 bg-white rounded-full" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <X className={`w-6 h-6 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                          <span className={`text-lg font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
+                            Rijen Niet In Orde
+                          </span>
+                        </div>
+                      </div>
+                      {room.status === 'red' && (
+                        <div className="absolute right-4">
+                          <span className="flex h-3 w-3">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                          </span>
+                        </div>
+                      )}
                     </button>
                   </div>
                 </div>
