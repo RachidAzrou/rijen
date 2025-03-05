@@ -156,7 +156,7 @@ export function SufufPage() {
             <div className="grid gap-6 grid-cols-1">
               {volunteerRooms.map((room) => (
                 <div key={room.id} className="space-y-4">
-                  <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <button
                       onClick={() => {
                         if (room.status !== 'green') {
@@ -166,38 +166,28 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative w-full h-20 rounded-xl transition-all duration-300 flex items-center px-6
+                        relative h-32 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
                         ${room.status === 'green' 
-                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90' 
+                          ? 'bg-[#6BB85C] hover:bg-[#6BB85C]/90 shadow-lg' 
                           : 'bg-white hover:bg-[#6BB85C]/5 border-2 border-[#6BB85C]'
                         }
                       `}
                     >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className={`
-                          w-8 h-8 rounded-full border-4 transition-all duration-300 flex items-center justify-center
-                          ${room.status === 'green'
-                            ? 'border-white bg-white/20'
-                            : 'border-[#6BB85C] bg-transparent'
-                          }
-                        `}>
-                          {room.status === 'green' && (
-                            <div className="w-4 h-4 bg-white rounded-full" />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Check className={`w-6 h-6 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
-                          <span className={`text-lg font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
-                            Rijen In Orde
-                          </span>
-                        </div>
+                      <div className={`
+                        w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                        ${room.status === 'green'
+                          ? 'bg-white/20'
+                          : 'bg-[#6BB85C]/10'
+                        }
+                      `}>
+                        <Check className={`w-8 h-8 ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
                       </div>
+                      <span className={`text-lg font-medium ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`}>
+                        Rijen In Orde
+                      </span>
                       {room.status === 'green' && (
-                        <div className="absolute right-4">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                          </span>
+                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                          <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
                         </div>
                       )}
                     </button>
@@ -211,38 +201,28 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative w-full h-20 rounded-xl transition-all duration-300 flex items-center px-6
+                        relative h-32 rounded-xl transition-all duration-300 flex flex-col items-center justify-center gap-3
                         ${room.status === 'red' 
-                          ? 'bg-red-500 hover:bg-red-500/90' 
+                          ? 'bg-red-500 hover:bg-red-500/90 shadow-lg' 
                           : 'bg-white hover:bg-red-500/5 border-2 border-red-500'
                         }
                       `}
                     >
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className={`
-                          w-8 h-8 rounded-full border-4 transition-all duration-300 flex items-center justify-center
-                          ${room.status === 'red'
-                            ? 'border-white bg-white/20'
-                            : 'border-red-500 bg-transparent'
-                          }
-                        `}>
-                          {room.status === 'red' && (
-                            <div className="w-4 h-4 bg-white rounded-full" />
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <X className={`w-6 h-6 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
-                          <span className={`text-lg font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
-                            Rijen Niet In Orde
-                          </span>
-                        </div>
+                      <div className={`
+                        w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                        ${room.status === 'red'
+                          ? 'bg-white/20'
+                          : 'bg-red-500/10'
+                        }
+                      `}>
+                        <X className={`w-8 h-8 ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
                       </div>
+                      <span className={`text-lg font-medium ${room.status === 'red' ? 'text-white' : 'text-red-500'}`}>
+                        Rijen Niet In Orde
+                      </span>
                       {room.status === 'red' && (
-                        <div className="absolute right-4">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-                          </span>
+                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
+                          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
                         </div>
                       )}
                     </button>
