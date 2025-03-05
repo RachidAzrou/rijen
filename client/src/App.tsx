@@ -35,15 +35,15 @@ function Router() {
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
   return (
-    <div className="min-h-screen w-full relative">
+    <div className="min-h-screen w-full bg-gray-50/50">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
-      <main className={`relative z-10 transition-all duration-300
+      <main className={`relative transition-all duration-300
         ${showSidebar ? (
           isSidebarOpen ? 
-            'ml-0 md:ml-64' : 
-            'ml-0 md:ml-16'
+            'md:ml-56' : 
+            'md:ml-12'
         ) : ''}`}
       >
         <Switch>

@@ -49,41 +49,42 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       {/* Desktop Sidebar */}
       <div className={`
-        hidden md:flex fixed top-0 left-0 h-full bg-white shadow-xl transition-all duration-300 z-50 flex-col
-        ${isOpen ? 'w-64' : 'w-16'}
+        hidden md:flex fixed top-0 left-0 h-full bg-white/95 backdrop-blur-sm border-r border-gray-200 
+        transition-all duration-300 z-40 flex-col
+        ${isOpen ? 'w-56' : 'w-12'}
       `}>
         {/* Toggle Button */}
         <Button
           variant="ghost"
           size="icon"
-          className="absolute -right-4 top-4 h-8 w-8 rounded-full bg-white shadow-md hover:bg-gray-100"
+          className="absolute -right-3 top-4 h-6 w-6 rounded-full bg-white shadow-sm hover:bg-gray-100"
           onClick={onToggle}
         >
-          {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          {isOpen ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         </Button>
 
         {/* Logo Section */}
-        <div className="pt-8 pb-4">
+        <div className="pt-6 pb-4">
           {isOpen && (
             <div className="w-full p-2 flex justify-center items-center">
               <img
                 src="/static/Naamloos2.png"
                 alt="MEFEN Logo"
-                className="h-24 w-auto object-contain"
+                className="h-20 w-auto object-contain"
               />
             </div>
           )}
         </div>
 
         {/* Navigation Links */}
-        <div className="flex-1 flex flex-col justify-start pt-8 p-4 space-y-2">
+        <div className="flex-1 flex flex-col justify-start pt-6 px-2 space-y-2">
           <Link href="/">
             <a className={`
-              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-3' : 'justify-center'}
             `}>
-              <Home className="h-5 w-5 shrink-0" />
-              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+              <Home className="h-4 w-4 shrink-0" />
+              <span className={`transition-opacity duration-300 text-sm ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
                 Home
               </span>
             </a>
@@ -91,11 +92,11 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
           <Link href="/delen">
             <a className={`
-              flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+              flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-3' : 'justify-center'}
             `}>
-              <Share2 className="h-5 w-5 shrink-0" />
-              <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+              <Share2 className="h-4 w-4 shrink-0" />
+              <span className={`transition-opacity duration-300 text-sm ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
                 Delen
               </span>
             </a>
@@ -103,17 +104,17 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Logout Button */}
-        <div className="p-4">
+        <div className="p-2">
           <Button
             variant="ghost"
             className={`
-              w-full flex items-center gap-3 p-3 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
-              ${isOpen ? 'justify-start px-4' : 'justify-center'}
+              w-full flex items-center gap-3 p-2 rounded-lg text-[#963E56] hover:bg-[#963E56]/5 transition-colors
+              ${isOpen ? 'justify-start px-3' : 'justify-center'}
             `}
             onClick={handleLogout}
           >
-            <LogOut className="h-5 w-5 shrink-0" />
-            <span className={`transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
+            <LogOut className="h-4 w-4 shrink-0" />
+            <span className={`transition-opacity duration-300 text-sm ${isOpen ? 'opacity-100' : 'opacity-0 w-0'}`}>
               Afmelden
             </span>
           </Button>
