@@ -157,45 +157,48 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 md:h-40 rounded-2xl transition-all duration-300
-                        active:scale-[0.98] touch-manipulation overflow-hidden group
+                        relative p-6 rounded-2xl transition-all duration-300
+                        active:scale-[0.98] touch-manipulation
                         ${room.status === 'green'
-                          ? 'bg-gradient-to-br from-[#6BB85C] to-[#5a9b4d] shadow-lg'
-                          : 'bg-white hover:bg-[#6BB85C]/5'
+                          ? 'bg-white shadow-lg border-2 border-[#6BB85C]'
+                          : 'bg-white hover:shadow-md border-2 border-gray-200'
                         }
-                        ${room.status !== 'green' && 'hover:border-[#6BB85C] border-2 border-gray-200'}
                       `}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative flex flex-col items-center justify-center h-full gap-3">
+                      <div className="flex items-center gap-4">
                         <div className={`
-                          w-14 h-14 md:w-16 md:h-16 rounded-xl transition-all duration-300
-                          flex items-center justify-center
+                          w-12 h-12 rounded-full flex items-center justify-center
+                          transition-colors duration-300
                           ${room.status === 'green'
-                            ? 'bg-white/20'
-                            : 'bg-[#6BB85C]/10'
+                            ? 'bg-[#6BB85C]'
+                            : 'bg-gray-100'
                           }
                         `}>
                           <Check className={`
-                            w-8 h-8 md:w-10 md:h-10 transform transition-all duration-300
-                            ${room.status === 'green' ? 'text-white scale-110' : 'text-[#6BB85C] group-hover:scale-110'}
+                            w-6 h-6 transition-colors duration-300
+                            ${room.status === 'green' ? 'text-white' : 'text-gray-400'}
                           `} />
                         </div>
-                        <span className={`
-                          text-base md:text-lg font-medium text-center transition-all duration-300
-                          ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}
-                        `}>
-                          Rijen<br />In Orde
-                        </span>
-                      </div>
-                      {room.status === 'green' && (
-                        <div className="absolute top-3 right-3">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                        <div className="flex-1">
+                          <span className={`
+                            block font-medium text-lg
+                            ${room.status === 'green' ? 'text-[#6BB85C]' : 'text-gray-600'}
+                          `}>
+                            Rijen In Orde
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {room.status === 'green' ? 'Actief' : 'Klik om te activeren'}
                           </span>
                         </div>
-                      )}
+                        {room.status === 'green' && (
+                          <div className="absolute top-3 right-3">
+                            <span className="flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6BB85C] opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-[#6BB85C]"></span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </button>
 
                     <button
@@ -207,45 +210,48 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-32 md:h-40 rounded-2xl transition-all duration-300
-                        active:scale-[0.98] touch-manipulation overflow-hidden group
+                        relative p-6 rounded-2xl transition-all duration-300
+                        active:scale-[0.98] touch-manipulation
                         ${room.status === 'red'
-                          ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg'
-                          : 'bg-white hover:bg-red-500/5'
+                          ? 'bg-white shadow-lg border-2 border-red-500'
+                          : 'bg-white hover:shadow-md border-2 border-gray-200'
                         }
-                        ${room.status !== 'red' && 'hover:border-red-500 border-2 border-gray-200'}
                       `}
                     >
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <div className="relative flex flex-col items-center justify-center h-full gap-3">
+                      <div className="flex items-center gap-4">
                         <div className={`
-                          w-14 h-14 md:w-16 md:h-16 rounded-xl transition-all duration-300
-                          flex items-center justify-center
+                          w-12 h-12 rounded-full flex items-center justify-center
+                          transition-colors duration-300
                           ${room.status === 'red'
-                            ? 'bg-white/20'
-                            : 'bg-red-500/10'
+                            ? 'bg-red-500'
+                            : 'bg-gray-100'
                           }
                         `}>
                           <X className={`
-                            w-8 h-8 md:w-10 md:h-10 transform transition-all duration-300
-                            ${room.status === 'red' ? 'text-white scale-110' : 'text-red-500 group-hover:scale-110'}
+                            w-6 h-6 transition-colors duration-300
+                            ${room.status === 'red' ? 'text-white' : 'text-gray-400'}
                           `} />
                         </div>
-                        <span className={`
-                          text-base md:text-lg font-medium text-center transition-all duration-300
-                          ${room.status === 'red' ? 'text-white' : 'text-red-500'}
-                        `}>
-                          Rijen<br />Niet In Orde
-                        </span>
-                      </div>
-                      {room.status === 'red' && (
-                        <div className="absolute top-3 right-3">
-                          <span className="flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                        <div className="flex-1">
+                          <span className={`
+                            block font-medium text-lg
+                            ${room.status === 'red' ? 'text-red-500' : 'text-gray-600'}
+                          `}>
+                            Rijen Niet In Orde
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {room.status === 'red' ? 'Actief' : 'Klik om te activeren'}
                           </span>
                         </div>
-                      )}
+                        {room.status === 'red' && (
+                          <div className="absolute top-3 right-3">
+                            <span className="flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </button>
                   </div>
                 </div>
