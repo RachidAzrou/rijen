@@ -4,145 +4,77 @@ import app from './firebase';
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<WebSocket | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const socketRef = useRef<any>(null);
 
   useEffect(() => {
-    const isVercel = window.location.hostname.includes('vercel.app');
+    try {
+      const db = getDatabase(app);
+      const roomsRef = ref(db, 'rooms');
 
-    if (isVercel) {
-      // Use Firebase Realtime Database for Vercel deployment
-      try {
-        const db = getDatabase(app);
-        console.log('Firebase Database initialized');
-
-        // Initialize rooms data if it doesn't exist
-        const roomsRef = ref(db, 'rooms');
-        const initialData = {
-          'beneden': 'OFF',
-          'first-floor': 'OFF',
-          'garage': 'OFF'
-        };
+      // Listen for changes
+      const unsubscribe = onValue(roomsRef, (snapshot) => {
         try {
-          set(roomsRef, initialData)
-            .then(() => console.log('Rooms initialized in Firebase'))
-            .catch(error => console.error('Error initializing rooms:', error));
-        } catch (error) {
-          console.error('Error initializing rooms:', error);
-        }
+          const data = snapshot.val() || {
+            'beneden': 'OFF',
+            'first-floor': 'OFF',
+            'garage': 'OFF'
+          };
 
-        // Listen for changes
-        const unsubscribe = onValue(roomsRef, (snapshot) => {
+          if (socketRef.current?.onmessage) {
+            const event = new MessageEvent('message', {
+              data: JSON.stringify({
+                type: 'initialStatus',
+                data
+              })
+            });
+            socketRef.current.onmessage(event);
+          }
+          setIsConnected(true);
+        } catch (error) {
+          console.error('Error handling Firebase data:', error);
+          setError(error.message);
+        }
+      });
+
+      // Create a Firebase-like interface
+      socketRef.current = {
+        readyState: 1, // WebSocket.OPEN
+        send: (message: string) => {
           try {
-            const data = snapshot.val();
-            console.log('Received data from Firebase:', data);
-            if (data) {
-              const event = new MessageEvent('message', {
-                data: JSON.stringify({
-                  type: 'initialStatus',
-                  data
-                })
-              });
-              if (socketRef.current?.onmessage) {
-                socketRef.current.onmessage(event);
-              }
+            const data = JSON.parse(message);
+            if (data.type === 'updateStatus') {
+              const roomRef = ref(db, `rooms/${data.room}`);
+              set(roomRef, data.status);
             }
           } catch (error) {
-            console.error('Error processing Firebase data:', error);
+            console.error('Error sending message:', error);
           }
-        }, (error) => {
-          console.error('Firebase onValue error:', error);
-        });
-
-        // Create a Firebase-like WebSocket interface
-        socketRef.current = {
-          readyState: WebSocket.OPEN,
-          send: (message: string) => {
-            try {
-              const data = JSON.parse(message);
-              if (data.type === 'updateStatus') {
-                const roomRef = ref(db, `rooms/${data.room}`);
-                set(roomRef, data.status)
-                  .then(() => console.log('Status updated successfully:', data.room, data.status))
-                  .catch(error => console.error('Error updating room status:', error));
-              }
-            } catch (error) {
-              console.error('Error processing message:', error);
-            }
-          },
-          close: () => {
-            unsubscribe();
-            setIsConnected(false);
-          },
-          onmessage: null as any
-        } as WebSocket;
-
-        setIsConnected(true);
-        console.log('Firebase WebSocket interface initialized');
-
-        return () => {
+        },
+        close: () => {
           unsubscribe();
           setIsConnected(false);
-        };
-      } catch (error) {
-        console.error('Error setting up Firebase:', error);
-        setIsConnected(false);
-      }
-    } else {
-      // Use WebSocket for local development
-      const getWebSocketUrl = () => {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        return `${protocol}//${window.location.host}/ws`;
-      };
-
-      const connect = () => {
-        try {
-          if (socketRef.current?.readyState === WebSocket.OPEN) {
-            console.log("WebSocket already connected");
-            return;
-          }
-
-          console.log("Attempting WebSocket connection...");
-          const wsUrl = getWebSocketUrl();
-          socketRef.current = new WebSocket(wsUrl);
-
-          socketRef.current.onopen = () => {
-            console.log("WebSocket connected");
-            setIsConnected(true);
-
-            if (socketRef.current?.readyState === WebSocket.OPEN) {
-              console.log("Requesting initial status");
-              socketRef.current.send(JSON.stringify({ type: "getInitialStatus" }));
-            }
-          };
-
-          socketRef.current.onclose = () => {
-            console.log("WebSocket disconnected");
-            setIsConnected(false);
-          };
-
-          socketRef.current.onerror = (error) => {
-            console.error("WebSocket error:", error);
-            if (socketRef.current?.readyState === WebSocket.OPEN) {
-              socketRef.current?.close();
-            }
-          };
-        } catch (error) {
-          console.error("Error creating WebSocket connection:", error);
         }
       };
-
-      connect();
 
       return () => {
-        if (socketRef.current) {
-          socketRef.current.close();
-        }
+        unsubscribe();
+        setIsConnected(false);
       };
+    } catch (error) {
+      console.error('Error initializing Firebase:', error);
+      setError(error.message);
+      setIsConnected(false);
     }
   }, []);
+
+  if (error) {
+    console.error('Socket error:', error);
+  }
 
   return {
     socket: socketRef.current,
     isConnected,
+    error
   };
 }

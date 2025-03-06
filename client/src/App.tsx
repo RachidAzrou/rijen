@@ -9,6 +9,7 @@ import ImamDashboard from "@/pages/imam";
 import PublicImamDashboard from "@/pages/public-imam";
 import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
 import { useLocation } from "wouter";
@@ -38,6 +39,9 @@ function Router() {
           console.log('Redirecting to login');
           setLocation('/login');
         }
+      }, (error) => {
+        console.error('Auth state change error:', error);
+        setIsLoggedIn(false);
       });
 
       return () => unsubscribe();
@@ -49,9 +53,11 @@ function Router() {
 
   // Show loading state while checking authentication
   if (isLoggedIn === null && location !== '/public-imam') {
-    return <div className="min-h-screen w-full flex items-center justify-center">
-      <div className="text-[#963E56]">Loading...</div>
-    </div>;
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-[#963E56]">Loading...</div>
+      </div>
+    );
   }
 
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
@@ -83,10 +89,12 @@ function Router() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router />
-      <Toaster />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Router />
+        <Toaster />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
