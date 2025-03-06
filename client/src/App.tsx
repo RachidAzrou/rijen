@@ -16,7 +16,7 @@ import { useLocation } from "wouter";
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -27,13 +27,10 @@ function Router() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
-      if (!user && location !== '/login') {
-        setLocation('/login');
-      }
     });
 
     return () => unsubscribe();
-  }, [location, setLocation]);
+  }, []);
 
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
@@ -63,22 +60,6 @@ function Router() {
 }
 
 function App() {
-  useEffect(() => {
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js').then(
-          (registration) => {
-            console.log('ServiceWorker registration successful');
-          },
-          (err) => {
-            console.log('ServiceWorker registration failed: ', err);
-          }
-        );
-      });
-    }
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
       <Router />
