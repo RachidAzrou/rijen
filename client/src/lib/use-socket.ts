@@ -13,13 +13,27 @@ export function useSocket() {
     if (isVercel) {
       // Use Firebase Realtime Database for Vercel deployment
       const db = getDatabase(app);
+
+      // Initialize rooms data if it doesn't exist
+      const initializeRooms = async () => {
+        const roomsRef = ref(db, 'rooms');
+        const initialData = {
+          'beneden': 'OFF',
+          'first-floor': 'OFF',
+          'garage': 'OFF'
+        };
+        await set(roomsRef, initialData);
+      };
+
+      // Try to initialize rooms
+      initializeRooms().catch(console.error);
+
       const roomsRef = ref(db, 'rooms');
 
       // Listen for changes
       const unsubscribe = onValue(roomsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
-          // Emit the same format as WebSocket
           const event = new MessageEvent('message', {
             data: JSON.stringify({
               type: 'initialStatus',
@@ -36,14 +50,15 @@ export function useSocket() {
       socketRef.current = {
         readyState: WebSocket.OPEN,
         send: (message: string) => {
-          const data = JSON.parse(message);
-          if (data.type === 'updateStatus') {
-            // Update the specific room status in Firebase
-            const roomRef = ref(db, `rooms/${data.room}`);
-            set(roomRef, data.status)
-              .catch(error => console.error('Error updating room status:', error));
-          } else if (data.type === 'getInitialStatus') {
-            // Initial status will be handled by the onValue listener
+          try {
+            const data = JSON.parse(message);
+            if (data.type === 'updateStatus') {
+              const roomRef = ref(db, `rooms/${data.room}`);
+              set(roomRef, data.status)
+                .catch(error => console.error('Error updating room status:', error));
+            }
+          } catch (error) {
+            console.error('Error processing message:', error);
           }
         },
         close: () => {
@@ -54,6 +69,7 @@ export function useSocket() {
       } as WebSocket;
 
       setIsConnected(true);
+
       return () => {
         unsubscribe();
         setIsConnected(false);

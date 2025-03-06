@@ -12,5 +12,11 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "database": {
+    "rules": {
+      ".read": true,
+      ".write": true
+    }
   }
 }
