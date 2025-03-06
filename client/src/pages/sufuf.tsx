@@ -107,8 +107,8 @@ export function SufufPage() {
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                  ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
-                    room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
+                  ${room.status === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
+                    room.status === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
                       'bg-gray-300'}
                 `}>
                   {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
@@ -182,7 +182,7 @@ export function SufufPage() {
                       </div>
                       {room.status === 'green' && (
                         <div className="absolute top-2 md:top-3 right-2 md:right-3">
-                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-[#6BB85C] ring-4 ring-[#6BB85C]/20" />
+                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-[#6BB85C] ring-4 ring-[#6BB85C]/20 shadow-[0_0_10px_rgba(107,184,92,0.5)]" />
                         </div>
                       )}
                     </button>
@@ -221,7 +221,7 @@ export function SufufPage() {
                       </div>
                       {room.status === 'red' && (
                         <div className="absolute top-2 md:top-3 right-2 md:right-3">
-                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20" />
+                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.5)]" />
                         </div>
                       )}
                     </button>
