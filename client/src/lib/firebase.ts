@@ -34,5 +34,4 @@ isSupported().then(yes => {
   if (yes) analytics = getAnalytics(app);
 }).catch(console.error);
 
-export { auth, database };
-export default app;
+export { auth, database, app as default };

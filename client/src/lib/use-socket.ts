@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { database } from "@/lib/firebase";
+import { database } from "./firebase";
 import { ref, onValue, set } from "firebase/database";
 
 type RoomStatus = 'OK' | 'NOK' | 'OFF';
