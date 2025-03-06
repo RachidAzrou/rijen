@@ -112,12 +112,25 @@ export default function PublicImamDashboard() {
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              {t.pageTitle}
-            </h1>
-            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-            </div>
+            {language === 'nl' ? (
+              <>
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+                </div>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                  {t.pageTitle}
+                </h1>
+              </>
+            ) : (
+              <>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                  {t.pageTitle}
+                </h1>
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -131,8 +144,17 @@ export default function PublicImamDashboard() {
             >
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className={`flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
-                  <FaPray className="h-5 w-5" />
-                  {t.rooms[room.id as keyof typeof t.rooms]}
+                  {language === 'nl' ? (
+                    <>
+                      <FaPray className="h-5 w-5" />
+                      {t.rooms[room.id as keyof typeof t.rooms]}
+                    </>
+                  ) : (
+                    <>
+                      {t.rooms[room.id as keyof typeof t.rooms]}
+                      <FaPray className="h-5 w-5" />
+                    </>
+                  )}
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
