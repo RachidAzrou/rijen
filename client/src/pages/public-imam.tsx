@@ -136,8 +136,8 @@ export default function PublicImamDashboard() {
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                  ${room.status === 'green' ? 'bg-[#6BB85C] animate-pulse shadow-lg shadow-[#6BB85C]/50' :
-                    room.status === 'red' ? 'bg-red-500 animate-pulse shadow-lg shadow-red-500/50' :
+                  ${room.status === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
+                    room.status === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
                     'bg-gray-300'}
                 `}>
                   {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
