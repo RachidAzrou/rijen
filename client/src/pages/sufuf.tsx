@@ -158,28 +158,31 @@ export function SufufPage() {
                       }}
                       className={`
                         relative h-28 rounded-xl transition-all duration-300
-                        hover:shadow-xl active:scale-[0.98] touch-manipulation
+                        hover:shadow-lg active:scale-[0.98] touch-manipulation
+                        bg-white border-2
                         ${room.status === 'green'
-                          ? 'bg-gradient-to-br from-[#6BB85C] to-[#5a9b4d] shadow-lg'
-                          : 'bg-white hover:bg-[#6BB85C]/5'
+                          ? 'border-[#6BB85C] shadow-md'
+                          : 'border-gray-200 hover:border-[#6BB85C]'
                         }
-                        ${room.status !== 'green' && 'hover:border-[#6BB85C] border-2 border-gray-200'}
                       `}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                          w-20 h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                           ${room.status === 'green'
-                            ? 'bg-white/20'
-                            : 'bg-[#6BB85C]/10'
+                            ? 'bg-[#6BB85C]'
+                            : 'bg-[#6BB85C]/10 group-hover:bg-[#6BB85C]/20'
                           }
                         `}>
-                          <Check className={`w-8 h-8 stroke-[2.5] ${room.status === 'green' ? 'text-white' : 'text-[#6BB85C]'}`} />
+                          <Check className={`
+                            w-10 h-10 stroke-[2.5] transition-all duration-300
+                            ${room.status === 'green' ? 'text-white scale-110' : 'text-[#6BB85C]'}
+                          `} />
                         </div>
                       </div>
                       {room.status === 'green' && (
-                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                          <div className="h-3 w-3 rounded-full bg-[#6BB85C] animate-pulse" />
+                        <div className="absolute top-3 right-3">
+                          <div className="h-2.5 w-2.5 rounded-full bg-[#6BB85C] ring-4 ring-[#6BB85C]/20" />
                         </div>
                       )}
                     </button>
@@ -194,28 +197,31 @@ export function SufufPage() {
                       }}
                       className={`
                         relative h-28 rounded-xl transition-all duration-300
-                        hover:shadow-xl active:scale-[0.98] touch-manipulation
+                        hover:shadow-lg active:scale-[0.98] touch-manipulation
+                        bg-white border-2
                         ${room.status === 'red'
-                          ? 'bg-gradient-to-br from-red-500 to-red-600 shadow-lg'
-                          : 'bg-white hover:bg-red-500/5'
+                          ? 'border-red-500 shadow-md'
+                          : 'border-gray-200 hover:border-red-500'
                         }
-                        ${room.status !== 'red' && 'hover:border-red-500 border-2 border-gray-200'}
                       `}
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          w-12 h-12 rounded-full transition-all duration-300 flex items-center justify-center
+                          w-20 h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                           ${room.status === 'red'
-                            ? 'bg-white/20'
-                            : 'bg-red-500/10'
+                            ? 'bg-red-500'
+                            : 'bg-red-500/10 group-hover:bg-red-500/20'
                           }
                         `}>
-                          <X className={`w-8 h-8 stroke-[2.5] ${room.status === 'red' ? 'text-white' : 'text-red-500'}`} />
+                          <X className={`
+                            w-10 h-10 stroke-[2.5] transition-all duration-300
+                            ${room.status === 'red' ? 'text-white scale-110' : 'text-red-500'}
+                          `} />
                         </div>
                       </div>
                       {room.status === 'red' && (
-                        <div className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-lg">
-                          <div className="h-3 w-3 rounded-full bg-red-500 animate-pulse" />
+                        <div className="absolute top-3 right-3">
+                          <div className="h-2.5 w-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20" />
                         </div>
                       )}
                     </button>
