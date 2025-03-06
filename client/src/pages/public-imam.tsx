@@ -7,14 +7,12 @@ import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
-// Room type definition remains unchanged
 type Room = {
   id: string;
   title: string;
   status: 'green' | 'red' | 'grey';
 };
 
-// Language Switcher Component updated with better UI
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
   <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
     <Button
@@ -42,7 +40,6 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
   </div>
 );
 
-// Hadieth Component remains unchanged
 const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
     <CardContent className="p-4">
@@ -119,7 +116,7 @@ export default function PublicImamDashboard() {
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex items-center justify-center gap-4">
+          <div className={`flex items-center ${language === 'ar' ? 'justify-between' : 'justify-center gap-4'}`}>
             {language === 'nl' ? (
               <>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -131,7 +128,7 @@ export default function PublicImamDashboard() {
               </>
             ) : (
               <>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56] mr-auto">
                   {t.pageTitle}
                 </h1>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
