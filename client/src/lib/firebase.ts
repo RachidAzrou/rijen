@@ -16,10 +16,18 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const database = getDatabase(app);
+console.log('Firebase app initialized successfully');
+
+// Initialize services
+const auth = getAuth(app);
+const database = getDatabase(app);
+console.log('Firebase auth and database initialized');
 
 // Initialize Analytics only in browser environment
-const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null);
+let analytics = null;
+isSupported().then(yes => {
+  if (yes) analytics = getAnalytics(app);
+}).catch(console.error);
 
+export { auth, database };
 export default app;

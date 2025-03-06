@@ -17,25 +17,19 @@ export function useSocket() {
         console.log('Firebase Database initialized');
 
         // Initialize rooms data if it doesn't exist
-        const initializeRooms = async () => {
-          const roomsRef = ref(db, 'rooms');
-          const initialData = {
-            'beneden': 'OFF',
-            'first-floor': 'OFF',
-            'garage': 'OFF'
-          };
-          try {
-            await set(roomsRef, initialData);
-            console.log('Rooms initialized in Firebase');
-          } catch (error) {
-            console.error('Error initializing rooms:', error);
-          }
-        };
-
-        // Try to initialize rooms
-        initializeRooms();
-
         const roomsRef = ref(db, 'rooms');
+        const initialData = {
+          'beneden': 'OFF',
+          'first-floor': 'OFF',
+          'garage': 'OFF'
+        };
+        try {
+          set(roomsRef, initialData)
+            .then(() => console.log('Rooms initialized in Firebase'))
+            .catch(error => console.error('Error initializing rooms:', error));
+        } catch (error) {
+          console.error('Error initializing rooms:', error);
+        }
 
         // Listen for changes
         const unsubscribe = onValue(roomsRef, (snapshot) => {
