@@ -3,7 +3,10 @@ services:
     name: sufuf-websocket
     env: node
     region: frankfurt
-    buildCommand: npm install && npx tsc
+    buildCommand: |
+      npm install typescript -g
+      npm install
+      tsc --project tsconfig.json
     startCommand: node dist/server/index.js
     envVars:
       - key: NODE_ENV
