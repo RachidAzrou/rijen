@@ -157,7 +157,7 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-xl transition-all duration-300
+                        relative h-24 md:h-28 rounded-xl transition-all duration-300
                         hover:shadow-lg active:scale-[0.98] touch-manipulation
                         bg-white border-2
                         ${room.status === 'green'
@@ -168,21 +168,21 @@ export function SufufPage() {
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          w-20 h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
+                          w-16 h-16 md:w-20 md:h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                           ${room.status === 'green'
                             ? 'bg-[#6BB85C]'
                             : 'bg-[#6BB85C]/10 group-hover:bg-[#6BB85C]/20'
                           }
                         `}>
                           <Check className={`
-                            w-10 h-10 stroke-[2.5] transition-all duration-300
+                            w-8 h-8 md:w-10 md:h-10 stroke-[2.5] transition-all duration-300
                             ${room.status === 'green' ? 'text-white scale-110' : 'text-[#6BB85C]'}
                           `} />
                         </div>
                       </div>
                       {room.status === 'green' && (
-                        <div className="absolute top-3 right-3">
-                          <div className="h-2.5 w-2.5 rounded-full bg-[#6BB85C] ring-4 ring-[#6BB85C]/20" />
+                        <div className="absolute top-2 md:top-3 right-2 md:right-3">
+                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-[#6BB85C] ring-4 ring-[#6BB85C]/20" />
                         </div>
                       )}
                     </button>
@@ -196,7 +196,7 @@ export function SufufPage() {
                         }
                       }}
                       className={`
-                        relative h-28 rounded-xl transition-all duration-300
+                        relative h-24 md:h-28 rounded-xl transition-all duration-300
                         hover:shadow-lg active:scale-[0.98] touch-manipulation
                         bg-white border-2
                         ${room.status === 'red'
@@ -207,21 +207,21 @@ export function SufufPage() {
                     >
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className={`
-                          w-20 h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
+                          w-16 h-16 md:w-20 md:h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                           ${room.status === 'red'
                             ? 'bg-red-500'
                             : 'bg-red-500/10 group-hover:bg-red-500/20'
                           }
                         `}>
                           <X className={`
-                            w-10 h-10 stroke-[2.5] transition-all duration-300
+                            w-8 h-8 md:w-10 md:h-10 stroke-[2.5] transition-all duration-300
                             ${room.status === 'red' ? 'text-white scale-110' : 'text-red-500'}
                           `} />
                         </div>
                       </div>
                       {room.status === 'red' && (
-                        <div className="absolute top-3 right-3">
-                          <div className="h-2.5 w-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20" />
+                        <div className="absolute top-2 md:top-3 right-2 md:right-3">
+                          <div className="h-2 w-2 md:h-2.5 md:w-2.5 rounded-full bg-red-500 ring-4 ring-red-500/20" />
                         </div>
                       )}
                     </button>
