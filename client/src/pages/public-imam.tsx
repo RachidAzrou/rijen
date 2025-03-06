@@ -14,22 +14,30 @@ type Room = {
   status: 'green' | 'red' | 'grey';
 };
 
-// Language Switcher Component remains unchanged
+// Language Switcher Component updated with better UI
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
-  <div className="fixed bottom-4 left-4 flex gap-2 z-50">
+  <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
     <Button
-      variant={language === 'nl' ? 'default' : 'outline'}
+      variant={language === 'nl' ? 'default' : 'ghost'}
       onClick={() => setLanguage('nl')}
-      className={`w-12 h-8 ${language === 'nl' ? 'bg-[#963E56] hover:bg-[#963E56]/90' : 'border-[#963E56] text-[#963E56] hover:bg-[#963E56]/10'}`}
+      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
+        language === 'nl' 
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90' 
+          : 'text-[#963E56] hover:bg-[#963E56]/10'
+      }`}
     >
-      NL
+      Nederlands
     </Button>
     <Button
-      variant={language === 'ar' ? 'default' : 'outline'}
+      variant={language === 'ar' ? 'default' : 'ghost'}
       onClick={() => setLanguage('ar')}
-      className={`w-12 h-8 ${language === 'ar' ? 'bg-[#963E56] hover:bg-[#963E56]/90' : 'border-[#963E56] text-[#963E56] hover:bg-[#963E56]/10'}`}
+      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
+        language === 'ar'
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
+          : 'text-[#963E56] hover:bg-[#963E56]/10'
+      }`}
     >
-      AR
+      العربية
     </Button>
   </div>
 );
@@ -112,25 +120,12 @@ export default function PublicImamDashboard() {
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
-            {language === 'nl' ? (
-              <>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-                </div>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                  {t.pageTitle}
-                </h1>
-              </>
-            ) : (
-              <>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                  {t.pageTitle}
-                </h1>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-                </div>
-              </>
-            )}
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              {t.pageTitle}
+            </h1>
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+            </div>
           </div>
         </div>
 
