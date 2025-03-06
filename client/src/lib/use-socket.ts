@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { database } from "@/lib/firebase";
 import { ref, onValue, set } from "firebase/database";
 
@@ -76,14 +76,16 @@ export function useSocket() {
         setError(error.message);
       }
     },
-    set onmessage(handler: any) {
+    set onmessage(handler: ((event: { data: string }) => void) | null) {
       setMessageHandler((data: RoomStatuses) => {
-        handler({
-          data: JSON.stringify({
-            type: 'initialStatus',
-            data
-          })
-        });
+        if (handler) {
+          handler({
+            data: JSON.stringify({
+              type: 'initialStatus',
+              data
+            })
+          });
+        }
       });
     }
   };
