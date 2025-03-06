@@ -45,13 +45,13 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
     <CardContent className="p-4">
       {language === 'nl' ? (
         <blockquote className="space-y-2 text-center">
-          <p className="text-sm text-[#963E56] font-medium mb-2">
+          <p className="text-base md:text-lg text-[#963E56] font-medium mb-2">
             De Profeet ﷺ zei:
           </p>
-          <p className="text-sm text-[#963E56] leading-relaxed font-medium italic">
+          <p className="text-base md:text-lg text-[#963E56] leading-relaxed font-medium italic">
             {t.hadithText}
           </p>
-          <footer className="text-xs text-[#963E56]/80">
+          <footer className="text-sm text-[#963E56]/80">
             — {t.hadithSource}
           </footer>
         </blockquote>
@@ -72,7 +72,7 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
   </Card>
 );
 
-export default function PublicImamDashboard() {
+const PublicImamDashboard = () => {
   const { socket, isConnected } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [rooms, setRooms] = useState<Record<string, Room>>({
@@ -116,7 +116,7 @@ export default function PublicImamDashboard() {
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className={`flex items-center justify-center gap-4`}>
+          <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
               <>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -127,14 +127,14 @@ export default function PublicImamDashboard() {
                 </h1>
               </>
             ) : (
-              <>
+              <div className="flex flex-row-reverse items-center gap-4">
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
                   <PiMosqueDuotone className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
                 </div>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -208,4 +208,6 @@ export default function PublicImamDashboard() {
       </div>
     </div>
   );
-}
+};
+
+export default PublicImamDashboard;
