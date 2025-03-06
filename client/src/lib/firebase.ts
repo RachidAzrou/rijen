@@ -8,11 +8,16 @@ const firebaseConfig = {
   authDomain: "sufuf-c6cd6.firebaseapp.com",
   databaseURL: "https://sufuf-c6cd6-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "sufuf-c6cd6",
-  storageBucket: "sufuf-c6cd6.firebasestorage.app",
+  storageBucket: "sufuf-c6cd6.appspot.com",
   messagingSenderId: "799388036430",
   appId: "1:799388036430:web:ce7f4bcad3e8926573c21f",
   measurementId: "G-NE231CGCD4"
 };
+
+console.log('Initializing Firebase with config:', {
+  ...firebaseConfig,
+  apiKey: '***' // Hide API key in logs
+});
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
