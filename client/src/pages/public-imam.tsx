@@ -21,8 +21,8 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
       variant={language === 'nl' ? 'default' : 'ghost'}
       onClick={() => setLanguage('nl')}
       className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
-        language === 'nl' 
-          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90' 
+        language === 'nl'
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
           : 'text-[#963E56] hover:bg-[#963E56]/10'
       }`}
     >
@@ -120,12 +120,25 @@ export default function PublicImamDashboard() {
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              {t.pageTitle}
-            </h1>
-            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-            </div>
+            {language === 'nl' ? (
+              <>
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
+                </div>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                  {t.pageTitle}
+                </h1>
+              </>
+            ) : (
+              <>
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                  {t.pageTitle}
+                </h1>
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
+                </div>
+              </>
+            )}
           </div>
         </div>
 
