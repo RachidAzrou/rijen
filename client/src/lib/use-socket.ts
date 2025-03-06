@@ -5,7 +5,6 @@ import app from './firebase';
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const isVercel = window.location.hostname.includes('vercel.app');
@@ -87,7 +86,6 @@ export function useSocket() {
       } catch (error) {
         console.error('Error setting up Firebase:', error);
         setIsConnected(false);
-        return;
       }
     } else {
       // Use WebSocket for local development
@@ -120,10 +118,6 @@ export function useSocket() {
           socketRef.current.onclose = () => {
             console.log("WebSocket disconnected");
             setIsConnected(false);
-            if (reconnectTimeoutRef.current) {
-              clearTimeout(reconnectTimeoutRef.current);
-            }
-            reconnectTimeoutRef.current = setTimeout(connect, 2000);
           };
 
           socketRef.current.onerror = (error) => {
@@ -134,16 +128,12 @@ export function useSocket() {
           };
         } catch (error) {
           console.error("Error creating WebSocket connection:", error);
-          reconnectTimeoutRef.current = setTimeout(connect, 2000);
         }
       };
 
       connect();
 
       return () => {
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
         if (socketRef.current) {
           socketRef.current.close();
         }
