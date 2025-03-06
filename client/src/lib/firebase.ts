@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBVci6APXZEwofOm1Dsp7HjdcBxyAU8PYk",
@@ -12,5 +13,11 @@ const firebaseConfig = {
   measurementId: "G-NE231CGCD4"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+// Initialize Analytics only in browser environment
+const analytics = isSupported().then(yes => yes ? getAnalytics(app) : null);
+
+export default app;
