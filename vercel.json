@@ -2,18 +2,16 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/**",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist/public"
       }
     }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/client/dist/$1"
-    }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ],
   "env": {
     "NODE_ENV": "production",
