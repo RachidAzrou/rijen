@@ -116,7 +116,7 @@ export default function PublicImamDashboard() {
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className={`flex items-center ${language === 'ar' ? 'justify-between' : 'justify-center gap-4'}`}>
+          <div className={`flex items-center justify-center gap-4`}>
             {language === 'nl' ? (
               <>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -128,7 +128,7 @@ export default function PublicImamDashboard() {
               </>
             ) : (
               <>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56] mr-auto">
+                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
