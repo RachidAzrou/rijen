@@ -7,14 +7,14 @@ import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
-// Room type definition
+// Room type definition remains unchanged
 type Room = {
   id: string;
   title: string;
   status: 'green' | 'red' | 'grey';
 };
 
-// Language Switcher Component
+// Language Switcher Component remains unchanged
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
   <div className="fixed bottom-4 left-4 flex gap-2 z-50">
     <Button
@@ -34,7 +34,7 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
   </div>
 );
 
-// Hadieth Component
+// Hadieth Component remains unchanged
 const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
     <CardContent className="p-4">
@@ -108,16 +108,16 @@ export default function PublicImamDashboard() {
   const t = translations[language];
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
-            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
-            </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               {t.pageTitle}
             </h1>
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+            </div>
           </div>
         </div>
 
@@ -130,7 +130,7 @@ export default function PublicImamDashboard() {
               className="overflow-hidden bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
+                <CardTitle className={`flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
                   <FaPray className="h-5 w-5" />
                   {t.rooms[room.id as keyof typeof t.rooms]}
                 </CardTitle>
