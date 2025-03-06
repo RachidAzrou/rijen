@@ -1,8 +1,8 @@
-const CACHE_NAME = 'mefen-sufuf-v2';
+const CACHE_NAME = 'mefen-sufuf-v3';
 const urlsToCache = [
   '/',
   '/static/123.jpg',
-  '/static/guest_2031475.png',
+  '/static/teamwork_9014707.png',
   '/static/Naamloos2.png',
   '/index.html',
   '/manifest.json'
