@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <meta name="theme-color" content="#963E56" />
     <meta name="description" content="MEFEN Sufuf - Prayer Rows Management" />
-    <link rel="icon" href="/static/Naamloos2.png" />
-    <link rel="apple-touch-icon" href="/static/Naamloos2.png" />
+    <link rel="icon" href="/static/guest_2031475.png" />
+    <link rel="apple-touch-icon" href="/static/guest_2031475.png" />
     <link rel="manifest" href="/manifest.json" />
-    <base href="/" />
     <title>MEFEN</title>
   </head>
   <body class="h-full">
@@ -19,10 +18,10 @@
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/service-worker.js')
             .then(registration => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              console.log('ServiceWorker registration successful');
             })
             .catch(err => {
-              console.error('ServiceWorker registration failed: ', err);
+              console.log('ServiceWorker registration failed: ', err);
             });
         });
       }

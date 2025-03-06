@@ -8,13 +8,13 @@
   "theme_color": "#963E56",
   "icons": [
     {
-      "src": "/static/Naamloos2.png",
+      "src": "/static/guest_2031475.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/static/Naamloos2.png",
+      "src": "/static/guest_2031475.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

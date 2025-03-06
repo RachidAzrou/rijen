@@ -1,102 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { database } from "./firebase";
-import { ref, onValue, set } from "firebase/database";
-
-type RoomStatus = 'OK' | 'NOK' | 'OFF';
-type RoomStatuses = Record<string, RoomStatus>;
+import { useEffect, useRef, useState } from 'react';
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [messageHandler, setMessageHandler] = useState<((data: RoomStatuses) => void) | null>(null);
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    try {
-      const roomsRef = ref(database, 'rooms');
-      let unsubscribe: (() => void) | null = null;
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
 
-      // Initialize rooms data
-      const initialData: RoomStatuses = {
-        'beneden': 'OFF',
-        'first-floor': 'OFF',
-        'garage': 'OFF'
+    const connect = () => {
+      console.log("Attempting WebSocket connection...");
+      socketRef.current = new WebSocket(wsUrl);
+
+      socketRef.current.onopen = () => {
+        console.log("WebSocket connected");
+        setIsConnected(true);
+
+        // Request initial status when connecting
+        if (socketRef.current?.readyState === WebSocket.OPEN) {
+          console.log("Requesting initial status");
+          socketRef.current.send(JSON.stringify({ type: "getInitialStatus" }));
+        }
       };
 
-      // Set initial data if not exists
-      set(roomsRef, initialData).catch(console.error);
-
-      // Listen for changes
-      unsubscribe = onValue(roomsRef, (snapshot) => {
-        try {
-          const data = snapshot.val() || initialData;
-          setIsConnected(true);
-
-          if (messageHandler) {
-            messageHandler(data);
-          }
-        } catch (error: any) {
-          console.error('Firebase data handling error:', error);
-          setError(error.message);
-          setIsConnected(false);
-        }
-      }, (error) => {
-        console.error('Firebase subscription error:', error);
-        setError(error.message);
+      socketRef.current.onclose = () => {
+        console.log("WebSocket disconnected");
         setIsConnected(false);
-      });
-
-      return () => {
-        if (unsubscribe) {
-          unsubscribe();
-        }
-        setIsConnected(false);
+        // Try to reconnect after 2 seconds
+        setTimeout(connect, 2000);
       };
-    } catch (error: any) {
-      console.error('Firebase initialization error:', error);
-      setError(error.message);
-      setIsConnected(false);
-    }
-  }, [messageHandler]);
 
-  // Create a socket-like interface
-  const socket = {
-    readyState: isConnected ? 1 : 3,
-    addEventListener: () => {}, // Dummy method
-    removeEventListener: () => {}, // Dummy method
-    send: (message: string) => {
-      try {
-        const data = JSON.parse(message);
-        if (data.type === 'updateStatus' && data.room && data.status) {
-          const roomRef = ref(database, `rooms/${data.room}`);
-          set(roomRef, data.status)
-            .then(() => console.log('Room status updated:', data.room, data.status))
-            .catch((error) => {
-              console.error('Error updating room status:', error);
-              setError(error.message);
-            });
-        }
-      } catch (error: any) {
-        console.error('Message processing error:', error);
-        setError(error.message);
+      socketRef.current.onerror = (error) => {
+        console.error("WebSocket error:", error);
+        socketRef.current?.close();
+      };
+    };
+
+    connect();
+
+    return () => {
+      console.log("Cleaning up WebSocket connection");
+      if (socketRef.current) {
+        socketRef.current.close();
       }
-    },
-    set onmessage(handler: ((event: { data: string }) => void) | null) {
-      setMessageHandler((data: RoomStatuses) => {
-        if (handler) {
-          handler({
-            data: JSON.stringify({
-              type: 'initialStatus',
-              data
-            })
-          });
-        }
-      });
-    }
-  };
+    };
+  }, []);
 
   return {
-    socket,
+    socket: socketRef.current,
     isConnected,
-    error
   };
 }

@@ -9,15 +9,14 @@ import ImamDashboard from "@/pages/imam";
 import PublicImamDashboard from "@/pages/public-imam";
 import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
 import { useLocation } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
-  const [location, setLocation] = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [location] = useLocation();
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -26,39 +25,12 @@ function Router() {
   }, [location]);
 
   useEffect(() => {
-    try {
-      const unsubscribe = auth.onAuthStateChanged((user) => {
-        console.log('Auth state changed:', user ? 'logged in' : 'logged out');
-        setIsLoggedIn(!!user);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setIsLoggedIn(!!user);
+    });
 
-        // Redirect to login if not authenticated and not on public routes
-        if (!user && 
-            location !== '/login' && 
-            location !== '/public-imam' && 
-            !location.startsWith('/static/')) {
-          console.log('Redirecting to login');
-          setLocation('/login');
-        }
-      }, (error) => {
-        console.error('Auth state change error:', error);
-        setIsLoggedIn(false);
-      });
-
-      return () => unsubscribe();
-    } catch (error) {
-      console.error('Error in auth state change:', error);
-      setIsLoggedIn(false);
-    }
-  }, [location, setLocation]);
-
-  // Show loading state while checking authentication
-  if (isLoggedIn === null && location !== '/public-imam') {
-    return (
-      <div className="min-h-screen w-full flex items-center justify-center">
-        <div className="text-[#963E56]">Loading...</div>
-      </div>
-    );
-  }
+    return () => unsubscribe();
+  }, []);
 
   const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
 
@@ -89,12 +61,10 @@ function Router() {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <Router />
-        <Toaster />
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <Router />
+      <Toaster />
+    </QueryClientProvider>
   );
 }
 
