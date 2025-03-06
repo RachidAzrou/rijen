@@ -13,66 +13,70 @@ export function useSocket() {
   useEffect(() => {
     try {
       const roomsRef = ref(database, 'rooms');
+      let unsubscribe: (() => void) | null = null;
+
+      // Initialize rooms data
+      const initialData: RoomStatuses = {
+        'beneden': 'OFF',
+        'first-floor': 'OFF',
+        'garage': 'OFF'
+      };
+
+      // Set initial data if not exists
+      set(roomsRef, initialData).catch(console.error);
 
       // Listen for changes
-      const unsubscribe = onValue(roomsRef, (snapshot) => {
+      unsubscribe = onValue(roomsRef, (snapshot) => {
         try {
-          const data = snapshot.val() || {
-            'beneden': 'OFF',
-            'first-floor': 'OFF',
-            'garage': 'OFF'
-          };
-
-          // Initialize if no data exists
-          if (!snapshot.exists()) {
-            set(roomsRef, data)
-              .then(() => console.log('Initial room data set'))
-              .catch(error => console.error('Error setting initial data:', error));
-          }
-
-          // Update connected state and notify subscribers
+          const data = snapshot.val() || initialData;
           setIsConnected(true);
-          messageHandler?.(data);
+
+          if (messageHandler) {
+            messageHandler(data);
+          }
         } catch (error: any) {
-          console.error('Error handling Firebase data:', error);
+          console.error('Firebase data handling error:', error);
           setError(error.message);
+          setIsConnected(false);
         }
       }, (error) => {
-        console.error('Firebase onValue error:', error);
+        console.error('Firebase subscription error:', error);
         setError(error.message);
         setIsConnected(false);
       });
 
       return () => {
-        unsubscribe();
+        if (unsubscribe) {
+          unsubscribe();
+        }
         setIsConnected(false);
       };
     } catch (error: any) {
-      console.error('Error initializing Firebase:', error);
+      console.error('Firebase initialization error:', error);
       setError(error.message);
       setIsConnected(false);
     }
   }, [messageHandler]);
 
-  // Create a socket-like interface with all expected methods
+  // Create a socket-like interface
   const socket = {
     readyState: isConnected ? 1 : 3,
-    addEventListener: () => {}, // Dummy method to prevent errors
-    removeEventListener: () => {}, // Dummy method to prevent errors
+    addEventListener: () => {}, // Dummy method
+    removeEventListener: () => {}, // Dummy method
     send: (message: string) => {
       try {
         const data = JSON.parse(message);
-        if (data.type === 'updateStatus') {
+        if (data.type === 'updateStatus' && data.room && data.status) {
           const roomRef = ref(database, `rooms/${data.room}`);
           set(roomRef, data.status)
-            .then(() => console.log('Status updated:', data.room, data.status))
-            .catch(error => {
-              console.error('Error updating status:', error);
+            .then(() => console.log('Room status updated:', data.room, data.status))
+            .catch((error) => {
+              console.error('Error updating room status:', error);
               setError(error.message);
             });
         }
       } catch (error: any) {
-        console.error('Error processing message:', error);
+        console.error('Message processing error:', error);
         setError(error.message);
       }
     },
