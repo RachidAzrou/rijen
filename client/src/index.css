@@ -10,7 +10,7 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 240 5.9% 10%;
+    --primary: 150 5.9% 10%;
     --primary-foreground: 0 0% 98%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -52,11 +52,18 @@
 @layer base {
   html, body, #root {
     height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background-color: #f5f5f5;
   }
 
   /* Login page specific */
   .login-page {
     background: url('/static/123.jpg') center center/cover no-repeat fixed;
+    min-height: 100vh;
   }
 
   /* Other pages */
