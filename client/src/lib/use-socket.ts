@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { getDatabase, ref, onValue, set } from "firebase/database";
+import app from './firebase';
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
@@ -6,72 +8,110 @@ export function useSocket() {
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
-    const getWebSocketUrl = () => {
-      // For Vercel deployment
-      if (window.location.hostname.includes('vercel.app')) {
-        return `wss://${window.location.hostname}/ws`;
-      }
-      // For local development
-      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      return `${protocol}//${window.location.host}/ws`;
-    };
+    const isVercel = window.location.hostname.includes('vercel.app');
 
-    const connect = () => {
-      try {
-        if (socketRef.current?.readyState === WebSocket.OPEN) {
-          console.log("WebSocket already connected");
-          return;
+    if (isVercel) {
+      // Use Firebase Realtime Database for Vercel deployment
+      const db = getDatabase(app);
+      const roomsRef = ref(db, 'rooms');
+
+      // Listen for changes
+      const unsubscribe = onValue(roomsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          // Emit the same format as WebSocket
+          const event = new MessageEvent('message', {
+            data: JSON.stringify({
+              type: 'initialStatus',
+              data
+            })
+          });
+          if (socketRef.current?.onmessage) {
+            socketRef.current.onmessage(event);
+          }
         }
+      });
 
-        console.log("Attempting WebSocket connection...");
-        const wsUrl = getWebSocketUrl();
-        socketRef.current = new WebSocket(wsUrl);
-
-        socketRef.current.onopen = () => {
-          console.log("WebSocket connected");
-          setIsConnected(true);
-
-          // Request initial status when connecting
-          if (socketRef.current?.readyState === WebSocket.OPEN) {
-            console.log("Requesting initial status");
-            socketRef.current.send(JSON.stringify({ type: "getInitialStatus" }));
+      // Create a Firebase-like WebSocket interface
+      socketRef.current = {
+        readyState: WebSocket.OPEN,
+        send: (message: string) => {
+          const data = JSON.parse(message);
+          if (data.type === 'updateStatus') {
+            set(ref(db, `rooms/${data.room}`), data.status);
           }
-        };
-
-        socketRef.current.onclose = () => {
-          console.log("WebSocket disconnected");
+        },
+        close: () => {
+          unsubscribe();
           setIsConnected(false);
-          // Clear any existing reconnect timeout
-          if (reconnectTimeoutRef.current) {
-            clearTimeout(reconnectTimeoutRef.current);
-          }
-          // Try to reconnect after 2 seconds
-          reconnectTimeoutRef.current = setTimeout(connect, 2000);
-        };
+        }
+      } as any;
 
-        socketRef.current.onerror = (error) => {
-          console.error("WebSocket error:", error);
+      setIsConnected(true);
+      return () => {
+        unsubscribe();
+        setIsConnected(false);
+      };
+    } else {
+      // Use WebSocket for local development
+      const getWebSocketUrl = () => {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        return `${protocol}//${window.location.host}/ws`;
+      };
+
+      const connect = () => {
+        try {
           if (socketRef.current?.readyState === WebSocket.OPEN) {
-            socketRef.current?.close();
+            console.log("WebSocket already connected");
+            return;
           }
-        };
-      } catch (error) {
-        console.error("Error creating WebSocket connection:", error);
-        // Try to reconnect after error
-        reconnectTimeoutRef.current = setTimeout(connect, 2000);
-      }
-    };
 
-    connect();
+          console.log("Attempting WebSocket connection...");
+          const wsUrl = getWebSocketUrl();
+          socketRef.current = new WebSocket(wsUrl);
 
-    return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
-      if (socketRef.current) {
-        socketRef.current.close();
-      }
-    };
+          socketRef.current.onopen = () => {
+            console.log("WebSocket connected");
+            setIsConnected(true);
+
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+              console.log("Requesting initial status");
+              socketRef.current.send(JSON.stringify({ type: "getInitialStatus" }));
+            }
+          };
+
+          socketRef.current.onclose = () => {
+            console.log("WebSocket disconnected");
+            setIsConnected(false);
+            if (reconnectTimeoutRef.current) {
+              clearTimeout(reconnectTimeoutRef.current);
+            }
+            reconnectTimeoutRef.current = setTimeout(connect, 2000);
+          };
+
+          socketRef.current.onerror = (error) => {
+            console.error("WebSocket error:", error);
+            if (socketRef.current?.readyState === WebSocket.OPEN) {
+              socketRef.current?.close();
+            }
+          };
+        } catch (error) {
+          console.error("Error creating WebSocket connection:", error);
+          reconnectTimeoutRef.current = setTimeout(connect, 2000);
+        }
+      };
+
+      connect();
+
+      return () => {
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+        if (socketRef.current) {
+          socketRef.current.close();
+        }
+      };
+    }
   }, []);
 
   return {
