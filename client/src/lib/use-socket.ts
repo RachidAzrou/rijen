@@ -38,14 +38,20 @@ export function useSocket() {
         send: (message: string) => {
           const data = JSON.parse(message);
           if (data.type === 'updateStatus') {
-            set(ref(db, `rooms/${data.room}`), data.status);
+            // Update the specific room status in Firebase
+            const roomRef = ref(db, `rooms/${data.room}`);
+            set(roomRef, data.status)
+              .catch(error => console.error('Error updating room status:', error));
+          } else if (data.type === 'getInitialStatus') {
+            // Initial status will be handled by the onValue listener
           }
         },
         close: () => {
           unsubscribe();
           setIsConnected(false);
-        }
-      } as any;
+        },
+        onmessage: null as any
+      } as WebSocket;
 
       setIsConnected(true);
       return () => {
