@@ -1,6 +1,6 @@
 {
-  "name": "MEFEN Sufuf App",
-  "short_name": "MEFEN",
+  "name": "Sufuf App",
+  "short_name": "Sufuf",
   "description": "Moskee El Fath En Nassr gebedsruimte management",
   "start_url": "/",
   "display": "standalone",

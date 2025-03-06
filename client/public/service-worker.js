@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mefen-sufuf-v4';
+const CACHE_NAME = 'mefen-sufuf-v5';
 const urlsToCache = [
   '/',
   '/static/123.jpg',
