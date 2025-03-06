@@ -16,15 +16,23 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Skip chrome-extension requests
+  if (event.request.url.startsWith('chrome-extension://')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
         if (response) {
           return response;
         }
+
         return fetch(event.request).then(
           (response) => {
-            if(!response || response.status !== 200 || response.type !== 'basic') {
+            // Check if we received a valid response
+            if (!response || response.status !== 200 || response.type !== 'basic' || 
+                event.request.url.startsWith('chrome-extension://')) {
               return response;
             }
 
