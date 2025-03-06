@@ -2,11 +2,15 @@ services:
   - type: web
     name: sufuf-websocket
     env: node
-    buildCommand: npm install
-    startCommand: node server/index.ts
+    region: frankfurt
+    buildCommand: npm install && npx tsc
+    startCommand: node dist/server/index.js
     envVars:
       - key: NODE_ENV
         value: production
     healthCheckPath: /
-    autoDeploy: false
+    cors:
+      allowedOrigins:
+        - https://*.vercel.app
+    autoDeploy: true
     numInstances: 1

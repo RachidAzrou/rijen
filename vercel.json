@@ -6,22 +6,21 @@
       "use": "@vercel/node"
     },
     {
-      "src": "client/package.json",
+      "src": "client/**",
       "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "server/index.ts"
-    },
-    {
       "src": "/(.*)",
-      "dest": "client/dist/$1"
+      "dest": "/client/dist/$1"
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VITE_WS_URL": "wss://sufuf-websocket.onrender.com/ws"
   }
 }
