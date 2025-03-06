@@ -5,11 +5,13 @@ export function useSocket() {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const wsUrl = import.meta.env.VITE_WS_URL || (() => {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      return `${protocol}//${window.location.host}/ws`;
+    })();
 
     const connect = () => {
-      console.log("Attempting WebSocket connection...");
+      console.log("Attempting WebSocket connection to:", wsUrl);
       socketRef.current = new WebSocket(wsUrl);
 
       socketRef.current.onopen = () => {
