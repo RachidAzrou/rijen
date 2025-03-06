@@ -9,7 +9,7 @@ export function useSocket() {
     const getWebSocketUrl = () => {
       // For Vercel deployment
       if (window.location.hostname.includes('vercel.app')) {
-        return 'wss://sufuf-c6cd6-default-rtdb.europe-west1.firebasedatabase.app';
+        return `wss://${window.location.hostname}/ws`;
       }
       // For local development
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
