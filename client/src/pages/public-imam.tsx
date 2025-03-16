@@ -7,10 +7,10 @@ import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
-type Room = {
-  id: string;
-  title: string;
-  status: 'green' | 'red' | 'grey';
+const rooms = {
+  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
+  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
@@ -75,38 +75,38 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 const PublicImamDashboard = () => {
   const { socket, isConnected } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
-  const [rooms, setRooms] = useState<Record<string, Room>>({
-    'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
-    'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
-    'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-  });
+  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(
+    Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {})
+  );
 
   React.useEffect(() => {
     if (!socket || !isConnected) return;
 
     const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Public imam received message:', data);
 
-      if (data.type === "initialStatus") {
-        const updatedRooms = { ...rooms };
-        Object.entries(data.data).forEach(([key, value]: [string, any]) => {
-          if (updatedRooms[key]) {
-            updatedRooms[key].status = value === 'OK' ? 'green' : value === 'NOK' ? 'red' : 'grey';
-          }
-        });
-        setRooms(updatedRooms);
-      } else if (data.type === "statusUpdated") {
-        setRooms(prev => ({
-          ...prev,
-          [data.room]: {
-            ...prev[data.room],
-            status: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-          }
-        }));
+        if (data.type === "initialStatus") {
+          const newStatuses = { ...roomStatuses };
+          Object.entries(data.data).forEach(([room, status]: [string, any]) => {
+            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+          });
+          setRoomStatuses(newStatuses);
+        } else if (data.type === "statusUpdated") {
+          setRoomStatuses(prev => ({
+            ...prev,
+            [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling WebSocket message:', error);
       }
     };
 
     socket.addEventListener('message', handleMessage);
+    socket.send(JSON.stringify({ type: "getInitialStatus" }));
+
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected]);
 
@@ -120,7 +120,7 @@ const PublicImamDashboard = () => {
             {language === 'nl' ? (
               <>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
                 </div>
                 <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                   {t.pageTitle}
@@ -132,7 +132,7 @@ const PublicImamDashboard = () => {
                   {t.pageTitle}
                 </h1>
                 <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
+                  <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
                 </div>
               </div>
             )}
@@ -163,34 +163,34 @@ const PublicImamDashboard = () => {
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                  ${room.status === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
-                    room.status === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
+                  ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
+                    roomStatuses[room.id] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
                     'bg-gray-300'}
                 `}>
-                  {room.status === 'green' && <Check className="w-6 h-6 text-white" />}
-                  {room.status === 'red' && <X className="w-6 h-6 text-white" />}
+                  {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 text-white" />}
+                  {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 text-white" />}
                 </div>
               </CardHeader>
               <CardContent className="p-4 md:p-6 pt-2">
                 <div className="mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-500 ${
-                      room.status === 'green' ? 'w-full bg-[#6BB85C]' :
-                      room.status === 'red' ? 'w-full bg-red-500' :
+                      roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
+                      roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
                       'w-0'
                     }`}
                   />
                 </div>
                 <div className="mt-4 text-center">
-                  {room.status !== 'grey' && (
+                  {roomStatuses[room.id] !== 'grey' && (
                     <span className={`
                       inline-block px-4 py-1 rounded-full text-sm font-medium
-                      ${room.status === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
-                        room.status === 'red' ? 'bg-red-500/10 text-red-500' :
+                      ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
+                        roomStatuses[room.id] === 'red' ? 'bg-red-500/10 text-red-500' :
                         'bg-gray-100 text-gray-500'}
                     `}>
-                      {room.status === 'green' ? t.available :
-                        room.status === 'red' ? t.unavailable :
+                      {roomStatuses[room.id] === 'green' ? t.available :
+                        roomStatuses[room.id] === 'red' ? t.unavailable :
                         ''}
                     </span>
                   )}
