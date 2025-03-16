@@ -12,6 +12,17 @@ const firebaseConfig = {
   measurementId: "G-VKCD38BY9M"
 };
 
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const analytics = getAnalytics(app);
+let auth;
+let analytics;
+
+try {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  analytics = getAnalytics(app);
+  console.log('Firebase initialized successfully');
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
+  throw error;
+}
+
+export { auth, analytics };

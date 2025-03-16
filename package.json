@@ -54,7 +54,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "firebase": "^11.4.0",
-    "firebase-tools": "^13.32.0",
+    "firebase-tools": "^13.34.0",
     "framer-motion": "^11.13.1",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.453.0",
