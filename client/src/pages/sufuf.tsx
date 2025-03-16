@@ -7,6 +7,8 @@ import { FaPray } from "react-icons/fa";
 import { auth } from "@/lib/firebase";
 import { useLocation, useRoute } from "wouter";
 
+const ROOM_STATUSES_KEY = 'room_statuses';
+
 const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
@@ -20,9 +22,16 @@ export function SufufPage() {
   const roomId = params?.roomId || '';
   const currentRoom = rooms[roomId as keyof typeof rooms];
 
-  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(
-    Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {})
-  );
+  // Load initial statuses from localStorage or use default
+  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
+    try {
+      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+    } catch (error) {
+      console.error('Error loading stored statuses:', error);
+      return Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+    }
+  });
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
   useEffect(() => {
@@ -48,11 +57,16 @@ export function SufufPage() {
             newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
           });
           setRoomStatuses(newStatuses);
+          localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-          }));
+          setRoomStatuses(prev => {
+            const newStatuses = {
+              ...prev,
+              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+            };
+            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+            return newStatuses;
+          });
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
@@ -60,6 +74,7 @@ export function SufufPage() {
     };
 
     socket.addEventListener('message', handleMessage);
+    console.log('Requesting initial status...');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
@@ -79,10 +94,14 @@ export function SufufPage() {
       sendMessage(message);
 
       // Optimistic update
-      setRoomStatuses(prev => ({
-        ...prev,
-        [roomId]: status === "OK" ? "green" : status === "NOK" ? "red" : "grey"
-      }));
+      setRoomStatuses(prev => {
+        const newStatuses = {
+          ...prev,
+          [roomId]: status === "OK" ? "green" : status === "NOK" ? "red" : "grey"
+        };
+        localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+        return newStatuses;
+      });
     } catch (error) {
       console.error('Error sending status update:', error);
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
@@ -6,6 +6,8 @@ import { FaPray } from "react-icons/fa";
 import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
+
+const ROOM_STATUSES_KEY = 'room_statuses';
 
 const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
@@ -75,39 +77,43 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 const PublicImamDashboard = () => {
   const { socket, isConnected, sendMessage } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
-  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(
-    Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {})
-  );
 
-  React.useEffect(() => {
+  // Load initial statuses from localStorage or use default
+  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
+    try {
+      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+    } catch (error) {
+      console.error('Error loading stored statuses:', error);
+      return Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+    }
+  });
+
+  useEffect(() => {
     if (!socket || !isConnected) return;
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Public imam dashboard - Received message:', data);
-        console.log('Current room statuses:', roomStatuses);
+        console.log('Public imam received message:', data);
 
         if (data.type === "initialStatus") {
-          console.log('Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            console.log(`Setting status for room ${room} to ${status}`);
             if (rooms[room as keyof typeof rooms]) {
               newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
             }
           });
-          console.log('New room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
+          localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`Status update received for room ${data.room}: ${data.status}`);
           if (rooms[data.room as keyof typeof rooms]) {
             setRoomStatuses(prev => {
               const newStatuses = {
                 ...prev,
                 [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
               };
-              console.log('Updated room statuses:', newStatuses);
+              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
               return newStatuses;
             });
           }
@@ -118,11 +124,9 @@ const PublicImamDashboard = () => {
     };
 
     socket.addEventListener('message', handleMessage);
-    console.log('Public imam dashboard - Requesting initial status...');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => {
-      console.log('Public imam dashboard - Cleaning up WebSocket listener');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected, sendMessage]);
