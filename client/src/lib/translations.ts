@@ -9,8 +9,8 @@ export const translations = {
     hadithText: "Houd de rijen recht, want het recht houden van de rijen is deel van het perfect verrichten van het gebed.",
     hadithSource: "Overgeleverd door Bukhari & Muslim",
     rooms: {
-      'first-floor': 'Moskee +1',
-      'beneden': 'Moskee +0',
+      'prayer-ground': 'Gebedsruimte +0',
+      'prayer-first': 'Gebedsruimte +1',
       'garage': 'Garage'
     }
   },
@@ -23,8 +23,8 @@ export const translations = {
     hadithText: 'سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ',
     hadithSource: 'رواه البخاري ومسلم',
     rooms: {
-      'first-floor': 'مصلى +١',
-      'beneden': 'مصلى +٠',
+      'prayer-ground': 'مصلى +٠',
+      'prayer-first': 'مصلى +١',
       'garage': 'المرآب'
     }
   }
