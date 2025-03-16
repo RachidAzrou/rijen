@@ -15,6 +15,6 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "VITE_API_URL": "https://rijen.onrender.com"
+    "VITE_API_URL": "https://sufuf-backend.onrender.com"
   }
 }

@@ -9,3 +9,4 @@ services:
         value: 5000
       - key: NODE_ENV
         value: production
+    plan: free
