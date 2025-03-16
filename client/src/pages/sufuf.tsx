@@ -7,13 +7,6 @@ import { FaPray } from "react-icons/fa";
 import { auth } from "@/lib/firebase";
 import { useLocation, useRoute } from "wouter";
 
-// Room type definitie
-type Room = {
-  id: string;
-  title: string;
-  status: 'green' | 'red' | 'grey';
-};
-
 const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
@@ -45,32 +38,52 @@ export function SufufPage() {
     if (!socket || !isConnected) return;
 
     const handleMessage = (event: MessageEvent) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "initialStatus") {
-        const newStatuses = { ...roomStatuses };
-        Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-          newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-        });
-        setRoomStatuses(newStatuses);
-      } else if (data.type === "statusUpdated") {
-        setRoomStatuses(prev => ({
-          ...prev,
-          [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-        }));
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Received WebSocket message:', data); // Debug log
+
+        if (data.type === "initialStatus") {
+          const newStatuses = { ...roomStatuses };
+          Object.entries(data.data).forEach(([room, status]: [string, any]) => {
+            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+          });
+          setRoomStatuses(newStatuses);
+        } else if (data.type === "statusUpdated") {
+          setRoomStatuses(prev => ({
+            ...prev,
+            [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling WebSocket message:', error);
       }
     };
 
     socket.addEventListener('message', handleMessage);
+
+    // Request initial status when socket is ready
     if (socket.readyState === WebSocket.OPEN) {
+      console.log('Requesting initial status...'); // Debug log
       socket.send(JSON.stringify({ type: "getInitialStatus" }));
     }
+
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected]);
 
   const sendSocketMessage = (status: "OK" | "NOK" | "OFF") => {
-    if (socket && isConnected && socket.readyState === WebSocket.OPEN) {
-      socket.send(JSON.stringify({ type: "updateStatus", room: roomId, status }));
+    if (!socket || !isConnected) {
+      console.error('WebSocket not connected');
+      return;
     }
+
+    if (socket.readyState !== WebSocket.OPEN) {
+      console.error('WebSocket not in OPEN state');
+      return;
+    }
+
+    const message = JSON.stringify({ type: "updateStatus", room: roomId, status });
+    console.log('Sending WebSocket message:', message); // Debug log
+    socket.send(message);
   };
 
   return (
@@ -87,32 +100,46 @@ export function SufufPage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {Object.values(rooms).map((room) => (
-            <Card
-              key={room.id}
-              className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-            >
-              <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
-                  <FaPray className="h-5 w-5" />
-                  {room.title}
-                </CardTitle>
-                <div className={`
-                  relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                  ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
-                    roomStatuses[room.id] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
-                      'bg-gray-300'}
-                `}>
-                  {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 text-white" />}
-                  {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 text-white" />}
-                </div>
-              </CardHeader>
-            </Card>
-          ))}
+        <div className="space-y-4">
+          <h2 className="text-xl font-semibold text-[#963E56] px-1">Status Gebedsruimtes</h2>
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {Object.values(rooms).map((room) => (
+              <Card
+                key={room.id}
+                className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              >
+                <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
+                    <FaPray className="h-5 w-5" />
+                    {room.title}
+                  </CardTitle>
+                  <div className={`
+                    relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
+                    ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
+                      roomStatuses[room.id] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
+                        'bg-gray-300'}
+                  `}>
+                    {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 text-white" />}
+                    {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 text-white" />}
+                  </div>
+                </CardHeader>
+                <CardContent className="p-4 md:p-6 pt-2">
+                  <div className="mt-2 md:mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${
+                        roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
+                          roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
+                            'w-0'
+                      }`}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
-        {/* Alleen toon de vrijwilligersacties voor de huidige ruimte */}
+        {/* Vrijwilligersacties sectie */}
         <div className="space-y-4">
           <Button
             variant="ghost"
