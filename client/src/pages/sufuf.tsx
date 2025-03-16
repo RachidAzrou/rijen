@@ -14,7 +14,7 @@ const rooms = {
 };
 
 export function SufufPage() {
-  const { socket, isConnected } = useSocket();
+  const { socket, isConnected, sendMessage } = useSocket();
   const [_, setLocation] = useLocation();
   const [match, params] = useRoute('/dashboard/:roomId');
   const roomId = params?.roomId || '';
@@ -40,7 +40,7 @@ export function SufufPage() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received WebSocket message:', data); // Debug log
+        console.log('Received WebSocket message:', data);
 
         if (data.type === "initialStatus") {
           const newStatuses = { ...roomStatuses };
@@ -60,30 +60,20 @@ export function SufufPage() {
     };
 
     socket.addEventListener('message', handleMessage);
-
-    // Request initial status when socket is ready
-    if (socket.readyState === WebSocket.OPEN) {
-      console.log('Requesting initial status...'); // Debug log
-      socket.send(JSON.stringify({ type: "getInitialStatus" }));
-    }
+    console.log('Requesting initial status...');
+    sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
-  }, [socket, isConnected]);
+  }, [socket, isConnected, sendMessage]);
 
   const sendSocketMessage = (status: "OK" | "NOK" | "OFF") => {
-    if (!socket || !isConnected) {
-      console.error('WebSocket not connected');
-      return;
+    try {
+      const message = JSON.stringify({ type: "updateStatus", room: roomId, status });
+      console.log('Sending status update:', message);
+      sendMessage(message);
+    } catch (error) {
+      console.error('Error sending WebSocket message:', error);
     }
-
-    if (socket.readyState !== WebSocket.OPEN) {
-      console.error('WebSocket not in OPEN state');
-      return;
-    }
-
-    const message = JSON.stringify({ type: "updateStatus", room: roomId, status });
-    console.log('Sending WebSocket message:', message); // Debug log
-    socket.send(message);
   };
 
   return (
