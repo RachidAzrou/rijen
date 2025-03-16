@@ -54,6 +54,7 @@ function Router() {
       >
         <Switch>
           <Route path="/login" component={Login} />
+          <Route path="/" component={RoomSelect} />
           <Route path="/room-select" component={RoomSelect} />
           <Route path="/dashboard/:roomId" component={SufufPage} />
           <Route path="/imam" component={ImamDashboard} />
