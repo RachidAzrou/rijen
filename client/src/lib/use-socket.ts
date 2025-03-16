@@ -42,13 +42,17 @@ export function useSocket() {
     const wsUrl = `${protocol}//${window.location.host}/ws`;
 
     const connect = () => {
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
+        console.log('WebSocket already connected');
+        return;
+      }
+
       console.log("Attempting WebSocket connection to:", wsUrl);
       socketRef.current = new WebSocket(wsUrl);
 
       socketRef.current.onopen = () => {
         console.log("WebSocket connected successfully");
         setIsConnected(true);
-        sendQueuedMessages();
 
         // Send request for initial status
         const storedStatuses = loadStoredStatuses();
@@ -61,6 +65,8 @@ export function useSocket() {
         } else {
           socketRef.current?.send(JSON.stringify({ type: "getInitialStatus" }));
         }
+
+        sendQueuedMessages();
       };
 
       socketRef.current.onclose = (event) => {
@@ -101,17 +107,29 @@ export function useSocket() {
     };
   }, []);
 
+  const sendMessage = (message: string) => {
+    console.log('Attempting to send message:', message);
+
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      console.log('Socket is open, sending directly');
+      socketRef.current.send(message);
+    } else {
+      console.log('Socket not ready, queueing message');
+      messageQueueRef.current.push(message);
+      // If socket is closed, try to reconnect
+      if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
+        console.log('Socket is closed, attempting to reconnect...');
+        socketRef.current = null; // Reset the socket reference
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        socketRef.current = new WebSocket(wsUrl);
+      }
+    }
+  };
+
   return {
     socket: socketRef.current,
     isConnected,
-    sendMessage: (message: string) => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        console.log('Sending message directly:', message);
-        socketRef.current.send(message);
-      } else {
-        console.log('Queueing message:', message);
-        messageQueueRef.current.push(message);
-      }
-    }
+    sendMessage
   };
 }

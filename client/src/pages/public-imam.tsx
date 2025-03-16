@@ -82,6 +82,7 @@ const PublicImamDashboard = () => {
   const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      console.log('Initial stored statuses:', stored);
       return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
     } catch (error) {
       console.error('Error loading stored statuses:', error);
@@ -90,7 +91,10 @@ const PublicImamDashboard = () => {
   });
 
   useEffect(() => {
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) {
+      console.log('Socket not ready yet');
+      return;
+    }
 
     const handleMessage = (event: MessageEvent) => {
       try {
@@ -98,35 +102,38 @@ const PublicImamDashboard = () => {
         console.log('Public imam received message:', data);
 
         if (data.type === "initialStatus") {
+          console.log('Handling initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            if (rooms[room as keyof typeof rooms]) {
-              newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-            }
+            console.log(`Processing room ${room} with status ${status}`);
+            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
           });
+          console.log('Setting new statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          if (rooms[data.room as keyof typeof rooms]) {
-            setRoomStatuses(prev => {
-              const newStatuses = {
-                ...prev,
-                [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-              };
-              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-              return newStatuses;
-            });
-          }
+          console.log(`Status update for room ${data.room}: ${data.status}`);
+          setRoomStatuses(prev => {
+            const newStatuses = {
+              ...prev,
+              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+            };
+            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+            return newStatuses;
+          });
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
       }
     };
 
+    console.log('Setting up message handler');
     socket.addEventListener('message', handleMessage);
+    console.log('Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => {
+      console.log('Cleaning up message handler');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected, sendMessage]);
