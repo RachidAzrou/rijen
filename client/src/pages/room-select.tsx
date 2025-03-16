@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { Building2 } from "lucide-react";
+import { UserRoundCog } from "lucide-react"; // Using UserRoundCog as a temporary replacement
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
@@ -20,12 +20,9 @@ export default function RoomSelect() {
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-b from-[#963E56]/10 to-[#6BB85C]/10">
       <div className="w-full max-w-4xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#963E56] mb-4">
+          <h1 className="text-3xl font-bold text-[#963E56]">
             Selecteer een Ruimte
           </h1>
-          <p className="text-gray-600">
-            Kies een ruimte om het dashboard en vrijwilligersacties te beheren
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -37,7 +34,7 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-4">
-                  <Building2 className="h-12 w-12 text-[#963E56]" />
+                  <UserRoundCog className="h-12 w-12 text-[#963E56]" />
                 </div>
                 <h2 className="text-xl font-semibold text-center mb-2">
                   {room.name}
@@ -46,7 +43,7 @@ export default function RoomSelect() {
                   Capaciteit: {room.capacity} personen
                 </p>
                 <Button 
-                  className="w-full mt-4 bg-[#963E56] hover:bg-[#6BB85C]"
+                  className="w-full mt-4 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   Beheer Ruimte
