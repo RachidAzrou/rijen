@@ -1,8 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { 
   getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup,
   signInWithEmailAndPassword
 } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
@@ -19,7 +17,6 @@ const firebaseConfig = {
 
 let auth;
 let analytics;
-const provider = new GoogleAuthProvider();
 
 try {
   const app = initializeApp(firebaseConfig);
@@ -34,24 +31,17 @@ try {
 // Function to sign in with just a password
 export const signInWithPassword = async (password: string) => {
   try {
-    // Use a default email with the provided password
-    const defaultEmail = 'mosque@sufuf.com';
-    const result = await signInWithEmailAndPassword(auth, defaultEmail, password);
+    // Use hardcoded credentials
+    const email = 'mosque@sufuf.com';
+    const result = await signInWithEmailAndPassword(auth, email, password);
     console.log('Successfully signed in with password');
     return result.user;
-  } catch (error) {
-    console.error('Error signing in:', error);
-    throw error;
-  }
-};
-
-export const signInWithGoogle = async () => {
-  try {
-    const result = await signInWithPopup(auth, provider);
-    console.log('Successfully signed in with Google:', result.user);
-    return result.user;
-  } catch (error) {
-    console.error('Error signing in with Google:', error);
+  } catch (error: any) {
+    console.error('Error signing in:', error.code, error.message);
+    // This will help us see exactly what's going wrong
+    if (error.code === 'auth/invalid-credential') {
+      throw new Error('Incorrect wachtwoord of gebruiker bestaat niet. Controleer of de gebruiker is aangemaakt in Firebase Console.');
+    }
     throw error;
   }
 };

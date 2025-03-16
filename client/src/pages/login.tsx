@@ -40,7 +40,7 @@ export default function Login() {
       toast({
         variant: "destructive",
         title: "Inloggen mislukt",
-        description: "Incorrect wachtwoord. Probeer het opnieuw.",
+        description: error.message || "Incorrect wachtwoord. Probeer het opnieuw.",
         duration: 5000,
       });
     } finally {
