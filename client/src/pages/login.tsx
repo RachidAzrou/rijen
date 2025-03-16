@@ -37,7 +37,7 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, data.email, data.password);
-      setLocation("/");
+      setLocation("/room-select");
     } catch (error: any) {
       console.error("Login error:", error);
       toast({

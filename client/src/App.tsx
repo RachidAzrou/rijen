@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
+import RoomSelect from "@/pages/room-select";
 import { SufufPage } from "@/pages/sufuf";
 import ImamDashboard from "@/pages/imam";
 import PublicImamDashboard from "@/pages/public-imam";
@@ -11,12 +12,12 @@ import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
 import { useState, useEffect } from "react";
 import { auth } from "@/lib/firebase";
-import { useLocation } from "wouter";
+import { useLocation, useLocation as useLocationHook } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [location] = useLocation();
+  const [location, setLocation] = useLocationHook();
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -27,12 +28,17 @@ function Router() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
+      if (!user && location !== '/login') {
+        setLocation('/login');
+      }
     });
 
     return () => unsubscribe();
   }, []);
 
-  const showSidebar = isLoggedIn && location !== '/login' && location !== '/public-imam';
+  // Don't show sidebar on login and public pages
+  const showSidebar = isLoggedIn && 
+    !['/login', '/public-imam', '/room-select'].includes(location);
 
   return (
     <div className="min-h-screen w-full bg-gray-50/50">
@@ -48,7 +54,8 @@ function Router() {
       >
         <Switch>
           <Route path="/login" component={Login} />
-          <Route path="/" component={SufufPage} />
+          <Route path="/room-select" component={RoomSelect} />
+          <Route path="/dashboard/:roomId" component={SufufPage} />
           <Route path="/imam" component={ImamDashboard} />
           <Route path="/public-imam" component={PublicImamDashboard} />
           <Route path="/delen" component={DelenPage} />
