@@ -7,10 +7,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Store room statuses
+// Store room statuses with correct room IDs matching the client
 const roomStatuses: { [key: string]: 'OK' | 'NOK' | 'OFF' } = {
-  'first-floor': 'OFF',
-  'beneden': 'OFF',
+  'prayer-ground': 'OFF',
+  'prayer-first': 'OFF',
   'garage': 'OFF'
 };
 
@@ -52,6 +52,7 @@ app.use((req, res, next) => {
 
   // Broadcast to all clients
   function broadcast(message: string) {
+    console.log('Broadcasting message:', message);
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(message);
@@ -63,31 +64,38 @@ app.use((req, res, next) => {
     console.log('Client connected');
 
     // Send initial status on connection
-    ws.send(JSON.stringify({
+    const initialStatusMessage = JSON.stringify({
       type: 'initialStatus',
       data: roomStatuses
-    }));
+    });
+    console.log('Sending initial status:', initialStatusMessage);
+    ws.send(initialStatusMessage);
 
     ws.on('message', (message) => {
       try {
         const data = JSON.parse(message.toString());
-        console.log('Received:', data);
+        console.log('Received message:', data);
 
         if (data.type === 'getInitialStatus') {
-          ws.send(JSON.stringify({
+          const response = JSON.stringify({
             type: 'initialStatus',
             data: roomStatuses
-          }));
+          });
+          console.log('Sending initial status response:', response);
+          ws.send(response);
         } else if (data.type === 'updateStatus') {
           const { room, status } = data;
           if (room && status && roomStatuses.hasOwnProperty(room)) {
+            console.log(`Updating status for room ${room} to ${status}`);
             roomStatuses[room] = status;
             // Broadcast the update to all clients
-            broadcast(JSON.stringify({
+            const updateMessage = JSON.stringify({
               type: 'statusUpdated',
               room,
               status
-            }));
+            });
+            console.log('Broadcasting status update:', updateMessage);
+            broadcast(updateMessage);
           }
         }
       } catch (error) {
