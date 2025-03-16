@@ -4,9 +4,9 @@ import { useLocation } from "wouter";
 import { Building2 } from "lucide-react";
 
 const rooms = [
-  { id: "main-hall", name: "Hoofdzaal", capacity: 500 },
-  { id: "womens-hall", name: "Vrouwenzaal", capacity: 200 },
-  { id: "study-room", name: "Studieruimte", capacity: 50 }
+  { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
+  { id: "prayer-first", name: "Gebedsruimte +1", capacity: 300 },
+  { id: "garage", name: "Garage", capacity: 100 }
 ];
 
 export default function RoomSelect() {
