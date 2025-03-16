@@ -3,8 +3,7 @@ import {
   getAuth, 
   GoogleAuthProvider, 
   signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
@@ -32,6 +31,20 @@ try {
   throw error;
 }
 
+// Function to sign in with just a password
+export const signInWithPassword = async (password: string) => {
+  try {
+    // Use a default email with the provided password
+    const defaultEmail = 'mosque@sufuf.com';
+    const result = await signInWithEmailAndPassword(auth, defaultEmail, password);
+    console.log('Successfully signed in with password');
+    return result.user;
+  } catch (error) {
+    console.error('Error signing in:', error);
+    throw error;
+  }
+};
+
 export const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
@@ -39,28 +52,6 @@ export const signInWithGoogle = async () => {
     return result.user;
   } catch (error) {
     console.error('Error signing in with Google:', error);
-    throw error;
-  }
-};
-
-export const signInWithEmail = async (email: string, password: string) => {
-  try {
-    const result = await signInWithEmailAndPassword(auth, email, password);
-    console.log('Successfully signed in with email:', result.user);
-    return result.user;
-  } catch (error) {
-    console.error('Error signing in with email:', error);
-    throw error;
-  }
-};
-
-export const createUserWithEmail = async (email: string, password: string) => {
-  try {
-    const result = await createUserWithEmailAndPassword(auth, email, password);
-    console.log('Successfully created user:', result.user);
-    return result.user;
-  } catch (error) {
-    console.error('Error creating user:', error);
     throw error;
   }
 };
