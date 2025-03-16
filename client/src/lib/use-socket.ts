@@ -11,6 +11,7 @@ export function useSocket() {
   const loadStoredStatuses = () => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      console.log('Loading stored statuses:', stored);
       return stored ? JSON.parse(stored) : null;
     } catch (error) {
       console.error('Error loading stored statuses:', error);
@@ -21,6 +22,7 @@ export function useSocket() {
   // Save statuses to localStorage
   const saveStatuses = (statuses: Record<string, string>) => {
     try {
+      console.log('Saving statuses to localStorage:', statuses);
       localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(statuses));
     } catch (error) {
       console.error('Error saving statuses:', error);
@@ -57,12 +59,13 @@ export function useSocket() {
         // Send request for initial status
         const storedStatuses = loadStoredStatuses();
         if (storedStatuses) {
-          console.log('Loaded stored statuses:', storedStatuses);
+          console.log('Syncing stored statuses:', storedStatuses);
           socketRef.current?.send(JSON.stringify({
             type: "syncStatus",
             data: storedStatuses
           }));
         } else {
+          console.log('Requesting initial status');
           socketRef.current?.send(JSON.stringify({ type: "getInitialStatus" }));
         }
 
@@ -82,13 +85,15 @@ export function useSocket() {
       socketRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          console.log("WebSocket message received:", data);
+          console.log("WebSocket raw message received:", event.data);
+          console.log("WebSocket parsed message:", data);
 
           // Save status updates to localStorage
           if (data.type === "initialStatus" || data.type === "statusUpdated") {
             const statuses = data.type === "initialStatus" ? data.data : {
               [data.room]: data.status
             };
+            console.log('Saving statuses update:', statuses);
             saveStatuses(statuses);
           }
         } catch (error) {

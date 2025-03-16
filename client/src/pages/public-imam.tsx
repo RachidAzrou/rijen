@@ -9,11 +9,16 @@ import { translations, type Language } from "@/lib/translations";
 
 const ROOM_STATUSES_KEY = 'room_statuses';
 
+// Define valid room IDs
+const VALID_ROOM_IDS = ['prayer-ground', 'prayer-first', 'garage'] as const;
+type RoomId = typeof VALID_ROOM_IDS[number];
+
+// Make sure room IDs match exactly with other components
 const rooms = {
-  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
-  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
-  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-};
+  'prayer-ground': { id: 'prayer-ground' as RoomId, title: 'Gebedsruimte +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first' as RoomId, title: 'Gebedsruimte +1', status: 'grey' },
+  'garage': { id: 'garage' as RoomId, title: 'Garage', status: 'grey' }
+} as const;
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
   <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
@@ -78,62 +83,91 @@ const PublicImamDashboard = () => {
   const { socket, isConnected, sendMessage } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
 
-  // Load initial statuses from localStorage or use default
-  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
+  // Load initial statuses from localStorage
+  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('Initial stored statuses:', stored);
-      return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+      console.log('[PublicImam] Loading stored statuses:', stored);
+      const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+
+      if (stored) {
+        const parsedStatuses = JSON.parse(stored);
+        console.log('[PublicImam] Parsed stored statuses:', parsedStatuses);
+        // Ensure we only use valid room IDs
+        const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
+          ...acc,
+          [roomId]: parsedStatuses[roomId] || 'grey'
+        }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+        return validStatuses;
+      }
+      return defaultStatuses;
     } catch (error) {
-      console.error('Error loading stored statuses:', error);
-      return Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+      console.error('[PublicImam] Error loading stored statuses:', error);
+      return Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
     }
   });
 
   useEffect(() => {
     if (!socket || !isConnected) {
-      console.log('Socket not ready yet');
+      console.log('[PublicImam] Socket not connected yet');
       return;
     }
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Public imam received message:', data);
+        console.log('[PublicImam] Received WebSocket message:', data);
 
         if (data.type === "initialStatus") {
-          console.log('Handling initial status:', data.data);
+          console.log('[PublicImam] Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            console.log(`Processing room ${room} with status ${status}`);
-            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              console.log(`[PublicImam] Setting status for room ${room} to ${status}`);
+              newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            } else {
+              console.warn(`[PublicImam] Received status for unknown room: ${room}`);
+            }
           });
-          console.log('Setting new statuses:', newStatuses);
+          console.log('[PublicImam] Final room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`Status update for room ${data.room}: ${data.status}`);
-          setRoomStatuses(prev => {
-            const newStatuses = {
-              ...prev,
-              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-            };
-            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-            return newStatuses;
-          });
+          console.log(`[PublicImam] Processing status update for room ${data.room}: ${data.status}`);
+          if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
+            setRoomStatuses(prev => {
+              const newStatuses = {
+                ...prev,
+                [data.room as RoomId]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+              };
+              console.log('[PublicImam] Updated room statuses:', newStatuses);
+              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+              return newStatuses;
+            });
+          } else {
+            console.warn(`[PublicImam] Received status update for unknown room: ${data.room}`);
+          }
         }
       } catch (error) {
-        console.error('Error handling WebSocket message:', error);
+        console.error('[PublicImam] Error handling WebSocket message:', error);
       }
     };
 
-    console.log('Setting up message handler');
+    console.log('[PublicImam] Setting up WebSocket handler for rooms:', VALID_ROOM_IDS);
     socket.addEventListener('message', handleMessage);
-    console.log('Requesting initial status');
+
+    // Request initial status
+    console.log('[PublicImam] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => {
-      console.log('Cleaning up message handler');
+      console.log('[PublicImam] Cleaning up WebSocket handler');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected, sendMessage]);

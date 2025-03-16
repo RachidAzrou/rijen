@@ -9,11 +9,15 @@ import { useLocation, useRoute } from "wouter";
 
 const ROOM_STATUSES_KEY = 'room_statuses';
 
+// Define valid room IDs
+const VALID_ROOM_IDS = ['prayer-ground', 'prayer-first', 'garage'] as const;
+type RoomId = typeof VALID_ROOM_IDS[number];
+
 const rooms = {
-  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
-  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
-  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-};
+  'prayer-ground': { id: 'prayer-ground' as RoomId, title: 'Gebedsruimte +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first' as RoomId, title: 'Gebedsruimte +1', status: 'grey' },
+  'garage': { id: 'garage' as RoomId, title: 'Garage', status: 'grey' }
+} as const;
 
 export function SufufPage() {
   const { socket, isConnected, sendMessage } = useSocket();
@@ -23,14 +27,32 @@ export function SufufPage() {
   const currentRoom = rooms[roomId as keyof typeof rooms];
 
   // Load initial statuses from localStorage or use default
-  const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
+  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('Initial stored statuses (sufuf):', stored);
-      return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+      console.log('[Sufuf] Loading stored statuses:', stored);
+      const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+
+      if (stored) {
+        const parsedStatuses = JSON.parse(stored);
+        console.log('[Sufuf] Parsed stored statuses:', parsedStatuses);
+        // Ensure we only use valid room IDs
+        const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
+          ...acc,
+          [roomId]: parsedStatuses[roomId] || 'grey'
+        }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+        return validStatuses;
+      }
+      return defaultStatuses;
     } catch (error) {
-      console.error('Error loading stored statuses:', error);
-      return Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
+      console.error('[Sufuf] Error loading stored statuses:', error);
+      return Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
     }
   });
 
@@ -46,49 +68,69 @@ export function SufufPage() {
   }, [setLocation]);
 
   useEffect(() => {
-    if (!socket || !isConnected) return;
+    if (!socket || !isConnected) {
+      console.log('[Sufuf] Socket not connected yet');
+      return;
+    }
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Sufuf received message:', data);
-        console.log('Current room statuses:', roomStatuses);
+        console.log('[Sufuf] Received WebSocket message:', data);
 
         if (data.type === "initialStatus") {
-          console.log('Processing initial status data:', data.data);
+          console.log('[Sufuf] Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            console.log(`Setting status for room ${room} to ${status}`);
-            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              console.log(`[Sufuf] Setting status for room ${room} to ${status}`);
+              newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            } else {
+              console.warn(`[Sufuf] Received status for unknown room: ${room}`);
+            }
           });
-          console.log('New statuses to set:', newStatuses);
+          console.log('[Sufuf] Final room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`Status update for room ${data.room}: ${data.status}`);
-          setRoomStatuses(prev => {
-            const newStatuses = {
-              ...prev,
-              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-            };
-            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-            return newStatuses;
-          });
+          console.log(`[Sufuf] Processing status update for room ${data.room}: ${data.status}`);
+          if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
+            setRoomStatuses(prev => {
+              const newStatuses = {
+                ...prev,
+                [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+              };
+              console.log('[Sufuf] Updated room statuses:', newStatuses);
+              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+              return newStatuses;
+            });
+          } else {
+            console.warn(`[Sufuf] Received status update for unknown room: ${data.room}`);
+          }
         }
       } catch (error) {
-        console.error('Error handling WebSocket message:', error);
+        console.error('[Sufuf] Error handling WebSocket message:', error);
       }
     };
 
+    console.log('[Sufuf] Setting up WebSocket handler for rooms:', VALID_ROOM_IDS);
     socket.addEventListener('message', handleMessage);
-    console.log('Requesting initial status with room IDs:', Object.keys(rooms));
+    console.log('[Sufuf] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
-    return () => socket.removeEventListener('message', handleMessage);
+    return () => {
+      console.log('[Sufuf] Cleaning up WebSocket handler');
+      socket.removeEventListener('message', handleMessage);
+    };
   }, [socket, isConnected, sendMessage]);
 
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
-    console.log(`Updating status for room ${roomId} to ${status}`);
+    if (!VALID_ROOM_IDS.includes(roomId as RoomId)) {
+      console.error(`[Sufuf] Invalid room ID: ${roomId}`);
+      return;
+    }
+
+    console.log(`[Sufuf] Updating status for room ${roomId} to ${status}`);
 
     try {
       const message = JSON.stringify({
@@ -97,7 +139,7 @@ export function SufufPage() {
         status: status
       });
 
-      console.log('Sending message:', message);
+      console.log('[Sufuf] Sending message:', message);
       sendMessage(message);
 
       // Optimistic update
@@ -110,7 +152,7 @@ export function SufufPage() {
         return newStatuses;
       });
     } catch (error) {
-      console.error('Error sending status update:', error);
+      console.error('[Sufuf] Error sending status update:', error);
     }
   };
 
