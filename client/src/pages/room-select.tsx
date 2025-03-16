@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { Building2 } from "lucide-react"; // Changed from Mosque to Building2 as it exists in lucide-react
+import { Building2 } from "lucide-react";
 
 const rooms = [
   { id: "main-hall", name: "Hoofdzaal", capacity: 500 },
