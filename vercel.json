@@ -15,6 +15,8 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "VITE_API_URL": "https://sufuf-backend.onrender.com"
+    "VITE_FIREBASE_PROJECT_ID": "sufuf-c61e0",
+    "VITE_FIREBASE_API_KEY": "AIzaSyDzZB7z0tjstC3ZWs6jlGric53-kwzy57Y",
+    "VITE_FIREBASE_APP_ID": "1:759510003093:web:6fba5d85da0a5c5aea9a9c"
   }
 }
