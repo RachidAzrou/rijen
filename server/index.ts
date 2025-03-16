@@ -48,7 +48,7 @@ app.use((req, res, next) => {
   next();
 });
 
-async function startServer(retries = 3, delay = 2000): Promise<void> {
+async function startServer(retries = 3, delay = 2000, preferredPort = 5000): Promise<void> {
   try {
     console.log('Starting server setup...');
     const server = await registerRoutes(app);
@@ -134,7 +134,7 @@ async function startServer(retries = 3, delay = 2000): Promise<void> {
       });
     });
 
-    const port = process.env.PORT || 5000;
+    const port = process.env.PORT || preferredPort;
     console.log(`Attempting to start server on port ${port}...`);
 
     return new Promise((resolve, reject) => {
@@ -148,9 +148,15 @@ async function startServer(retries = 3, delay = 2000): Promise<void> {
         resolve();
       }).on('error', async (error: any) => {
         if (error.code === 'EADDRINUSE' && retries > 0) {
-          console.log(`Port ${port} is in use, waiting ${delay}ms before retry... (${retries} retries left)`);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          await startServer(retries - 1, delay);
+          if (port === 5000) {
+            // Try alternate port
+            console.log(`Port ${port} is in use, trying alternate port 3000...`);
+            await startServer(retries - 1, delay, 3000);
+          } else {
+            console.log(`Port ${port} is in use, waiting ${delay}ms before retry... (${retries} retries left)`);
+            await new Promise(resolve => setTimeout(resolve, Number(delay)));
+            await startServer(retries - 1, delay * 2, port); // Exponential backoff
+          }
         } else if (error.code === 'EADDRINUSE') {
           console.error(`Port ${port} is still in use after all retries. Please ensure no other instance is running.`);
           process.exit(1);
