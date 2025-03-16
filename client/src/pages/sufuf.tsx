@@ -26,12 +26,14 @@ export function SufufPage() {
   const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      console.log('Initial stored statuses (sufuf):', stored);
       return stored ? JSON.parse(stored) : Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
     } catch (error) {
       console.error('Error loading stored statuses:', error);
       return Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {});
     }
   });
+
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
   useEffect(() => {
@@ -49,16 +51,21 @@ export function SufufPage() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received WebSocket message:', data);
+        console.log('Sufuf received message:', data);
+        console.log('Current room statuses:', roomStatuses);
 
         if (data.type === "initialStatus") {
+          console.log('Processing initial status data:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
+            console.log(`Setting status for room ${room} to ${status}`);
             newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
           });
+          console.log('New statuses to set:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
+          console.log(`Status update for room ${data.room}: ${data.status}`);
           setRoomStatuses(prev => {
             const newStatuses = {
               ...prev,
@@ -74,7 +81,7 @@ export function SufufPage() {
     };
 
     socket.addEventListener('message', handleMessage);
-    console.log('Requesting initial status...');
+    console.log('Requesting initial status with room IDs:', Object.keys(rooms));
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
