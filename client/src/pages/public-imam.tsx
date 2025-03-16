@@ -73,7 +73,7 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 );
 
 const PublicImamDashboard = () => {
-  const { socket, isConnected } = useSocket();
+  const { socket, isConnected, sendMessage } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [roomStatuses, setRoomStatuses] = useState<Record<string, 'green' | 'red' | 'grey'>>(
     Object.keys(rooms).reduce((acc, key) => ({ ...acc, [key]: 'grey' }), {})
@@ -105,10 +105,11 @@ const PublicImamDashboard = () => {
     };
 
     socket.addEventListener('message', handleMessage);
-    socket.send(JSON.stringify({ type: "getInitialStatus" }));
+    console.log('Requesting initial status...');
+    sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
-  }, [socket, isConnected]);
+  }, [socket, isConnected, sendMessage]);
 
   const t = translations[language];
 
