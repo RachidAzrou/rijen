@@ -85,19 +85,32 @@ const PublicImamDashboard = () => {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Public imam received message:', data);
+        console.log('Public imam dashboard - Received message:', data);
+        console.log('Current room statuses:', roomStatuses);
 
         if (data.type === "initialStatus") {
+          console.log('Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            console.log(`Setting status for room ${room} to ${status}`);
+            if (rooms[room as keyof typeof rooms]) {
+              newStatuses[room] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            }
           });
+          console.log('New room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
         } else if (data.type === "statusUpdated") {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-          }));
+          console.log(`Status update received for room ${data.room}: ${data.status}`);
+          if (rooms[data.room as keyof typeof rooms]) {
+            setRoomStatuses(prev => {
+              const newStatuses = {
+                ...prev,
+                [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+              };
+              console.log('Updated room statuses:', newStatuses);
+              return newStatuses;
+            });
+          }
         }
       } catch (error) {
         console.error('Error handling WebSocket message:', error);
@@ -105,10 +118,13 @@ const PublicImamDashboard = () => {
     };
 
     socket.addEventListener('message', handleMessage);
-    console.log('Requesting initial status...');
+    console.log('Public imam dashboard - Requesting initial status...');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
-    return () => socket.removeEventListener('message', handleMessage);
+    return () => {
+      console.log('Public imam dashboard - Cleaning up WebSocket listener');
+      socket.removeEventListener('message', handleMessage);
+    };
   }, [socket, isConnected, sendMessage]);
 
   const t = translations[language];
