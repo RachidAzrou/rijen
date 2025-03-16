@@ -60,19 +60,31 @@ export function SufufPage() {
     };
 
     socket.addEventListener('message', handleMessage);
-    console.log('Requesting initial status...');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected, sendMessage]);
 
-  const sendSocketMessage = (status: "OK" | "NOK" | "OFF") => {
+  const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
+    console.log(`Updating status for room ${roomId} to ${status}`);
+
     try {
-      const message = JSON.stringify({ type: "updateStatus", room: roomId, status });
-      console.log('Sending status update:', message);
+      const message = JSON.stringify({
+        type: "updateStatus",
+        room: roomId,
+        status: status
+      });
+
+      console.log('Sending message:', message);
       sendMessage(message);
+
+      // Optimistic update
+      setRoomStatuses(prev => ({
+        ...prev,
+        [roomId]: status === "OK" ? "green" : status === "NOK" ? "red" : "grey"
+      }));
     } catch (error) {
-      console.error('Error sending WebSocket message:', error);
+      console.error('Error sending status update:', error);
     }
   };
 
@@ -147,13 +159,7 @@ export function SufufPage() {
             <div className="grid gap-4">
               <div className="grid grid-cols-2 gap-4">
                 <button
-                  onClick={() => {
-                    if (roomStatuses[roomId] !== 'green') {
-                      sendSocketMessage("OK");
-                    } else {
-                      sendSocketMessage("OFF");
-                    }
-                  }}
+                  onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'green' ? "OK" : "OFF")}
                   className={`
                     relative h-24 md:h-28 rounded-xl transition-all duration-300
                     hover:shadow-lg active:scale-[0.98] touch-manipulation
@@ -186,13 +192,7 @@ export function SufufPage() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    if (roomStatuses[roomId] !== 'red') {
-                      sendSocketMessage("NOK");
-                    } else {
-                      sendSocketMessage("OFF");
-                    }
-                  }}
+                  onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'red' ? "NOK" : "OFF")}
                   className={`
                     relative h-24 md:h-28 rounded-xl transition-all duration-300
                     hover:shadow-lg active:scale-[0.98] touch-manipulation
