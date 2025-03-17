@@ -129,29 +129,25 @@ const PublicImamDashboard = () => {
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              console.log(`[PublicImam] Setting status for room ${room} to ${status}`);
-              newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-            } else {
-              console.warn(`[PublicImam] Received status for unknown room: ${room}`);
+              console.log(`[PublicImam] Setting status for room ${room} to ${status.status}`);
+              newStatuses[room as RoomId] = status.status;
             }
           });
           console.log('[PublicImam] Final room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`[PublicImam] Processing status update for room ${data.room}: ${data.status}`);
+          console.log(`[PublicImam] Processing status update:`, data);
           if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
             setRoomStatuses(prev => {
               const newStatuses = {
                 ...prev,
-                [data.room as RoomId]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+                [data.room]: data.status
               };
               console.log('[PublicImam] Updated room statuses:', newStatuses);
               localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
               return newStatuses;
             });
-          } else {
-            console.warn(`[PublicImam] Received status update for unknown room: ${data.room}`);
           }
         }
       } catch (error) {
@@ -159,10 +155,8 @@ const PublicImamDashboard = () => {
       }
     };
 
-    console.log('[PublicImam] Setting up WebSocket handler for rooms:', VALID_ROOM_IDS);
+    console.log('[PublicImam] Setting up WebSocket handler');
     socket.addEventListener('message', handleMessage);
-
-    // Request initial status
     console.log('[PublicImam] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
