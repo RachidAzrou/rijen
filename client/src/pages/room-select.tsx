@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { FaPray } from "react-icons/fa";
 
+// Version stamp for debugging
+const VERSION = "DEBUG_V1"; // Added for debugging
+console.log("Room Select Component loaded:", VERSION, new Date().toISOString());
+
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0" },
   { id: "prayer-first", name: "Gebedsruimte +1" },
@@ -11,14 +15,20 @@ const rooms = [
 
 export default function RoomSelect() {
   const [_, setLocation] = useLocation();
+  console.log("RoomSelect rendered:", new Date().toISOString()); // Debug log
 
   const handleRoomSelect = (roomId: string) => {
+    console.log("Room selected:", roomId); // Debug log
     setLocation(`/dashboard/${roomId}`);
   };
 
   return (
     <div className="min-h-screen w-full bg-gray-50/50">
       <div className="container mx-auto px-4 py-6">
+        {/* Debug indicator */}
+        <div className="fixed top-0 right-0 bg-yellow-200 text-yellow-800 px-2 py-1 text-xs">
+          Debug v1: {new Date().toLocaleTimeString()}
+        </div>
 
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
@@ -27,7 +37,7 @@ export default function RoomSelect() {
                 <FaPray className="h-8 w-8 text-[#963E56]" />
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                Selecteer een Ruimte
+                TEST - Selecteer een Ruimte
               </h1>
             </div>
           </CardContent>
