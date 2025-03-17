@@ -87,15 +87,13 @@ const PublicImamDashboard = () => {
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('[PublicImam] Loading stored statuses:', stored);
       const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
         ...acc, 
         [key]: 'grey' 
       }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
 
       if (stored) {
-        const parsedStatuses = JSON.parse(stored);
-        return parsedStatuses;
+        return JSON.parse(stored);
       }
       return defaultStatuses;
     } catch (error) {
@@ -123,7 +121,6 @@ const PublicImamDashboard = () => {
           Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
             newStatuses[room as RoomId] = roomData.status;
           });
-          console.log('[PublicImam] Setting room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
@@ -132,7 +129,6 @@ const PublicImamDashboard = () => {
               ...prev,
               [data.room]: data.status
             };
-            console.log('[PublicImam] Updating room status:', newStatuses);
             localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
             return newStatuses;
           });
@@ -143,10 +139,20 @@ const PublicImamDashboard = () => {
     };
 
     socket.addEventListener('message', handleMessage);
+
+    // Request initial status immediately
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+
+    // Set up periodic status refresh
+    const refreshInterval = setInterval(() => {
+      if (socket.readyState === WebSocket.OPEN) {
+        sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+      }
+    }, 5000); // Refresh every 5 seconds
 
     return () => {
       socket.removeEventListener('message', handleMessage);
+      clearInterval(refreshInterval);
     };
   }, [socket, isConnected, sendMessage]);
 

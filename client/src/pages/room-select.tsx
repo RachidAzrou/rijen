@@ -19,31 +19,31 @@ export default function RoomSelect() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="container mx-auto px-4 py-6 space-y-6">
-        <Card className="shadow-lg border border-[#963E56]/10">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
-              <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                Dashboard Ruimtes
-              </h1>
+      <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="shadow-lg p-4 md:p-6 border border-[#963E56]/10 rounded-xl">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <LayoutDashboard className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
-          </CardContent>
-        </Card>
+            <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              Dashboard Ruimtes
+            </h1>
+          </div>
+        </div>
 
         <Card className="shadow-lg border border-[#963E56]/10">
-          <CardContent className="p-6">
+          <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold text-[#963E56] mb-6">
               Status Gebedsruimtes
             </h2>
 
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {rooms.map((room) => (
                 <Card
                   key={room.id}
                   className="shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
                 >
-                  <CardContent className="p-6">
+                  <CardContent className="p-4 md:p-6">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="bg-[#963E56]/10 p-2 rounded-full">
                         <FaPray className="h-5 w-5 text-[#963E56]" />
