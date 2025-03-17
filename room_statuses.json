@@ -1,0 +1,17 @@
+{
+  "prayer-ground": {
+    "id": "prayer-ground",
+    "title": "Moskee +0",
+    "status": "grey"
+  },
+  "prayer-first": {
+    "id": "prayer-first",
+    "title": "Moskee +1",
+    "status": "grey"
+  },
+  "garage": {
+    "id": "garage",
+    "title": "Garage",
+    "status": "grey"
+  }
+}

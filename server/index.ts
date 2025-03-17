@@ -2,17 +2,36 @@ import express from "express";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import path from "path";
+import fs from "fs";
 
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
-// Store room statuses
-const rooms = {
+// Key for storing room statuses
+const ROOM_STATUSES_FILE = path.join(process.cwd(), 'room_statuses.json');
+
+// Default room statuses
+const defaultRooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-} as const;
+};
+
+// Load room statuses from file or use defaults
+let rooms = defaultRooms;
+try {
+  if (fs.existsSync(ROOM_STATUSES_FILE)) {
+    const data = fs.readFileSync(ROOM_STATUSES_FILE, 'utf8');
+    rooms = JSON.parse(data);
+    console.log('Loaded room statuses from file:', rooms);
+  } else {
+    fs.writeFileSync(ROOM_STATUSES_FILE, JSON.stringify(defaultRooms, null, 2));
+    console.log('Created new room statuses file with defaults');
+  }
+} catch (error) {
+  console.error('Error loading room statuses:', error);
+}
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
@@ -39,6 +58,9 @@ wss.on('connection', (ws) => {
           const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
           rooms[room].status = newStatus;
           console.log(`Updated ${room} status to ${newStatus}`);
+
+          // Save to file
+          fs.writeFileSync(ROOM_STATUSES_FILE, JSON.stringify(rooms, null, 2));
 
           // Create update message
           const updateMessage = {

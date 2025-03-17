@@ -10,6 +10,8 @@ import { useLocation, useRoute } from "wouter";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
+const ROOM_STATUSES_KEY = 'room_statuses';
+
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
@@ -23,10 +25,34 @@ export function SufufPage() {
   const roomId = params?.roomId as RoomId;
   const currentRoom = rooms[roomId];
 
-  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
-    'prayer-first': 'grey',
-    'prayer-ground': 'grey',
-    'garage': 'grey'
+  // Load initial statuses from localStorage or use default
+  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
+    try {
+      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
+      console.log('Loading stored statuses:', stored);
+      const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+
+      if (stored) {
+        const parsedStatuses = JSON.parse(stored);
+        console.log('Parsed stored statuses:', parsedStatuses);
+        // Ensure we only use valid room IDs
+        const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
+          ...acc,
+          [roomId]: parsedStatuses[roomId] || 'grey'
+        }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+        return validStatuses;
+      }
+      return defaultStatuses;
+    } catch (error) {
+      console.error('Error loading stored statuses:', error);
+      return Object.keys(rooms).reduce((acc, key) => ({ 
+        ...acc, 
+        [key]: 'grey' 
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+    }
   });
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
@@ -39,39 +65,50 @@ export function SufufPage() {
     return () => unsubscribe();
   }, [setLocation]);
 
-  // Socket.IO event handlers
+  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
-    // Handle initial status
-    socket.on('initialStatus', (data) => {
-      console.log('Received initial status:', data);
-      const newStatuses = Object.entries(data).reduce((acc, [room, info]: [string, any]) => ({
-        ...acc,
-        [room]: info.status
-      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-      setRoomStatuses(newStatuses);
-    });
+    function handleMessage(event: MessageEvent) {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('Received message:', data);
 
-    // Handle status updates
-    socket.on('statusUpdated', (data) => {
-      console.log('Received status update:', data);
-      setRoomStatuses(prev => ({
-        ...prev,
-        [data.room]: data.status
-      }));
-    });
+        if (data.type === 'statusUpdated') {
+          setRoomStatuses(prev => {
+            const newStatuses = {
+              ...prev,
+              [data.room]: data.status
+            };
+            // Save to localStorage whenever statuses change
+            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+            return newStatuses;
+          });
+        } else if (data.type === 'initialStatus') {
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+            ...acc,
+            [room]: info.status
+          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          setRoomStatuses(newStatuses);
+          // Save initial statuses to localStorage
+          localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+        }
+      } catch (error) {
+        console.error('Error handling message:', error);
+      }
+    }
+
+    socket.addEventListener('message', handleMessage);
 
     return () => {
-      socket.off('initialStatus');
-      socket.off('statusUpdated');
+      socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);
 
   // Handle status updates
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
     if (!isConnected) {
-      console.log('Cannot update - Socket.IO not connected');
+      console.log('Cannot update - WebSocket not connected');
       return;
     }
 
