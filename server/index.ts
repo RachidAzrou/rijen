@@ -14,60 +14,67 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
-// Helper function to broadcast to all clients
-function broadcast(message: any) {
-  const messageStr = JSON.stringify(message);
-  console.log('[WebSocket] Broadcasting:', messageStr);
+function broadcast(data: any) {
+  const message = JSON.stringify(data);
+  console.log('[WebSocket] Broadcasting to all clients:', message);
 
+  let clientCount = 0;
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(messageStr);
+      client.send(message);
+      clientCount++;
     }
   });
+  console.log(`[WebSocket] Broadcast sent to ${clientCount} clients`);
 }
 
-// WebSocket connection handling
 wss.on('connection', (ws) => {
-  console.log('[WebSocket] Client connected');
+  console.log('[WebSocket] New client connected');
+  console.log(`[WebSocket] Total connected clients: ${wss.clients.size}`);
 
   // Send initial status to new client
-  ws.send(JSON.stringify({
+  const initialStatus = JSON.stringify({
     type: 'initialStatus',
     data: rooms
-  }));
+  });
+  console.log('[WebSocket] Sending initial status to new client:', initialStatus);
+  ws.send(initialStatus);
 
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
-      console.log('[WebSocket] Received:', data);
+      console.log('[WebSocket] Received message:', data);
 
       if (data.type === 'updateStatus') {
         const { room, status } = data;
         if (rooms[room]) {
           const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
           rooms[room].status = newStatus;
-          console.log('[WebSocket] Updated room status:', room, newStatus);
+          console.log(`[WebSocket] Updated status for room ${room} to ${newStatus}`);
 
-          // Broadcast update to ALL clients
-          broadcast({
+          // Broadcast the update to all clients
+          const updateMessage = {
             type: 'statusUpdated',
             room,
             status: newStatus
-          });
+          };
+          broadcast(updateMessage);
         }
       } else if (data.type === 'getInitialStatus') {
+        console.log('[WebSocket] Client requested initial status');
         ws.send(JSON.stringify({
           type: 'initialStatus',
           data: rooms
         }));
       }
     } catch (error) {
-      console.error('[WebSocket] Message processing error:', error);
+      console.error('[WebSocket] Error processing message:', error);
     }
   });
 
   ws.on('close', () => {
     console.log('[WebSocket] Client disconnected');
+    console.log(`[WebSocket] Remaining connected clients: ${wss.clients.size}`);
   });
 });
 
@@ -83,6 +90,6 @@ app.get('*', (_, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
