@@ -4,37 +4,24 @@ export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
-  const messageQueueRef = useRef<string[]>([]);
-
-  const getWebSocketUrl = () => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    return `${protocol}//${window.location.host}/ws`;
-  };
 
   const connect = useCallback(() => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      return;
-    }
+    if (socketRef.current?.readyState === WebSocket.OPEN) return;
 
     try {
-      const wsUrl = getWebSocketUrl();
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
       console.log('[WebSocket] Connecting to:', wsUrl);
 
       socketRef.current = new WebSocket(wsUrl);
 
       socketRef.current.onopen = () => {
-        console.log('[WebSocket] Connected successfully');
+        console.log('[WebSocket] Connected');
         setIsConnected(true);
-
-        // Send any queued messages
-        while (messageQueueRef.current.length > 0) {
-          const message = messageQueueRef.current.shift();
-          if (message) socketRef.current?.send(message);
-        }
       };
 
       socketRef.current.onclose = () => {
-        console.log('[WebSocket] Connection closed');
+        console.log('[WebSocket] Disconnected, attempting to reconnect...');
         setIsConnected(false);
 
         // Clear any existing reconnect timeout
@@ -42,11 +29,11 @@ export function useSocket() {
           clearTimeout(reconnectTimeoutRef.current);
         }
 
-        // Attempt to reconnect after 2 seconds
+        // Attempt to reconnect after 1 second
         reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('[WebSocket] Attempting to reconnect...');
+          console.log('[WebSocket] Reconnecting...');
           connect();
-        }, 2000);
+        }, 1000);
       };
 
       socketRef.current.onerror = (error) => {
@@ -65,27 +52,23 @@ export function useSocket() {
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
-
       if (socketRef.current) {
         socketRef.current.close();
-        socketRef.current = null;
       }
     };
   }, [connect]);
 
   const sendMessage = useCallback((message: string) => {
-    console.log('[WebSocket] Sending message:', message);
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
+      console.log('[WebSocket] Not connected, attempting to reconnect...');
+      connect();
+      return;
+    }
 
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
+    try {
       socketRef.current.send(message);
-    } else {
-      console.log('[WebSocket] Queueing message for later');
-      messageQueueRef.current.push(message);
-
-      // If socket is closed, attempt to reconnect
-      if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
-        connect();
-      }
+    } catch (error) {
+      console.error('[WebSocket] Failed to send message:', error);
     }
   }, [connect]);
 

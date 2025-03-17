@@ -76,7 +76,7 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 );
 
 const PublicImamDashboard = () => {
-  const { socket } = useSocket();
+  const { socket, isConnected, sendMessage } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
@@ -88,42 +88,50 @@ const PublicImamDashboard = () => {
   useEffect(() => {
     if (!socket) return;
 
-    // Direct WebSocket message handler
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received WebSocket message:', data);
+        console.log('[PublicImam] Received message:', data);
 
-        if (data.type === "statusUpdated") {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status
-          }));
-          setLastUpdate(new Date());
-        } else if (data.type === "initialStatus") {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              acc[room as RoomId] = roomData.status;
+        switch (data.type) {
+          case "statusUpdated":
+            if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
+              setRoomStatuses(prev => ({
+                ...prev,
+                [data.room]: data.status
+              }));
+              setLastUpdate(new Date());
             }
-            return acc;
-          }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+            break;
 
-          setRoomStatuses(newStatuses);
-          setLastUpdate(new Date());
+          case "initialStatus":
+            const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
+              if (VALID_ROOM_IDS.includes(room as RoomId)) {
+                acc[room as RoomId] = roomData.status;
+              }
+              return acc;
+            }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+            setRoomStatuses(newStatuses);
+            setLastUpdate(new Date());
+            break;
         }
       } catch (error) {
-        console.error('Error handling WebSocket message:', error);
+        console.error('[PublicImam] Error handling message:', error);
       }
     };
 
-    // Request initial status
-    socket.send(JSON.stringify({ type: "getInitialStatus" }));
+    // Request initial status when connected
+    if (isConnected) {
+      console.log('[PublicImam] Requesting initial status');
+      sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+    }
 
-    // Cleanup on unmount
     return () => {
-      socket.onmessage = null;
+      if (socket) {
+        socket.onmessage = null;
+      }
     };
-  }, [socket]); // Only re-run when socket changes
+  }, [socket, isConnected, sendMessage]);
 
   const t = translations[language];
 

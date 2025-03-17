@@ -14,55 +14,69 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
-// Broadcast helper function
-const broadcast = (message: any) => {
-  const messageStr = JSON.stringify(message);
-  console.log('[WebSocket] Broadcasting:', messageStr);
+// Broadcast to all connected clients
+const broadcast = (data: any) => {
+  const message = JSON.stringify(data);
+  console.log('[WebSocket] Broadcasting:', message);
 
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(messageStr);
+      client.send(message);
     }
   });
 };
 
+// WebSocket connection handling
 wss.on('connection', (ws) => {
   console.log('[WebSocket] Client connected');
 
-  // Send initial status immediately on connection
+  // Send initial status immediately
   ws.send(JSON.stringify({
     type: 'initialStatus',
     data: rooms
   }));
+
+  // Setup ping-pong to keep connection alive
+  const pingInterval = setInterval(() => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.ping();
+    }
+  }, 30000);
 
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
       console.log('[WebSocket] Received:', data);
 
-      if (data.type === 'updateStatus') {
-        const { room, status } = data;
-        if (rooms[room]) {
-          // Update room status
-          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+      switch (data.type) {
+        case 'updateStatus':
+          const { room, status } = data;
+          if (rooms[room]) {
+            rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
 
-          // Broadcast to all clients immediately
-          broadcast({
-            type: 'statusUpdated',
-            room,
-            status: rooms[room].status
-          });
-        }
-      } else if (data.type === 'getInitialStatus') {
-        // Send current status to requesting client
-        ws.send(JSON.stringify({
-          type: 'initialStatus',
-          data: rooms
-        }));
+            // Broadcast update to all clients
+            broadcast({
+              type: 'statusUpdated',
+              room,
+              status: rooms[room].status
+            });
+          }
+          break;
+
+        case 'getInitialStatus':
+          ws.send(JSON.stringify({
+            type: 'initialStatus',
+            data: rooms
+          }));
+          break;
       }
     } catch (error) {
-      console.error('[WebSocket] Error:', error);
+      console.error('[WebSocket] Error processing message:', error);
     }
+  });
+
+  ws.on('pong', () => {
+    // Connection is still alive
   });
 
   ws.on('error', (error) => {
@@ -71,6 +85,7 @@ wss.on('connection', (ws) => {
 
   ws.on('close', () => {
     console.log('[WebSocket] Client disconnected');
+    clearInterval(pingInterval);
   });
 });
 
