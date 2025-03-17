@@ -3,10 +3,6 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { LayoutDashboard } from "lucide-react";
 
-// Version stamp for debugging
-const VERSION = "DEBUG_V1.1"; // Changed version number
-console.log("Room Select Component loaded:", VERSION, new Date().toISOString());
-
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0" },
   { id: "prayer-first", name: "Gebedsruimte +1" },
@@ -15,21 +11,14 @@ const rooms = [
 
 export default function RoomSelect() {
   const [_, setLocation] = useLocation();
-  console.log("RoomSelect rendered:", new Date().toISOString()); // Debug log
 
   const handleRoomSelect = (roomId: string) => {
-    console.log("Room selected:", roomId); // Debug log
     setLocation(`/dashboard/${roomId}`);
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50 flex items-center">
-      <div className="container mx-auto px-4 py-6">
-        {/* Debug indicator */}
-        <div className="fixed top-0 right-0 bg-yellow-200 text-yellow-800 px-2 py-1 text-xs">
-          Debug v1.1: {new Date().toLocaleTimeString()}
-        </div>
-
+    <div className="min-h-screen w-full bg-gray-50/50 flex flex-col items-center"> {/* Added flex-col for vertical layout */}
+      <div className="container mx-auto px-4 py-6 flex-grow"> {/* Added flex-grow to allow content to expand */}
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
@@ -43,7 +32,7 @@ export default function RoomSelect() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 flex-grow"> {/* Added flex-grow */}
           {rooms.map((room) => (
             <Card
               key={room.id}
@@ -59,7 +48,7 @@ export default function RoomSelect() {
                   </h2>
                 </div>
 
-                <Button 
+                <Button
                   className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
                   onClick={() => handleRoomSelect(room.id)}
                 >
