@@ -17,9 +17,9 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-4 md:py-6 flex-grow flex flex-col gap-4">
-        <Card className="bg-white rounded-xl shadow-lg border border-[#963E56]/10">
+    <div className="h-screen w-full flex flex-col overflow-hidden bg-gray-50/50">
+      <div className="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4">
+        <Card className="bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -36,7 +36,7 @@ export default function RoomSelect() {
           {rooms.map((room) => (
             <Card
               key={room.id}
-              className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              className="bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardContent className="p-4 md:p-6">
                 <div className="flex items-center justify-between mb-4">
