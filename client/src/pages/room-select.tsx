@@ -17,13 +17,13 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="min-h-screen w-full flex flex-col overflow-hidden">
       <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6 flex-grow">
         <Card className="bg-white rounded-xl shadow-lg border border-[#963E56]/10">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+                <FaPray className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
               </div>
               <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Selecteer een Ruimte
