@@ -39,7 +39,7 @@ export const websocket = functions.https.onRequest((request, response) => {
           const { room, status } = data;
           if (room && status && roomStatuses.hasOwnProperty(room)) {
             roomStatuses[room] = status;
-            
+
             // Broadcast to all clients
             wss.clients.forEach((client) => {
               if (client.readyState === ws.OPEN) {
@@ -59,8 +59,9 @@ export const websocket = functions.https.onRequest((request, response) => {
   });
 
   // Handle the upgrade
-  const server = request.socket.server;
-  server.emit('upgrade', request, request.socket, Buffer.from(''));
+  wss.handleUpgrade(request, request.socket, Buffer.from(''), (ws) => {
+    wss.emit('connection', ws, request);
+  });
 });
 
 // API endpoint for health check

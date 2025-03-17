@@ -17,7 +17,7 @@ app.get('/api/status', (_, res) => {
   });
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
 app.listen(port, "0.0.0.0", () => {
   console.log(`Server started successfully on port ${port}`);
@@ -31,8 +31,5 @@ app.listen(port, "0.0.0.0", () => {
 // Handle graceful shutdown
 process.on('SIGTERM', () => {
   console.log('SIGTERM received, shutting down gracefully');
-  app.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
+  process.exit(0);
 });
