@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { UserRoundCog } from "lucide-react"; // Using UserRoundCog as a temporary replacement
+import { FaPray } from "react-icons/fa"; 
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
@@ -34,7 +34,7 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-4">
-                  <UserRoundCog className="h-12 w-12 text-[#963E56]" />
+                  <FaPray className="h-12 w-12 text-[#963E56]" /> 
                 </div>
                 <h2 className="text-xl font-semibold text-center mb-2">
                   {room.name}
