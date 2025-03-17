@@ -23,7 +23,7 @@ export default function RoomSelect() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                <FaPray className="h-6 w-6 md:h-8 md:h-8 text-[#963E56]" />
+                <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
               </div>
               <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Selecteer een Ruimte
