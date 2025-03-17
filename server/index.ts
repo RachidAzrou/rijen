@@ -1,6 +1,6 @@
 import express from "express";
 import { createServer } from "http";
-import { WebSocketServer, WebSocket } from "ws"; // Added WebSocket import
+import { WebSocketServer, WebSocket } from "ws";
 import path from "path";
 
 const app = express();
@@ -16,13 +16,15 @@ const rooms = {
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+  console.log('New client connected');
 
   // Send initial status
-  ws.send(JSON.stringify({
+  const initialMessage = {
     type: 'initialStatus',
     data: rooms
-  }));
+  };
+  console.log('Sending initial status:', initialMessage);
+  ws.send(JSON.stringify(initialMessage));
 
   ws.on('message', (message) => {
     try {
@@ -31,18 +33,25 @@ wss.on('connection', (ws) => {
 
       if (data.type === 'updateStatus') {
         const { room, status } = data;
+        console.log('Processing status update for room:', room, 'new status:', status);
 
         if (rooms[room]) {
-          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          console.log(`Updated ${room} status to ${rooms[room].status}`);
+          const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+          rooms[room].status = newStatus;
+          console.log(`Updated ${room} status to ${newStatus}`);
 
-          // Broadcast to all clients including sender
+          // Create update message
           const updateMessage = {
             type: 'statusUpdated',
             room,
-            status: rooms[room].status
+            status: newStatus
           };
 
+          // Log before broadcasting
+          console.log('Broadcasting to clients:', updateMessage);
+          console.log('Number of connected clients:', wss.clients.size);
+
+          // Broadcast to all clients
           wss.clients.forEach((client) => {
             if (client.readyState === WebSocket.OPEN) {
               client.send(JSON.stringify(updateMessage));
@@ -53,14 +62,6 @@ wss.on('connection', (ws) => {
     } catch (error) {
       console.error('Error processing message:', error);
     }
-  });
-
-  ws.on('error', (error) => {
-    console.error('WebSocket error:', error);
-  });
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
   });
 });
 
