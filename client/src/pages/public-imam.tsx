@@ -10,12 +10,6 @@ import { translations, type Language } from "@/lib/translations";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
-const rooms = {
-  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
-  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
-  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-} as const;
-
 export default function PublicImamDashboard() {
   const { socket } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
@@ -36,16 +30,23 @@ export default function PublicImamDashboard() {
         console.log('Received message:', data);
 
         if (data.type === 'statusUpdated') {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status
-          }));
+          console.log('Processing status update:', data);
+          setRoomStatuses(prev => {
+            const newStatuses = {
+              ...prev,
+              [data.room]: data.status
+            };
+            console.log('New room statuses:', newStatuses);
+            return newStatuses;
+          });
           setLastUpdate(new Date());
         } else if (data.type === 'initialStatus') {
+          console.log('Processing initial status:', data);
           const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
             ...acc,
             [room]: info.status
           }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          console.log('Initial room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           setLastUpdate(new Date());
         }
@@ -55,8 +56,10 @@ export default function PublicImamDashboard() {
     }
 
     socket.addEventListener('message', handleMessage);
+    console.log('WebSocket message handler registered');
 
     return () => {
+      console.log('Removing WebSocket message handler');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);
