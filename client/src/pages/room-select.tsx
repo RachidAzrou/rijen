@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { PiMosqueDuotone } from "react-icons/pi";
+import { SiMuslim } from "react-icons/si";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0" },
@@ -17,18 +17,20 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex items-center gap-3 md:gap-4">
-            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+    <div className="min-h-screen w-full flex flex-col">
+      <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6 flex-grow">
+        <Card className="bg-white rounded-xl shadow-lg border border-[#963E56]/10">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                <SiMuslim className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+              </div>
+              <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                Selecteer een Ruimte
+              </h1>
             </div>
-            <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-              Selecteer een Ruimte
-            </h1>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
@@ -42,7 +44,7 @@ export default function RoomSelect() {
                     {room.name}
                   </h2>
                   <div className="bg-[#963E56]/10 p-2 rounded-full">
-                    <PiMosqueDuotone className="h-5 w-5 text-[#963E56]" />
+                    <SiMuslim className="h-5 w-5 text-[#963E56]" />
                   </div>
                 </div>
 
@@ -51,7 +53,7 @@ export default function RoomSelect() {
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <PiMosqueDuotone className="h-4 w-4" />
+                    <SiMuslim className="h-4 w-4" />
                     <span>Beheer Ruimte</span>
                   </div>
                 </Button>
