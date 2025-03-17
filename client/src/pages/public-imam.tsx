@@ -16,67 +16,8 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
-  <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
-    <Button
-      variant={language === 'nl' ? 'default' : 'ghost'}
-      onClick={() => setLanguage('nl')}
-      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
-        language === 'nl'
-          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
-          : 'text-[#963E56] hover:bg-[#963E56]/10'
-      }`}
-    >
-      Nederlands
-    </Button>
-    <Button
-      variant={language === 'ar' ? 'default' : 'ghost'}
-      onClick={() => setLanguage('ar')}
-      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
-        language === 'ar'
-          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
-          : 'text-[#963E56] hover:bg-[#963E56]/10'
-      }`}
-    >
-      العربية
-    </Button>
-  </div>
-);
-
-const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
-  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
-    <CardContent className="p-4">
-      {language === 'nl' ? (
-        <blockquote className="space-y-2 text-center">
-          <p className="text-base md:text-lg text-[#963E56] font-medium mb-2">
-            De Profeet ﷺ zei:
-          </p>
-          <p className="text-base md:text-lg text-[#963E56] leading-relaxed font-medium italic">
-            {t.hadithText}
-          </p>
-          <footer className="text-sm text-[#963E56]/80">
-            — {t.hadithSource}
-          </footer>
-        </blockquote>
-      ) : (
-        <div className="space-y-4 text-center" dir="rtl">
-          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
-            {t.hadithTitle}
-          </p>
-          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
-            {t.hadithText}
-          </p>
-          <p className="text-sm text-[#963E56]/80">
-            {t.hadithSource}
-          </p>
-        </div>
-      )}
-    </CardContent>
-  </Card>
-);
-
-const PublicImamDashboard = () => {
-  const { socket, isConnected, sendMessage } = useSocket();
+export default function PublicImamDashboard() {
+  const { socket, isConnected } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
@@ -91,39 +32,34 @@ const PublicImamDashboard = () => {
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('[PublicImam] Received message:', data);
+        console.log('[PublicImam] Received:', data);
 
-        switch (data.type) {
-          case "statusUpdated":
-            if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
-              setRoomStatuses(prev => ({
-                ...prev,
-                [data.room]: data.status
-              }));
-              setLastUpdate(new Date());
+        if (data.type === "statusUpdated") {
+          console.log('[PublicImam] Updating status:', data);
+          setRoomStatuses(prev => ({
+            ...prev,
+            [data.room]: data.status
+          }));
+          setLastUpdate(new Date());
+        } else if (data.type === "initialStatus") {
+          console.log('[PublicImam] Setting initial status:', data);
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              acc[room as RoomId] = roomData.status;
             }
-            break;
-
-          case "initialStatus":
-            const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
-              if (VALID_ROOM_IDS.includes(room as RoomId)) {
-                acc[room as RoomId] = roomData.status;
-              }
-              return acc;
-            }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-            setRoomStatuses(newStatuses);
-            setLastUpdate(new Date());
-            break;
+            return acc;
+          }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          setRoomStatuses(newStatuses);
+          setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('[PublicImam] Error handling message:', error);
+        console.error('[PublicImam] Error:', error);
       }
     };
 
     // Request initial status when connected
     if (isConnected) {
-      console.log('[PublicImam] Requesting initial status');
-      sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+      socket.send(JSON.stringify({ type: "getInitialStatus" }));
     }
 
     return () => {
@@ -131,7 +67,7 @@ const PublicImamDashboard = () => {
         socket.onmessage = null;
       }
     };
-  }, [socket, isConnected, sendMessage]);
+  }, [socket, isConnected]);
 
   const t = translations[language];
 
@@ -231,6 +167,63 @@ const PublicImamDashboard = () => {
       </div>
     </div>
   );
-};
+}
 
-export default PublicImamDashboard;
+const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
+  <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
+    <Button
+      variant={language === 'nl' ? 'default' : 'ghost'}
+      onClick={() => setLanguage('nl')}
+      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
+        language === 'nl'
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
+          : 'text-[#963E56] hover:bg-[#963E56]/10'
+      }`}
+    >
+      Nederlands
+    </Button>
+    <Button
+      variant={language === 'ar' ? 'default' : 'ghost'}
+      onClick={() => setLanguage('ar')}
+      className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
+        language === 'ar'
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
+          : 'text-[#963E56] hover:bg-[#963E56]/10'
+      }`}
+    >
+      العربية
+    </Button>
+  </div>
+);
+
+const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
+  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border-0 shadow-sm">
+    <CardContent className="p-4">
+      {language === 'nl' ? (
+        <blockquote className="space-y-2 text-center">
+          <p className="text-base md:text-lg text-[#963E56] font-medium mb-2">
+            De Profeet ﷺ zei:
+          </p>
+          <p className="text-base md:text-lg text-[#963E56] leading-relaxed font-medium italic">
+            {t.hadithText}
+          </p>
+          <footer className="text-sm text-[#963E56]/80">
+            — {t.hadithSource}
+          </footer>
+        </blockquote>
+      ) : (
+        <div className="space-y-4 text-center" dir="rtl">
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
+            {t.hadithTitle}
+          </p>
+          <p className="text-xl md:text-2xl text-[#963E56] leading-relaxed font-medium">
+            {t.hadithText}
+          </p>
+          <p className="text-sm text-[#963E56]/80">
+            {t.hadithSource}
+          </p>
+        </div>
+      )}
+    </CardContent>
+  </Card>
+);

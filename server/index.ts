@@ -36,56 +36,38 @@ wss.on('connection', (ws) => {
     data: rooms
   }));
 
-  // Setup ping-pong to keep connection alive
-  const pingInterval = setInterval(() => {
-    if (ws.readyState === WebSocket.OPEN) {
-      ws.ping();
-    }
-  }, 30000);
-
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
       console.log('[WebSocket] Received:', data);
 
-      switch (data.type) {
-        case 'updateStatus':
-          const { room, status } = data;
-          if (rooms[room]) {
-            rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+      if (data.type === 'updateStatus') {
+        const { room, status } = data;
+        if (rooms[room]) {
+          // Update room status
+          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+          console.log('[WebSocket] Updated room status:', rooms[room]);
 
-            // Broadcast update to all clients
-            broadcast({
-              type: 'statusUpdated',
-              room,
-              status: rooms[room].status
-            });
-          }
-          break;
-
-        case 'getInitialStatus':
-          ws.send(JSON.stringify({
-            type: 'initialStatus',
-            data: rooms
-          }));
-          break;
+          // Broadcast to all clients immediately
+          broadcast({
+            type: 'statusUpdated',
+            room,
+            status: rooms[room].status
+          });
+        }
+      } else if (data.type === 'getInitialStatus') {
+        ws.send(JSON.stringify({
+          type: 'initialStatus',
+          data: rooms
+        }));
       }
     } catch (error) {
-      console.error('[WebSocket] Error processing message:', error);
+      console.error('[WebSocket] Error:', error);
     }
-  });
-
-  ws.on('pong', () => {
-    // Connection is still alive
-  });
-
-  ws.on('error', (error) => {
-    console.error('[WebSocket] Client error:', error);
   });
 
   ws.on('close', () => {
     console.log('[WebSocket] Client disconnected');
-    clearInterval(pingInterval);
   });
 });
 
