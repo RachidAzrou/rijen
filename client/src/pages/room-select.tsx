@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { FaPray } from "react-icons/fa";
 import { LayoutDashboard } from "lucide-react";
 
 // Version stamp for debugging
@@ -38,7 +37,7 @@ export default function RoomSelect() {
                 <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                Ruimte Dashboard
+                Dashboard ruimtes
               </h1>
             </div>
           </CardContent>
@@ -52,11 +51,8 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-[#963E56]/10 p-2 rounded-full">
-                      <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
-                    </div>
-                    {/*<FaPray className="h-5 w-5 text-[#963E56]" />*/}
+                  <div className="bg-[#963E56]/10 p-2 rounded-full">
+                    <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
                   </div>
                   <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
