@@ -17,12 +17,8 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50/50 overflow-hidden">
+    <div className="h-screen w-full bg-gray-50/50">
       <div className="container mx-auto px-4 py-6">
-        {/* TEST HEADER - VERSIE 1.0 */}
-        <div className="mb-4 p-2 bg-yellow-100 text-yellow-800 rounded">
-          Test Header - Versie 1.0 - {new Date().toISOString()}
-        </div>
 
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
