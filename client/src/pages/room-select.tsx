@@ -18,7 +18,7 @@ export default function RoomSelect() {
 
   return (
     <div className="min-h-screen w-full flex flex-col overflow-hidden">
-      <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6 flex-grow">
+      <div className="container mx-auto px-4 py-4 md:py-6 flex-grow flex flex-col gap-4">
         <Card className="bg-white rounded-xl shadow-lg border border-[#963E56]/10">
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
@@ -39,7 +39,7 @@ export default function RoomSelect() {
               className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardContent className="p-4 md:p-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-4">
                   <h2 className="text-base md:text-lg font-semibold text-[#963E56]">
                     {room.name}
                   </h2>
@@ -49,7 +49,7 @@ export default function RoomSelect() {
                 </div>
 
                 <Button 
-                  className="w-full mt-4 bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
+                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   <div className="flex items-center justify-center gap-2">
