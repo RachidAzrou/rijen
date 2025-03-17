@@ -10,56 +10,65 @@ import { translations, type Language } from "@/lib/translations";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
+const rooms = {
+  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
+  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
+  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
+} as const;
+
 export default function PublicImamDashboard() {
   const { socket } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
-  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
+  const [statusMap, setStatusMap] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
     'prayer-first': 'grey',
     'prayer-ground': 'grey',
     'garage': 'grey'
   });
 
-  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
-    function handleMessage(event: MessageEvent) {
+    const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received message:', data);
+        console.log('Ontvangen bericht:', data);
 
         if (data.type === 'statusUpdated') {
-          console.log('Processing status update:', data);
-          setRoomStatuses(prev => {
-            const newStatuses = {
+          console.log('Status update ontvangen:', data);
+          // Direct de state bijwerken
+          setStatusMap(prev => {
+            const newStatus = {
               ...prev,
               [data.room]: data.status
             };
-            console.log('New room statuses:', newStatuses);
-            return newStatuses;
+            console.log('Nieuwe status map:', newStatus);
+            return newStatus;
           });
           setLastUpdate(new Date());
-        } else if (data.type === 'initialStatus') {
-          console.log('Processing initial status:', data);
+        }
+
+        if (data.type === 'initialStatus') {
+          console.log('Initiële status ontvangen:', data.data);
+          // Initiële status verwerken
           const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
             ...acc,
             [room]: info.status
           }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          console.log('Initial room statuses:', newStatuses);
-          setRoomStatuses(newStatuses);
+          console.log('Initiële status map:', newStatuses);
+          setStatusMap(newStatuses);
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('Error handling message:', error);
+        console.error('Fout bij verwerken bericht:', error);
       }
-    }
+    };
 
+    console.log('WebSocket message handler toevoegen');
     socket.addEventListener('message', handleMessage);
-    console.log('WebSocket message handler registered');
 
     return () => {
-      console.log('Removing WebSocket message handler');
+      console.log('WebSocket message handler verwijderen');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);
@@ -69,6 +78,7 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
+        {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
@@ -96,9 +106,9 @@ export default function PublicImamDashboard() {
         <HadiethCard t={t} language={language} />
 
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {Object.values(rooms).map((room) => (
+          {Object.entries(rooms).map(([id, room]) => (
             <Card
-              key={room.id}
+              key={id}
               className="overflow-hidden bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
@@ -106,45 +116,45 @@ export default function PublicImamDashboard() {
                   {language === 'nl' ? (
                     <>
                       <FaPray className="h-5 w-5" />
-                      {t.rooms[room.id as keyof typeof t.rooms]}
+                      {t.rooms[id as keyof typeof t.rooms]}
                     </>
                   ) : (
                     <>
-                      {t.rooms[room.id as keyof typeof t.rooms]}
+                      {t.rooms[id as keyof typeof t.rooms]}
                       <FaPray className="h-5 w-5" />
                     </>
                   )}
                 </CardTitle>
                 <div className={`
                   relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                  ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
-                    roomStatuses[room.id] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
+                  ${statusMap[id as RoomId] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
+                    statusMap[id as RoomId] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
                     'bg-gray-300'}
                 `}>
-                  {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 text-white" />}
-                  {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 text-white" />}
+                  {statusMap[id as RoomId] === 'green' && <Check className="w-6 h-6 text-white" />}
+                  {statusMap[id as RoomId] === 'red' && <X className="w-6 h-6 text-white" />}
                 </div>
               </CardHeader>
               <CardContent className="p-4 md:p-6 pt-2">
                 <div className="mt-4 h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-500 ${
-                      roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
-                      roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
+                      statusMap[id as RoomId] === 'green' ? 'w-full bg-[#6BB85C]' :
+                      statusMap[id as RoomId] === 'red' ? 'w-full bg-red-500' :
                       'w-0'
                     }`}
                   />
                 </div>
                 <div className="mt-4 text-center">
-                  {roomStatuses[room.id] !== 'grey' && (
+                  {statusMap[id as RoomId] !== 'grey' && (
                     <span className={`
                       inline-block px-4 py-1 rounded-full text-sm font-medium
-                      ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
-                        roomStatuses[room.id] === 'red' ? 'bg-red-500/10 text-red-500' :
+                      ${statusMap[id as RoomId] === 'green' ? 'bg-[#6BB85C]/10 text-[#6BB85C]' :
+                        statusMap[id as RoomId] === 'red' ? 'bg-red-500/10 text-red-500' :
                         'bg-gray-100 text-gray-500'}
                     `}>
-                      {roomStatuses[room.id] === 'green' ? t.available :
-                        roomStatuses[room.id] === 'red' ? t.unavailable :
+                      {statusMap[id as RoomId] === 'green' ? t.available :
+                        statusMap[id as RoomId] === 'red' ? t.unavailable :
                         ''}
                     </span>
                   )}
@@ -182,7 +192,7 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
       onClick={() => setLanguage('ar')}
       className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
         language === 'ar'
-          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
+          ? 'bg-[#963E56] text.white hover:bg-[#963E56]/90'
           : 'text-[#963E56] hover:bg-[#963E56]/10'
       }`}
     >
