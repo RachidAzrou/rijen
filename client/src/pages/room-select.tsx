@@ -31,7 +31,7 @@ export default function RoomSelect() {
           </div>
         </div>
 
-        <Card className="shadow-lg border border-[#963E56]/10 backdrop-blur-sm">
+        <Card className="shadow-lg border border-[#963E56]/10">
           <CardContent className="p-4 md:p-6">
             <h2 className="text-xl font-semibold text-[#963E56] mb-6">
               Status Gebedsruimtes
@@ -41,7 +41,7 @@ export default function RoomSelect() {
               {rooms.map((room) => (
                 <Card
                   key={room.id}
-                  className="bg-white/50 shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+                  className="shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
                 >
                   <CardContent className="p-4 md:p-6">
                     <div className="flex items-center gap-3 mb-4">
