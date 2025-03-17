@@ -29,7 +29,7 @@ export default function RoomSelect() {
           {rooms.map((room) => (
             <Card 
               key={room.id}
-              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer bg-white/90 backdrop-blur-sm border border-[#963E56]/10"
+              className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
               onClick={() => handleRoomSelect(room.id)}
             >
               <CardContent className="p-6">
