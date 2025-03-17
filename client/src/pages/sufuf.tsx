@@ -157,9 +157,10 @@ export function SufufPage() {
   };
 
   return (
-    <div className="min-h-screen w-full pb-16 md:pb-0">
+    <div className="min-h-screen w-full pb-16 md:pb-0 bg-gray-50/50">
       <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+        {/* Header */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
@@ -170,13 +171,24 @@ export function SufufPage() {
           </div>
         </div>
 
+        {/* Status Section */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-[#963E56] px-1">Status Gebedsruimtes</h2>
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-[#963E56]/10"
+          >
+            <div className="flex items-center gap-3">
+              <User className="h-6 w-6" />
+              <span>Status Gebedsruimtes</span>
+            </div>
+            <ChevronDown className="h-5 w-5" />
+          </Button>
+
           <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {Object.values(rooms).map((room) => (
               <Card
                 key={room.id}
-                className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+                className="group bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
               >
                 <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
@@ -185,9 +197,11 @@ export function SufufPage() {
                   </CardTitle>
                   <div className={`
                     relative w-10 h-10 rounded-full flex items-center justify-center transition-all duration-500
-                    ${roomStatuses[room.id] === 'green' ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50' :
-                      roomStatuses[room.id] === 'red' ? 'bg-red-500 shadow-lg shadow-red-500/50' :
-                        'bg-gray-300'}
+                    ${roomStatuses[room.id] === 'green' 
+                      ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50 group-hover:scale-110' 
+                      : roomStatuses[room.id] === 'red'
+                        ? 'bg-red-500 shadow-lg shadow-red-500/50 group-hover:scale-110'
+                        : 'bg-gray-300 group-hover:bg-gray-400'}
                   `}>
                     {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 text-white" />}
                     {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 text-white" />}
@@ -198,8 +212,8 @@ export function SufufPage() {
                     <div
                       className={`h-full transition-all duration-500 ${
                         roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
-                          roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
-                            'w-0'
+                        roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
+                        'w-0'
                       }`}
                     />
                   </div>
@@ -213,7 +227,7 @@ export function SufufPage() {
         <div className="space-y-4">
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white rounded-lg shadow-sm border border-[#963E56]/10"
+            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-[#963E56]/10"
             onClick={() => setIsVolunteerSectionOpen(!isVolunteerSectionOpen)}
           >
             <div className="flex items-center gap-3">
@@ -231,7 +245,7 @@ export function SufufPage() {
                   className={`
                     relative h-24 md:h-28 rounded-xl transition-all duration-300
                     hover:shadow-lg active:scale-[0.98] touch-manipulation
-                    bg-white border-2
+                    bg-white/80 backdrop-blur-sm border-2
                     ${roomStatuses[roomId] === 'green'
                       ? 'border-[#6BB85C] shadow-md'
                       : 'border-gray-200 hover:border-[#6BB85C]'
@@ -243,7 +257,7 @@ export function SufufPage() {
                       w-16 h-16 md:w-20 md:h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                       ${roomStatuses[roomId] === 'green'
                         ? 'bg-[#6BB85C]'
-                        : 'bg-[#6BB85C]/10 group-hover:bg-[#6BB85C]/20'
+                        : 'bg-[#6BB85C]/10 hover:bg-[#6BB85C]/20'
                       }
                     `}>
                       <Check className={`
@@ -264,7 +278,7 @@ export function SufufPage() {
                   className={`
                     relative h-24 md:h-28 rounded-xl transition-all duration-300
                     hover:shadow-lg active:scale-[0.98] touch-manipulation
-                    bg-white border-2
+                    bg-white/80 backdrop-blur-sm border-2
                     ${roomStatuses[roomId] === 'red'
                       ? 'border-red-500 shadow-md'
                       : 'border-gray-200 hover:border-red-500'
@@ -276,7 +290,7 @@ export function SufufPage() {
                       w-16 h-16 md:w-20 md:h-20 rounded-2xl transition-all duration-300 flex items-center justify-center
                       ${roomStatuses[roomId] === 'red'
                         ? 'bg-red-500'
-                        : 'bg-red-500/10 group-hover:bg-red-500/20'
+                        : 'bg-red-500/10 hover:bg-red-500/20'
                       }
                     `}>
                       <X className={`

@@ -21,6 +21,12 @@ function Router() {
   const auth = getAuth();
 
   useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setIsSidebarOpen(true);
+    }
+  }, []);
+
+  useEffect(() => {
     if (window.innerWidth < 768) {
       setIsSidebarOpen(false);
     }
@@ -42,15 +48,15 @@ function Router() {
     !['/login', '/public-imam', '/room-select'].includes(location);
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-gray-50">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
       <main className={`relative transition-all duration-300
         ${showSidebar ? (
           isSidebarOpen ? 
-            'md:ml-56' : 
-            'md:ml-12'
+            'md:ml-64' : 
+            'md:ml-16'
         ) : ''}`}
       >
         <Switch>
