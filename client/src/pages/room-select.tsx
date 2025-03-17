@@ -17,30 +17,30 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="h-screen w-full flex flex-col overflow-hidden bg-gray-50/50">
-      <div className="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4">
-        <Card className="bg-white shadow-lg border border-[#963E56]/10">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-center gap-3 md:gap-4">
-              <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+    <div className="h-screen w-full bg-gray-50/50 overflow-hidden flex flex-col">
+      <div className="container mx-auto px-4 py-6">
+        <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="bg-[#963E56]/10 p-3 rounded-full">
+                <FaPray className="h-8 w-8 text-[#963E56]" />
               </div>
-              <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+              <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Selecteer een Ruimte
               </h1>
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
             <Card
               key={room.id}
-              className="bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              className="bg-white shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
-              <CardContent className="p-4 md:p-6">
+              <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base md:text-lg font-semibold text-[#963E56]">
+                  <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
                   </h2>
                   <div className="bg-[#963E56]/10 p-2 rounded-full">
@@ -49,7 +49,7 @@ export default function RoomSelect() {
                 </div>
 
                 <Button 
-                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
+                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   <div className="flex items-center justify-center gap-2">
