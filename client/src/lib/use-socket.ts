@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
 
   const connect = useCallback(() => {
     if (socketRef.current?.readyState === WebSocket.OPEN) return;
@@ -21,19 +20,10 @@ export function useSocket() {
       };
 
       socketRef.current.onclose = () => {
-        console.log('[WebSocket] Disconnected, attempting to reconnect...');
+        console.log('[WebSocket] Disconnected');
         setIsConnected(false);
-
-        // Clear any existing reconnect timeout
-        if (reconnectTimeoutRef.current) {
-          clearTimeout(reconnectTimeoutRef.current);
-        }
-
-        // Attempt to reconnect after 1 second
-        reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('[WebSocket] Reconnecting...');
-          connect();
-        }, 1000);
+        // Reconnect after 1 second
+        setTimeout(connect, 1000);
       };
 
       socketRef.current.onerror = (error) => {
@@ -47,11 +37,7 @@ export function useSocket() {
 
   useEffect(() => {
     connect();
-
     return () => {
-      if (reconnectTimeoutRef.current) {
-        clearTimeout(reconnectTimeoutRef.current);
-      }
       if (socketRef.current) {
         socketRef.current.close();
       }
@@ -60,15 +46,16 @@ export function useSocket() {
 
   const sendMessage = useCallback((message: string) => {
     if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      console.log('[WebSocket] Not connected, attempting to reconnect...');
+      console.log('[WebSocket] Not connected, reconnecting...');
       connect();
       return;
     }
 
     try {
+      console.log('[WebSocket] Sending:', message);
       socketRef.current.send(message);
     } catch (error) {
-      console.error('[WebSocket] Failed to send message:', error);
+      console.error('[WebSocket] Send error:', error);
     }
   }, [connect]);
 

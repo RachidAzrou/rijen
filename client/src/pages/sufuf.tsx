@@ -31,6 +31,7 @@ export function SufufPage() {
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
+  // Authentication check
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
@@ -40,6 +41,7 @@ export function SufufPage() {
     return () => unsubscribe();
   }, [setLocation]);
 
+  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
@@ -63,7 +65,7 @@ export function SufufPage() {
           setRoomStatuses(newStatuses);
         }
       } catch (error) {
-        console.error('[Sufuf] Error:', error);
+        console.error('[Sufuf] Error handling message:', error);
       }
     };
 
@@ -79,22 +81,19 @@ export function SufufPage() {
     };
   }, [socket, isConnected, sendMessage]);
 
+  // Status update handler
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
     if (!socket || !isConnected) {
       console.error('[Sufuf] Socket not connected');
       return;
     }
 
-    try {
-      console.log(`[Sufuf] Sending status update for ${roomId}: ${status}`);
-      sendMessage(JSON.stringify({
-        type: "updateStatus",
-        room: roomId,
-        status
-      }));
-    } catch (error) {
-      console.error('[Sufuf] Error sending update:', error);
-    }
+    console.log(`[Sufuf] Sending status update for ${roomId}: ${status}`);
+    sendMessage(JSON.stringify({
+      type: "updateStatus",
+      room: roomId,
+      status
+    }));
   };
 
   return (

@@ -26,6 +26,7 @@ export default function PublicImamDashboard() {
     'garage': 'grey'
   });
 
+  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
@@ -35,14 +36,12 @@ export default function PublicImamDashboard() {
         console.log('[PublicImam] Received:', data);
 
         if (data.type === "statusUpdated") {
-          console.log('[PublicImam] Updating status:', data);
           setRoomStatuses(prev => ({
             ...prev,
             [data.room]: data.status
           }));
           setLastUpdate(new Date());
         } else if (data.type === "initialStatus") {
-          console.log('[PublicImam] Setting initial status:', data);
           const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
               acc[room as RoomId] = roomData.status;
@@ -53,7 +52,7 @@ export default function PublicImamDashboard() {
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('[PublicImam] Error:', error);
+        console.error('[PublicImam] Error handling message:', error);
       }
     };
 

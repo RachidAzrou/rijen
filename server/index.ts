@@ -14,23 +14,23 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
-// Broadcast to all connected clients
-const broadcast = (data: any) => {
-  const message = JSON.stringify(data);
-  console.log('[WebSocket] Broadcasting:', message);
+// Helper function to broadcast to all clients
+function broadcast(message: any) {
+  const messageStr = JSON.stringify(message);
+  console.log('[WebSocket] Broadcasting:', messageStr);
 
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(message);
+      client.send(messageStr);
     }
   });
-};
+}
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   console.log('[WebSocket] Client connected');
 
-  // Send initial status immediately
+  // Send initial status to new client
   ws.send(JSON.stringify({
     type: 'initialStatus',
     data: rooms
@@ -44,15 +44,15 @@ wss.on('connection', (ws) => {
       if (data.type === 'updateStatus') {
         const { room, status } = data;
         if (rooms[room]) {
-          // Update room status
-          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          console.log('[WebSocket] Updated room status:', rooms[room]);
+          const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+          rooms[room].status = newStatus;
+          console.log('[WebSocket] Updated room status:', room, newStatus);
 
-          // Broadcast to all clients immediately
+          // Broadcast update to ALL clients
           broadcast({
             type: 'statusUpdated',
             room,
-            status: rooms[room].status
+            status: newStatus
           });
         }
       } else if (data.type === 'getInitialStatus') {
@@ -62,7 +62,7 @@ wss.on('connection', (ws) => {
         }));
       }
     } catch (error) {
-      console.error('[WebSocket] Error:', error);
+      console.error('[WebSocket] Message processing error:', error);
     }
   });
 
@@ -77,7 +77,7 @@ app.use(express.static(path.join(process.cwd(), 'dist/public')));
 // Health check endpoint
 app.get('/health', (_, res) => res.json({ status: 'ok' }));
 
-// Serve index.html for all routes
+// Handle all routes
 app.get('*', (_, res) => {
   res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
 });
