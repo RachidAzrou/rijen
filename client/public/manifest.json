@@ -11,13 +11,13 @@
       "src": "/static/waiting-room_8422432-fotor-bg-remover-20250317144030_1742219325190.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "/static/waiting-room_8422432-fotor-bg-remover-20250317144030_1742219325190.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     }
   ]
 }
