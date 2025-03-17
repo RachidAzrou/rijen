@@ -29,16 +29,16 @@ export default function RoomSelect() {
           {rooms.map((room) => (
             <Card 
               key={room.id}
-              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer"
+              className="hover:shadow-lg transition-shadow duration-200 cursor-pointer bg-white/90 backdrop-blur-sm border border-[#963E56]/10"
               onClick={() => handleRoomSelect(room.id)}
             >
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-[#963E56]/10 p-3 rounded-full">
-                    <FaPray className="h-8 w-8 text-[#963E56]" />
+                    <FaPray className="h-5 w-5 text-[#963E56]" />
                   </div>
                 </div>
-                <h2 className="text-xl font-semibold text-center mb-2">
+                <h2 className="text-xl font-semibold text-center mb-2 text-[#963E56]">
                   {room.name}
                 </h2>
                 <p className="text-gray-500 text-center text-sm">
