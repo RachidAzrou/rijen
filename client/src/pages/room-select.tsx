@@ -17,7 +17,7 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-50/50"> {/* Added flex-col to prevent unnecessary scrolling */}
+    <div className="flex flex-col min-h-screen w-full bg-gray-50/50"> {/* Prevent unnecessary scrolling */}
       <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
@@ -39,9 +39,7 @@ export default function RoomSelect() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
                   <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
-                  <h2 className="text-lg font-semibold text-[#963E56]">
-                    {room.name}
-                  </h2>
+                  <span className="font-medium text-[#963E56]">{room.name}</span>
                 </div>
 
                 <Button
