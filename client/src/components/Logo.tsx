@@ -1,5 +1,4 @@
 import React from 'react';
-import logoImg from '../assets/logo-red.png';
 
 interface LogoProps {
   className?: string;
@@ -10,7 +9,7 @@ interface LogoProps {
 export const Logo: React.FC<LogoProps> = ({ className = "", width = 40, height = 40 }) => {
   return (
     <img 
-      src={logoImg} 
+      src="/static/Naamloos2.png"
       alt="Sufuf App Logo" 
       className={className}
       width={width}
@@ -20,4 +19,4 @@ export const Logo: React.FC<LogoProps> = ({ className = "", width = 40, height =
   );
 };
 
-export const logoUrl = logoImg;
+export const logoUrl = "/static/Naamloos2.png";
