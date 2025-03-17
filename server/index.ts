@@ -30,37 +30,24 @@ wss.on('connection', (ws) => {
       if (data.type === 'updateStatus') {
         const { room, status } = data;
         console.log(`Processing status update for room ${room}: ${status}`);
-
         if (rooms[room]) {
           rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          console.log(`Updated room ${room} status to ${rooms[room].status}`);
 
           // Broadcast the update to all clients
           wss.clients.forEach((client) => {
             if (client.readyState === ws.OPEN) {
-              const updateMessage = JSON.stringify({
+              client.send(JSON.stringify({
                 type: 'statusUpdated',
-                data: { room, status: rooms[room].status }
-              });
-              client.send(updateMessage);
-              console.log('Broadcast status update:', updateMessage);
+                room,
+                status: rooms[room].status
+              }));
             }
           });
-        } else {
-          console.warn(`Received update for unknown room: ${room}`);
         }
-      } else if (data.type === 'getInitialStatus') {
-        console.log('Received request for initial status');
-        ws.send(JSON.stringify({ type: 'initialStatus', data: rooms }));
-        console.log('Sent initial status in response to request');
       }
     } catch (error) {
       console.error('Error processing message:', error);
     }
-  });
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
   });
 });
 

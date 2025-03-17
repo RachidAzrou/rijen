@@ -15,9 +15,9 @@ type RoomId = typeof VALID_ROOM_IDS[number];
 
 // Make sure room IDs match exactly with other components
 const rooms = {
-  'first-floor': { id: 'first-floor' as RoomId, title: 'Gebedsruimte +1', status: 'grey' },
-  'beneden': { id: 'beneden' as RoomId, title: 'Gebedsruimte +0', status: 'grey' },
-  'garage': { id: 'garage' as RoomId, title: 'Garage', status: 'grey' }
+  'first-floor': { id: 'first-floor', title: 'Gebedsruimte +1', status: 'grey' },
+  'beneden': { id: 'beneden', title: 'Gebedsruimte +0', status: 'grey' },
+  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
