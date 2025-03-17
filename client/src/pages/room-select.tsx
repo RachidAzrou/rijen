@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { FaPray } from "react-icons/fa";
+import { FaPrayingHands } from "react-icons/fa";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
@@ -20,9 +20,9 @@ export default function RoomSelect() {
     <div className="min-h-screen w-full bg-gradient-to-b from-[#963E56]/10 to-[#6BB85C]/10">
       <div className="container mx-auto px-4 py-6 space-y-6">
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-3">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+              <FaPrayingHands className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
             <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               Selecteer een Ruimte
@@ -40,7 +40,7 @@ export default function RoomSelect() {
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="bg-[#963E56]/10 p-3 rounded-full">
-                    <FaPray className="h-5 w-5 text-[#963E56]" />
+                    <FaPrayingHands className="h-5 w-5 text-[#963E56]" />
                   </div>
                   <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
