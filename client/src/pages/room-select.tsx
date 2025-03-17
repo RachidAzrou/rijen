@@ -50,7 +50,7 @@ export default function RoomSelect() {
               className="bg-white shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardContent className="p-6">
-                <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-3">
                   <div className="bg-[#963E56]/10 p-2 rounded-full">
                     <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
                   </div>
@@ -60,7 +60,7 @@ export default function RoomSelect() {
                 </div>
 
                 <Button 
-                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white"
+                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   Beheer Ruimte
