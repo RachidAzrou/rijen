@@ -9,8 +9,8 @@ const wss = new WebSocketServer({ server, path: '/ws' });
 
 // Store room statuses
 const rooms = {
-  'first-floor': { id: 'first-floor', title: 'Moskee +1', status: 'grey' },
-  'beneden': { id: 'beneden', title: 'Moskee +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
+  'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 

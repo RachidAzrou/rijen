@@ -10,13 +10,13 @@ import { translations, type Language } from "@/lib/translations";
 const ROOM_STATUSES_KEY = 'room_statuses';
 
 // Update the room IDs to match the server
-const VALID_ROOM_IDS = ['first-floor', 'beneden', 'garage'] as const;
+const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
 // Make sure room IDs match exactly with other components
 const rooms = {
-  'first-floor': { id: 'first-floor', title: 'Gebedsruimte +1', status: 'grey' },
-  'beneden': { id: 'beneden', title: 'Gebedsruimte +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
+  'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
