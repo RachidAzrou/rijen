@@ -82,6 +82,7 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 const PublicImamDashboard = () => {
   const { socket, isConnected, sendMessage } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
+  const [lastUpdate, setLastUpdate] = useState(new Date());
 
   // Load initial statuses from localStorage
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
@@ -105,6 +106,7 @@ const PublicImamDashboard = () => {
     }
   });
 
+  // Request initial status and setup WebSocket listeners
   useEffect(() => {
     if (!socket || !isConnected) {
       console.log('[PublicImam] Socket not connected yet');
@@ -118,41 +120,53 @@ const PublicImamDashboard = () => {
 
         if (data.type === "initialStatus") {
           const newStatuses = { ...roomStatuses };
-          Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
-            newStatuses[room as RoomId] = roomData.status;
+          Object.entries(data.data).forEach(([room, status]: [string, any]) => {
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+            }
           });
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+          setLastUpdate(new Date());
         } else if (data.type === "statusUpdated") {
-          setRoomStatuses(prev => {
-            const newStatuses = {
-              ...prev,
-              [data.room]: data.status
-            };
-            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-            return newStatuses;
-          });
+          if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
+            setRoomStatuses(prev => {
+              const newStatuses = {
+                ...prev,
+                [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+              };
+              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+              return newStatuses;
+            });
+            setLastUpdate(new Date());
+          }
         }
       } catch (error) {
         console.error('[PublicImam] Error handling WebSocket message:', error);
       }
     };
 
-    socket.addEventListener('message', handleMessage);
+    const handleSocketClose = () => {
+      console.log('[PublicImam] WebSocket connection closed, requesting initial status');
+      if (socket.readyState === WebSocket.CLOSED) {
+        setTimeout(() => {
+          sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+        }, 5000); // Retry after 5 seconds
+      }
+    };
 
-    // Request initial status immediately
+    // Add event listeners
+    socket.addEventListener('message', handleMessage);
+    socket.addEventListener('close', handleSocketClose);
+
+    // Request initial status
+    console.log('[PublicImam] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
-    // Set up periodic status refresh
-    const refreshInterval = setInterval(() => {
-      if (socket.readyState === WebSocket.OPEN) {
-        sendMessage(JSON.stringify({ type: "getInitialStatus" }));
-      }
-    }, 5000); // Refresh every 5 seconds
-
+    // Cleanup event listeners
     return () => {
       socket.removeEventListener('message', handleMessage);
-      clearInterval(refreshInterval);
+      socket.removeEventListener('close', handleSocketClose);
     };
   }, [socket, isConnected, sendMessage]);
 
@@ -247,7 +261,7 @@ const PublicImamDashboard = () => {
         </div>
 
         <div className="text-center text-sm text-gray-500 mt-8">
-          {t.lastUpdate}: {new Date().toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
+          {t.lastUpdate}: {lastUpdate.toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
 
         <LanguageSwitcher language={language} setLanguage={setLanguage} />
