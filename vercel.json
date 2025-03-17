@@ -3,24 +3,23 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
-  "routes": [
+  "functions": {
+    "api/*.ts": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "rewrites": [
     { 
-      "src": "/ws",
-      "dest": "/api/ws"
+      "source": "/ws",
+      "destination": "/api/websocket"
     },
     { 
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "VITE_FIREBASE_PROJECT_ID": "sufuf-c61e0",
-    "VITE_FIREBASE_API_KEY": "AIzaSyDzZB7z0tjstC3ZWs6jlGric53-kwzy57Y",
-    "VITE_FIREBASE_APP_ID": "1:759510003093:web:6fba5d85da0a5c5aea9a9c"
-  }
+  ]
 }
