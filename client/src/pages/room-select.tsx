@@ -18,7 +18,7 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-50/50">
+    <div className="flex flex-col min-h-screen bg-white">
       <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
@@ -31,30 +31,40 @@ export default function RoomSelect() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {rooms.map((room) => (
-            <Card
-              key={room.id}
-              className="bg-white shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-            >
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3">
-                  <div className="bg-[#963E56]/10 p-2 rounded-full">
-                    <FaPray className="h-5 w-5 text-[#963E56]" />
-                  </div>
-                  <span className="font-medium text-[#963E56]">{room.name}</span>
-                </div>
+        <Card className="bg-white shadow-lg border border-[#963E56]/10">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold text-[#963E56] mb-6">
+              Status Gebedsruimtes
+            </h2>
 
-                <Button
-                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
-                  onClick={() => handleRoomSelect(room.id)}
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {rooms.map((room) => (
+                <Card
+                  key={room.id}
+                  className="bg-white shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
                 >
-                  Beheer Ruimte
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="bg-[#963E56]/10 p-2 rounded-full">
+                        <FaPray className="h-5 w-5 text-[#963E56]" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-[#963E56]">
+                        {room.name}
+                      </h3>
+                    </div>
+
+                    <Button
+                      className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
+                      onClick={() => handleRoomSelect(room.id)}
+                    >
+                      Beheer Ruimte
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
