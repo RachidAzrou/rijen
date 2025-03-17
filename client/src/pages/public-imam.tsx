@@ -88,43 +88,42 @@ const PublicImamDashboard = () => {
   useEffect(() => {
     if (!socket) return;
 
-    function handleStatusUpdate(data: any) {
-      console.log('Received status update:', data);
-
-      if (data.type === "statusUpdated") {
-        setRoomStatuses(prev => ({
-          ...prev,
-          [data.room]: data.status
-        }));
-        setLastUpdate(new Date());
-      } else if (data.type === "initialStatus") {
-        const newStatuses = { ...roomStatuses };
-        Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
-          if (VALID_ROOM_IDS.includes(room as RoomId)) {
-            newStatuses[room as RoomId] = roomData.status;
-          }
-        });
-        setRoomStatuses(newStatuses);
-        setLastUpdate(new Date());
-      }
-    }
-
+    // Direct WebSocket message handler
     socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        handleStatusUpdate(data);
+        console.log('Received WebSocket message:', data);
+
+        if (data.type === "statusUpdated") {
+          setRoomStatuses(prev => ({
+            ...prev,
+            [data.room]: data.status
+          }));
+          setLastUpdate(new Date());
+        } else if (data.type === "initialStatus") {
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              acc[room as RoomId] = roomData.status;
+            }
+            return acc;
+          }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+
+          setRoomStatuses(newStatuses);
+          setLastUpdate(new Date());
+        }
       } catch (error) {
-        console.error('Error handling message:', error);
+        console.error('Error handling WebSocket message:', error);
       }
     };
 
     // Request initial status
     socket.send(JSON.stringify({ type: "getInitialStatus" }));
 
+    // Cleanup on unmount
     return () => {
       socket.onmessage = null;
     };
-  }, [socket]);
+  }, [socket]); // Only re-run when socket changes
 
   const t = translations[language];
 
