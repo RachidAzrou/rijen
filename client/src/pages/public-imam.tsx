@@ -10,7 +10,6 @@ import { translations, type Language } from "@/lib/translations";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
-// Make sure room IDs match exactly with other components
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
@@ -77,7 +76,7 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 );
 
 const PublicImamDashboard = () => {
-  const { socket, isConnected } = useSocket();
+  const { socket } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
@@ -86,51 +85,46 @@ const PublicImamDashboard = () => {
     'garage': 'grey'
   });
 
-  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
-    const handleMessage = (event: MessageEvent) => {
+    function handleStatusUpdate(data: any) {
+      console.log('Received status update:', data);
+
+      if (data.type === "statusUpdated") {
+        setRoomStatuses(prev => ({
+          ...prev,
+          [data.room]: data.status
+        }));
+        setLastUpdate(new Date());
+      } else if (data.type === "initialStatus") {
+        const newStatuses = { ...roomStatuses };
+        Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
+          if (VALID_ROOM_IDS.includes(room as RoomId)) {
+            newStatuses[room as RoomId] = roomData.status;
+          }
+        });
+        setRoomStatuses(newStatuses);
+        setLastUpdate(new Date());
+      }
+    }
+
+    socket.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('[PublicImam] Received message:', data);
-
-        if (data.type === "initialStatus") {
-          const newStatuses = { ...roomStatuses };
-          Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-            }
-          });
-          setRoomStatuses(newStatuses);
-          setLastUpdate(new Date());
-        } else if (data.type === "statusUpdated") {
-          if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
-            setRoomStatuses(prev => ({
-              ...prev,
-              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-            }));
-            setLastUpdate(new Date());
-          }
-        }
+        handleStatusUpdate(data);
       } catch (error) {
-        console.error('[PublicImam] Error handling message:', error);
+        console.error('Error handling message:', error);
       }
     };
 
-    // Add message listener
-    socket.addEventListener('message', handleMessage);
+    // Request initial status
+    socket.send(JSON.stringify({ type: "getInitialStatus" }));
 
-    // Request initial status when connected
-    if (isConnected) {
-      socket.send(JSON.stringify({ type: "getInitialStatus" }));
-    }
-
-    // Cleanup listener on unmount or socket change
     return () => {
-      socket.removeEventListener('message', handleMessage);
+      socket.onmessage = null;
     };
-  }, [socket, isConnected]);
+  }, [socket]);
 
   const t = translations[language];
 

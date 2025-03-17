@@ -7,37 +7,17 @@ const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
-type RoomStatus = 'green' | 'red' | 'grey';
-type Room = {
-  id: string;
-  title: string;
-  status: RoomStatus;
-};
-
 // Store room statuses
-const rooms: Record<string, Room> = {
+const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
-// Function to broadcast to all connected clients
-const broadcastUpdate = (message: any) => {
-  const messageStr = JSON.stringify(message);
-  console.log('[WebSocket] Broadcasting:', messageStr);
-
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(messageStr);
-    }
-  });
-};
-
-// WebSocket connection handling
 wss.on('connection', (ws) => {
-  console.log('[WebSocket] New client connected');
+  console.log('[WebSocket] Client connected');
 
-  // Send initial status immediately
+  // Send initial status
   ws.send(JSON.stringify({
     type: 'initialStatus',
     data: rooms
@@ -46,50 +26,43 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
-      console.log('[WebSocket] Received message:', data);
+      console.log('[WebSocket] Received:', data);
 
       if (data.type === 'updateStatus') {
         const { room, status } = data;
         if (rooms[room]) {
-          // Update room status
-          const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          rooms[room].status = newStatus;
+          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
 
-          // Broadcast update to all clients including sender
-          broadcastUpdate({
-            type: 'statusUpdated',
-            room,
-            status: newStatus
+          // Broadcast to ALL clients
+          wss.clients.forEach((client) => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: 'statusUpdated',
+                room,
+                status: rooms[room].status
+              }));
+            }
           });
         }
       } else if (data.type === 'getInitialStatus') {
-        // Send current status to requesting client
         ws.send(JSON.stringify({
           type: 'initialStatus',
           data: rooms
         }));
       }
     } catch (error) {
-      console.error('[WebSocket] Error processing message:', error);
+      console.error('[WebSocket] Error:', error);
     }
-  });
-
-  ws.on('error', (error) => {
-    console.error('[WebSocket] Client error:', error);
-  });
-
-  ws.on('close', () => {
-    console.log('[WebSocket] Client disconnected');
   });
 });
 
-// Basic health check endpoint
-app.get('/health', (_, res) => res.json({ status: 'ok' }));
-
-// Serve static files from React build
+// Serve static files
 app.use(express.static(path.join(process.cwd(), 'dist/public')));
 
-// Serve index.html for all other routes (SPA routing)
+// Health check endpoint
+app.get('/health', (_, res) => res.json({ status: 'ok' }));
+
+// Serve index.html for all routes
 app.get('*', (_, res) => {
   res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
 });
