@@ -39,8 +39,8 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-[#963E56]/10 p-3 rounded-full">
-                    <FaPrayingHands className="h-5 w-5 text-[#963E56]" />
+                  <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                    <FaPrayingHands className="h-6 w-6 text-[#963E56]" />
                   </div>
                   <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
