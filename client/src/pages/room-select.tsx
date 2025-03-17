@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { FaPray } from "react-icons/fa";
+import { PiMosqueDuotone } from "react-icons/pi";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
@@ -17,40 +18,42 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-b from-[#963E56]/10 to-[#6BB85C]/10">
-      <div className="w-full max-w-4xl">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="bg-[#963E56]/10 p-3 rounded-full">
-              <FaPray className="h-6 w-6 text-[#963E56]" />
+    <div className="min-h-screen w-full bg-gradient-to-b from-[#963E56]/10 to-[#6BB85C]/10">
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+          <div className="flex items-center justify-center gap-3">
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <PiMosqueDuotone className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
             </div>
-            <h1 className="text-3xl font-bold text-[#963E56]">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
               Selecteer een Ruimte
             </h1>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
-            <Card 
+            <Card
               key={room.id}
               className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
               onClick={() => handleRoomSelect(room.id)}
             >
               <CardContent className="p-6">
-                <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center gap-3 mb-4">
                   <div className="bg-[#963E56]/10 p-3 rounded-full">
                     <FaPray className="h-5 w-5 text-[#963E56]" />
                   </div>
+                  <h2 className="text-lg font-semibold text-[#963E56]">
+                    {room.name}
+                  </h2>
                 </div>
-                <h2 className="text-xl font-semibold text-center mb-2 text-[#963E56]">
-                  {room.name}
-                </h2>
-                <p className="text-gray-500 text-center text-sm">
+
+                <p className="text-sm text-gray-500 mb-4">
                   Capaciteit: {room.capacity} personen
                 </p>
+
                 <Button 
-                  className="w-full mt-4 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
+                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   Beheer Ruimte
