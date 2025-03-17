@@ -55,7 +55,10 @@ export default function RoomSelect() {
                   className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
                   onClick={() => handleRoomSelect(room.id)}
                 >
-                  Beheer Ruimte
+                  <div className="flex items-center justify-center gap-2">
+                    <FaPrayingHands className="h-4 w-4" />
+                    <span>Beheer Ruimte</span>
+                  </div>
                 </Button>
               </CardContent>
             </Card>
