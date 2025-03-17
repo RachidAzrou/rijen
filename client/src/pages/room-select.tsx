@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { LayoutDashboard } from "lucide-react";
+import { FaPray } from "react-icons/fa";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0" },
@@ -17,14 +17,14 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-gray-50/50"> {/* Prevent unnecessary scrolling */}
+    <div className="flex flex-col min-h-screen w-full bg-gray-50/50">
       <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
+              <FaPray className="h-8 w-8 text-[#963E56]" />
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                Dashboard ruimtes
+                Dashboard Ruimtes
               </h1>
             </div>
           </CardContent>
@@ -38,7 +38,7 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
-                  <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
+                  <FaPray className="h-5 w-5 text-[#963E56]" />
                   <span className="font-medium text-[#963E56]">{room.name}</span>
                 </div>
 
