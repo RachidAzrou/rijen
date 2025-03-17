@@ -7,9 +7,6 @@ import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 
-const ROOM_STATUSES_KEY = 'room_statuses';
-
-// Update the room IDs to match the server
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
@@ -80,43 +77,23 @@ const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Lan
 );
 
 const PublicImamDashboard = () => {
-  const { socket, isConnected, sendMessage } = useSocket();
+  const { socket, isConnected } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
-
-  // Load initial statuses from localStorage
-  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
-    try {
-      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
-        ...acc, 
-        [key]: 'grey' 
-      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-
-      if (stored) {
-        return JSON.parse(stored);
-      }
-      return defaultStatuses;
-    } catch (error) {
-      console.error('[PublicImam] Error loading stored statuses:', error);
-      return Object.keys(rooms).reduce((acc, key) => ({ 
-        ...acc, 
-        [key]: 'grey' 
-      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-    }
+  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
+    'prayer-first': 'grey',
+    'prayer-ground': 'grey',
+    'garage': 'grey'
   });
 
-  // Request initial status and setup WebSocket listeners
+  // WebSocket message handler
   useEffect(() => {
-    if (!socket || !isConnected) {
-      console.log('[PublicImam] Socket not connected yet');
-      return;
-    }
+    if (!socket) return;
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('[PublicImam] Received WebSocket message:', data);
+        console.log('[PublicImam] Received message:', data);
 
         if (data.type === "initialStatus") {
           const newStatuses = { ...roomStatuses };
@@ -126,49 +103,34 @@ const PublicImamDashboard = () => {
             }
           });
           setRoomStatuses(newStatuses);
-          localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
           setLastUpdate(new Date());
         } else if (data.type === "statusUpdated") {
           if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
-            setRoomStatuses(prev => {
-              const newStatuses = {
-                ...prev,
-                [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
-              };
-              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-              return newStatuses;
-            });
+            setRoomStatuses(prev => ({
+              ...prev,
+              [data.room]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
+            }));
             setLastUpdate(new Date());
           }
         }
       } catch (error) {
-        console.error('[PublicImam] Error handling WebSocket message:', error);
+        console.error('[PublicImam] Error handling message:', error);
       }
     };
 
-    const handleSocketClose = () => {
-      console.log('[PublicImam] WebSocket connection closed, requesting initial status');
-      if (socket.readyState === WebSocket.CLOSED) {
-        setTimeout(() => {
-          sendMessage(JSON.stringify({ type: "getInitialStatus" }));
-        }, 5000); // Retry after 5 seconds
-      }
-    };
-
-    // Add event listeners
+    // Add message listener
     socket.addEventListener('message', handleMessage);
-    socket.addEventListener('close', handleSocketClose);
 
-    // Request initial status
-    console.log('[PublicImam] Requesting initial status');
-    sendMessage(JSON.stringify({ type: "getInitialStatus" }));
+    // Request initial status when connected
+    if (isConnected) {
+      socket.send(JSON.stringify({ type: "getInitialStatus" }));
+    }
 
-    // Cleanup event listeners
+    // Cleanup listener on unmount or socket change
     return () => {
       socket.removeEventListener('message', handleMessage);
-      socket.removeEventListener('close', handleSocketClose);
     };
-  }, [socket, isConnected, sendMessage]);
+  }, [socket, isConnected]);
 
   const t = translations[language];
 
