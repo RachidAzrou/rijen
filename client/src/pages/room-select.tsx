@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { TbMosque } from "react-icons/tb";
+import { FaMosque } from "react-icons/fa6";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0" },
@@ -23,7 +23,7 @@ export default function RoomSelect() {
           <CardContent className="p-4 md:p-6">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                <TbMosque className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
+                <FaMosque className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
               </div>
               <h1 className="text-lg md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Selecteer een Ruimte
@@ -44,7 +44,7 @@ export default function RoomSelect() {
                     {room.name}
                   </h2>
                   <div className="bg-[#963E56]/10 p-2 rounded-full">
-                    <TbMosque className="h-5 w-5 text-[#963E56]" />
+                    <FaMosque className="h-5 w-5 text-[#963E56]" />
                   </div>
                 </div>
 
@@ -53,7 +53,7 @@ export default function RoomSelect() {
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <TbMosque className="h-4 w-4" />
+                    <FaMosque className="h-4 w-4" />
                     <span>Beheer Ruimte</span>
                   </div>
                 </Button>
