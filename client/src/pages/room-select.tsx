@@ -20,9 +20,14 @@ export default function RoomSelect() {
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-gradient-to-b from-[#963E56]/10 to-[#6BB85C]/10">
       <div className="w-full max-w-4xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#963E56]">
-            Selecteer een Ruimte
-          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="bg-[#963E56]/10 p-3 rounded-full">
+              <FaPray className="h-6 w-6 text-[#963E56]" />
+            </div>
+            <h1 className="text-3xl font-bold text-[#963E56]">
+              Selecteer een Ruimte
+            </h1>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
