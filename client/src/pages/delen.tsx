@@ -10,7 +10,7 @@ export default function DelenPage() {
   const publicDashboardUrl = `${currentUrl}/public-imam`;
 
   return (
-    <div className="min-h-screen w-full bg-white"> 
+    <div className="min-h-screen w-full"> 
       <div className="container mx-auto px-4 pt-4 pb-8 space-y-6 md:space-y-8">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">

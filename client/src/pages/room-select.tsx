@@ -18,7 +18,7 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen">
       <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">

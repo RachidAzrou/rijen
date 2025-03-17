@@ -42,7 +42,7 @@ function Router() {
     !['/login', '/public-imam', '/room-select'].includes(location);
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50">
+    <div className="min-h-screen w-full">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
