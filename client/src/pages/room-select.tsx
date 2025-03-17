@@ -35,20 +35,19 @@ export default function RoomSelect() {
             <Card
               key={room.id}
               className="overflow-hidden bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-              onClick={() => handleRoomSelect(room.id)}
             >
-              <CardContent className="p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                    <FaPray className="h-6 w-6 text-[#963E56]" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-[#963E56]">
+              <CardContent className="p-4 md:p-6">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base md:text-lg font-semibold text-[#963E56]">
                     {room.name}
                   </h2>
+                  <div className="bg-[#963E56]/10 p-2 rounded-full">
+                    <FaPray className="h-5 w-5 text-[#963E56]" />
+                  </div>
                 </div>
 
                 <Button 
-                  className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
+                  className="w-full mt-4 bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
                   onClick={() => handleRoomSelect(room.id)}
                 >
                   <div className="flex items-center justify-center gap-2">
