@@ -31,40 +31,38 @@ export default function RoomSelect() {
           </div>
         </div>
 
-        <Card className="shadow-lg border border-[#963E56]/10">
-          <CardContent className="p-4 md:p-6">
-            <h2 className="text-xl font-semibold text-[#963E56] mb-6">
-              Status Gebedsruimtes
-            </h2>
+        <div className="border border-[#963E56]/10 shadow-lg rounded-lg p-4 md:p-6">
+          <h2 className="text-xl font-semibold text-[#963E56] mb-6">
+            Status Gebedsruimtes
+          </h2>
 
-            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {rooms.map((room) => (
-                <Card
-                  key={room.id}
-                  className="shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
-                >
-                  <CardContent className="p-4 md:p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="bg-[#963E56]/10 p-2 rounded-full">
-                        <FaPray className="h-5 w-5 text-[#963E56]" />
-                      </div>
-                      <h3 className="text-xl font-semibold text-[#963E56]">
-                        {room.name}
-                      </h3>
+          <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {rooms.map((room) => (
+              <Card
+                key={room.id}
+                className="shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              >
+                <CardContent className="p-4 md:p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-[#963E56]/10 p-2 rounded-full">
+                      <FaPray className="h-5 w-5 text-[#963E56]" />
                     </div>
+                    <h3 className="text-xl font-semibold text-[#963E56]">
+                      {room.name}
+                    </h3>
+                  </div>
 
-                    <Button
-                      className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
-                      onClick={() => handleRoomSelect(room.id)}
-                    >
-                      Beheer Ruimte
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                  <Button
+                    className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white mt-4"
+                    onClick={() => handleRoomSelect(room.id)}
+                  >
+                    Beheer Ruimte
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
