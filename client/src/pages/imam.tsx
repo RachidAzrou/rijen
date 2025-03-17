@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, House } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
 import { useState, useEffect } from "react";
@@ -133,7 +133,7 @@ export default function ImamDashboard() {
               >
                 <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="flex items-center gap-3 text-lg font-semibold text-[#963E56]">
-                    <House className="h-5 w-5" />
+                    <FaPray className="h-5 w-5" />
                     {room.title}
                   </CardTitle>
                   <div className={`
