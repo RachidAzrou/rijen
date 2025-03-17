@@ -17,8 +17,8 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50 flex flex-col items-center"> {/* Added flex-col for vertical layout */}
-      <div className="container mx-auto px-4 py-6 flex-grow"> {/* Added flex-grow to allow content to expand */}
+    <div className="min-h-screen w-full bg-gray-50/50 flex items-center"> {/* Added flex centering */}
+      <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
@@ -32,7 +32,7 @@ export default function RoomSelect() {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 flex-grow"> {/* Added flex-grow */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {rooms.map((room) => (
             <Card
               key={room.id}
