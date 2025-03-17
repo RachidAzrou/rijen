@@ -1,11 +1,16 @@
 import express from "express";
-import http from "http";
-import { WebSocketServer, WebSocket } from "ws";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import path from "path";
 
 const app = express();
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server, path: '/ws' });
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 
 // Store room statuses
 const rooms = {
@@ -14,54 +19,33 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-// WebSocket server
-wss.on('connection', (ws) => {
-  console.log(`Connected client. Total clients: ${wss.clients.size}`);
+// Socket.IO connection handling
+io.on("connection", (socket) => {
+  console.log("Client connected:", socket.id);
 
-  // Send initial status
-  ws.send(JSON.stringify({
-    type: 'initialStatus',
-    data: rooms
-  }));
+  // Send initial status to new client
+  socket.emit("initialStatus", rooms);
 
-  ws.on('message', (message) => {
-    try {
-      const data = JSON.parse(message.toString());
-      console.log('Received:', data);
+  // Handle status updates
+  socket.on("updateStatus", ({ room, status }) => {
+    if (rooms[room]) {
+      rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+      console.log(`Updated ${room} status to ${rooms[room].status}`);
 
-      if (data.type === 'updateStatus') {
-        const { room, status } = data;
-
-        if (rooms[room]) {
-          // Update status
-          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-
-          // Create update message
-          const updateMsg = {
-            type: 'statusUpdated',
-            room,
-            status: rooms[room].status
-          };
-
-          // Send to ALL clients
-          console.log(`Broadcasting update to ${wss.clients.size} clients:`, updateMsg);
-          wss.clients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(updateMsg));
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Message processing error:', error);
+      // Broadcast the update to all clients
+      io.emit("statusUpdated", {
+        room,
+        status: rooms[room].status
+      });
     }
   });
 
-  ws.on('error', console.error);
-  ws.on('close', () => console.log(`Disconnected client. Remaining: ${wss.clients.size}`));
+  socket.on("disconnect", () => {
+    console.log("Client disconnected:", socket.id);
+  });
 });
 
-// Static files
+// Serve static files
 app.use(express.static(path.join(process.cwd(), 'dist/public')));
 
 // All routes -> index.html
@@ -71,7 +55,7 @@ app.get('*', (_, res) => {
 
 // Start server
 const PORT = 5000;
-server.listen(PORT, () => {
+httpServer.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`WebSocket server ready at ws://localhost:${PORT}/ws`);
+  console.log(`Socket.IO server ready`);
 });

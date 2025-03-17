@@ -1,66 +1,59 @@
 import { useEffect, useRef, useState } from 'react';
+import { io, Socket } from 'socket.io-client';
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
-  const socketRef = useRef<WebSocket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    let reconnectTimer: NodeJS.Timeout;
+    const socket = io(window.location.origin, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
 
-    function connect() {
-      try {
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws`;
-        console.log('Connecting to WebSocket:', wsUrl);
+    socketRef.current = socket;
 
-        const ws = new WebSocket(wsUrl);
-        socketRef.current = ws;
+    socket.on('connect', () => {
+      console.log('Socket.IO Connected', socket.id);
+      setIsConnected(true);
+    });
 
-        ws.onopen = () => {
-          console.log('WebSocket connected');
-          setIsConnected(true);
-        };
+    socket.on('disconnect', () => {
+      console.log('Socket.IO Disconnected');
+      setIsConnected(false);
+    });
 
-        ws.onclose = () => {
-          console.log('WebSocket disconnected, reconnecting...');
-          setIsConnected(false);
-          socketRef.current = null;
-          reconnectTimer = setTimeout(connect, 1000);
-        };
+    socket.on('connect_error', (error) => {
+      console.error('Socket.IO Connection error:', error);
+      setIsConnected(false);
+    });
 
-        ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
-        };
-
-      } catch (error) {
-        console.error('WebSocket connection error:', error);
-        reconnectTimer = setTimeout(connect, 1000);
-      }
-    }
-
-    connect();
-
-    // Cleanup
     return () => {
-      clearTimeout(reconnectTimer);
-      if (socketRef.current) {
-        socketRef.current.close();
-        socketRef.current = null;
-      }
+      console.log('Cleaning up Socket.IO connection');
+      socket.disconnect();
+      socketRef.current = null;
     };
   }, []);
 
   const sendMessage = (message: string) => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      console.log('Cannot send - WebSocket not connected');
+    if (!socketRef.current?.connected) {
+      console.log('Cannot send - Socket.IO not connected');
       return;
     }
 
     try {
-      console.log('Sending:', JSON.parse(message));
-      socketRef.current.send(message);
+      const data = JSON.parse(message);
+      console.log('Sending Socket.IO message:', data);
+
+      if (data.type === 'updateStatus') {
+        socketRef.current.emit('updateStatus', {
+          room: data.room,
+          status: data.status
+        });
+      }
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error('Failed to send Socket.IO message:', error);
     }
   };
 

@@ -39,10 +39,39 @@ export function SufufPage() {
     return () => unsubscribe();
   }, [setLocation]);
 
+  // Socket.IO event handlers
+  useEffect(() => {
+    if (!socket) return;
+
+    // Handle initial status
+    socket.on('initialStatus', (data) => {
+      console.log('Received initial status:', data);
+      const newStatuses = Object.entries(data).reduce((acc, [room, info]: [string, any]) => ({
+        ...acc,
+        [room]: info.status
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+      setRoomStatuses(newStatuses);
+    });
+
+    // Handle status updates
+    socket.on('statusUpdated', (data) => {
+      console.log('Received status update:', data);
+      setRoomStatuses(prev => ({
+        ...prev,
+        [data.room]: data.status
+      }));
+    });
+
+    return () => {
+      socket.off('initialStatus');
+      socket.off('statusUpdated');
+    };
+  }, [socket]);
+
   // Handle status updates
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
     if (!isConnected) {
-      console.log('Cannot update - WebSocket not connected');
+      console.log('Cannot update - Socket.IO not connected');
       return;
     }
 
@@ -55,39 +84,6 @@ export function SufufPage() {
     console.log('Sending status update:', message);
     sendMessage(JSON.stringify(message));
   };
-
-  // WebSocket message handler
-  useEffect(() => {
-    if (!socket) return;
-
-    function handleMessage(event: MessageEvent) {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('Received message:', data);
-
-        if (data.type === 'statusUpdated') {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status
-          }));
-        } else if (data.type === 'initialStatus') {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
-            ...acc,
-            [room]: info.status
-          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          setRoomStatuses(newStatuses);
-        }
-      } catch (error) {
-        console.error('Error handling message:', error);
-      }
-    }
-
-    socket.addEventListener('message', handleMessage);
-
-    return () => {
-      socket.removeEventListener('message', handleMessage);
-    };
-  }, [socket]);
 
   return (
     <div className="min-h-screen w-full pb-16 md:pb-0 bg-gray-50/50">

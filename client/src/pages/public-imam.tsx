@@ -26,38 +26,32 @@ export default function PublicImamDashboard() {
     'garage': 'grey'
   });
 
-  // WebSocket message handler
+  // Socket.IO event handlers
   useEffect(() => {
     if (!socket) return;
 
-    function handleMessage(event: MessageEvent) {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('Received message:', data);
+    socket.on('initialStatus', (data) => {
+      console.log('Received initial status:', data);
+      const newStatuses = Object.entries(data).reduce((acc, [room, info]: [string, any]) => ({
+        ...acc,
+        [room]: info.status
+      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+      setRoomStatuses(newStatuses);
+      setLastUpdate(new Date());
+    });
 
-        if (data.type === 'statusUpdated') {
-          setRoomStatuses(prev => ({
-            ...prev,
-            [data.room]: data.status
-          }));
-          setLastUpdate(new Date());
-        } else if (data.type === 'initialStatus') {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
-            ...acc,
-            [room]: info.status
-          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          setRoomStatuses(newStatuses);
-          setLastUpdate(new Date());
-        }
-      } catch (error) {
-        console.error('Error handling message:', error);
-      }
-    }
-
-    socket.addEventListener('message', handleMessage);
+    socket.on('statusUpdated', (data) => {
+      console.log('Received status update:', data);
+      setRoomStatuses(prev => ({
+        ...prev,
+        [data.room]: data.status
+      }));
+      setLastUpdate(new Date());
+    });
 
     return () => {
-      socket.removeEventListener('message', handleMessage);
+      socket.off('initialStatus');
+      socket.off('statusUpdated');
     };
   }, [socket]);
 
