@@ -4,9 +4,9 @@ import { useLocation } from "wouter";
 import { FaPrayingHands } from "react-icons/fa";
 
 const rooms = [
-  { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
-  { id: "prayer-first", name: "Gebedsruimte +1", capacity: 300 },
-  { id: "garage", name: "Garage", capacity: 100 }
+  { id: "prayer-ground", name: "Gebedsruimte +0" },
+  { id: "prayer-first", name: "Gebedsruimte +1" },
+  { id: "garage", name: "Garage" }
 ];
 
 export default function RoomSelect() {
@@ -46,10 +46,6 @@ export default function RoomSelect() {
                     {room.name}
                   </h2>
                 </div>
-
-                <p className="text-sm text-gray-500 mb-4">
-                  Capaciteit: {room.capacity} personen
-                </p>
 
                 <Button 
                   className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white transition-colors"
