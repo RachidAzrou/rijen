@@ -35,7 +35,7 @@ export default function RoomSelect() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-center mb-4">
                   <div className="bg-[#963E56]/10 p-3 rounded-full">
-                    <FaPray className="h-12 w-12 text-[#963E56]" />
+                    <FaPray className="h-8 w-8 text-[#963E56]" />
                   </div>
                 </div>
                 <h2 className="text-xl font-semibold text-center mb-2">
