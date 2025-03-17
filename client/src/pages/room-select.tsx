@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { FaPray } from "react-icons/fa"; 
+import { FaPray } from "react-icons/fa";
 
 const rooms = [
   { id: "prayer-ground", name: "Gebedsruimte +0", capacity: 400 },
