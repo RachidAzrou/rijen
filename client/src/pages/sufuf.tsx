@@ -31,12 +31,10 @@ export function SufufPage() {
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // Authentication check
+  // Auth check
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) {
-        setLocation("/login");
-      }
+      if (!user) setLocation("/login");
     });
     return () => unsubscribe();
   }, [setLocation]);
@@ -45,52 +43,49 @@ export function SufufPage() {
   useEffect(() => {
     if (!socket) return;
 
-    socket.onmessage = (event) => {
+    function handleMessage(event: MessageEvent) {
       try {
         const data = JSON.parse(event.data);
-        console.log('[Sufuf] Received:', data);
+        console.log('Received WebSocket message:', data);
 
-        if (data.type === "statusUpdated") {
+        if (data.type === 'statusUpdated') {
+          console.log('Updating status:', data.room, data.status);
           setRoomStatuses(prev => ({
             ...prev,
             [data.room]: data.status
           }));
-        } else if (data.type === "initialStatus") {
-          const newStatuses = { ...roomStatuses };
-          Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              newStatuses[room as RoomId] = roomData.status;
-            }
-          });
-          setRoomStatuses(newStatuses);
+        } else if (data.type === 'initialStatus') {
+          console.log('Setting initial status:', data.data);
+          setRoomStatuses(prev => ({
+            ...prev,
+            ...Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+              ...acc,
+              [room]: info.status
+            }), {})
+          }));
         }
       } catch (error) {
-        console.error('[Sufuf] Error handling message:', error);
+        console.error('Error handling WebSocket message:', error);
       }
-    };
-
-    // Request initial status
-    if (isConnected) {
-      sendMessage(JSON.stringify({ type: "getInitialStatus" }));
     }
 
-    return () => {
-      if (socket) {
-        socket.onmessage = null;
-      }
-    };
-  }, [socket, isConnected, sendMessage]);
+    socket.addEventListener('message', handleMessage);
 
-  // Status update handler
+    return () => {
+      socket.removeEventListener('message', handleMessage);
+    };
+  }, [socket]);
+
+  // Handle status updates
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
-    if (!socket || !isConnected) {
-      console.error('[Sufuf] Socket not connected');
+    if (!isConnected) {
+      console.log('WebSocket not connected');
       return;
     }
 
-    console.log(`[Sufuf] Sending status update for ${roomId}: ${status}`);
+    console.log('Sending status update:', roomId, status);
     sendMessage(JSON.stringify({
-      type: "updateStatus",
+      type: 'updateStatus',
       room: roomId,
       status
     }));

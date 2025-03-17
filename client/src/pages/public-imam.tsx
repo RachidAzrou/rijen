@@ -17,7 +17,7 @@ const rooms = {
 } as const;
 
 export default function PublicImamDashboard() {
-  const { socket, isConnected } = useSocket();
+  const { socket } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
@@ -26,47 +26,43 @@ export default function PublicImamDashboard() {
     'garage': 'grey'
   });
 
-  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
-    socket.onmessage = (event) => {
+    function handleMessage(event: MessageEvent) {
       try {
         const data = JSON.parse(event.data);
-        console.log('[PublicImam] Received:', data);
+        console.log('Public Imam received:', data);
 
-        if (data.type === "statusUpdated") {
+        if (data.type === 'statusUpdated') {
+          console.log('Updating status:', data.room, data.status);
           setRoomStatuses(prev => ({
             ...prev,
             [data.room]: data.status
           }));
           setLastUpdate(new Date());
-        } else if (data.type === "initialStatus") {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, roomData]: [string, any]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              acc[room as RoomId] = roomData.status;
-            }
-            return acc;
-          }, {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          setRoomStatuses(newStatuses);
+        } else if (data.type === 'initialStatus') {
+          console.log('Setting initial status:', data.data);
+          setRoomStatuses(prev => ({
+            ...prev,
+            ...Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+              ...acc,
+              [room]: info.status
+            }), {})
+          }));
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('[PublicImam] Error handling message:', error);
+        console.error('Error handling WebSocket message:', error);
       }
-    };
-
-    // Request initial status when connected
-    if (isConnected) {
-      socket.send(JSON.stringify({ type: "getInitialStatus" }));
     }
 
+    socket.addEventListener('message', handleMessage);
+
     return () => {
-      if (socket) {
-        socket.onmessage = null;
-      }
+      socket.removeEventListener('message', handleMessage);
     };
-  }, [socket, isConnected]);
+  }, [socket]);
 
   const t = translations[language];
 
