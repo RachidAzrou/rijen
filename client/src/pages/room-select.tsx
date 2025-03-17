@@ -17,14 +17,12 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50 flex items-center"> {/* Added flex centering */}
+    <div className="flex flex-col min-h-screen w-full bg-gray-50/50"> {/* Added flex-col to prevent unnecessary scrolling */}
       <div className="container mx-auto px-4 py-6 space-y-6">
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <div className="bg-[#963E56]/10 p-3 rounded-full">
-                <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
-              </div>
+              <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Dashboard ruimtes
               </h1>
@@ -40,9 +38,7 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
-                  <div className="bg-[#963E56]/10 p-2 rounded-full">
-                    <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
-                  </div>
+                  <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
                   <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
                   </h2>
