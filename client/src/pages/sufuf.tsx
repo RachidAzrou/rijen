@@ -31,13 +31,30 @@ export function SufufPage() {
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // Auth check
+  // Authentication check
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) setLocation("/login");
     });
     return () => unsubscribe();
   }, [setLocation]);
+
+  // Handle status updates
+  const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
+    if (!isConnected) {
+      console.log('Cannot update - WebSocket not connected');
+      return;
+    }
+
+    const message = {
+      type: 'updateStatus',
+      room: roomId,
+      status
+    };
+
+    console.log('Sending status update:', message);
+    sendMessage(JSON.stringify(message));
+  };
 
   // WebSocket message handler
   useEffect(() => {
@@ -46,26 +63,22 @@ export function SufufPage() {
     function handleMessage(event: MessageEvent) {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received WebSocket message:', data);
+        console.log('Received message:', data);
 
         if (data.type === 'statusUpdated') {
-          console.log('Updating status:', data.room, data.status);
           setRoomStatuses(prev => ({
             ...prev,
             [data.room]: data.status
           }));
         } else if (data.type === 'initialStatus') {
-          console.log('Setting initial status:', data.data);
-          setRoomStatuses(prev => ({
-            ...prev,
-            ...Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
-              ...acc,
-              [room]: info.status
-            }), {})
-          }));
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+            ...acc,
+            [room]: info.status
+          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          setRoomStatuses(newStatuses);
         }
       } catch (error) {
-        console.error('Error handling WebSocket message:', error);
+        console.error('Error handling message:', error);
       }
     }
 
@@ -75,21 +88,6 @@ export function SufufPage() {
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);
-
-  // Handle status updates
-  const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
-    if (!isConnected) {
-      console.log('WebSocket not connected');
-      return;
-    }
-
-    console.log('Sending status update:', roomId, status);
-    sendMessage(JSON.stringify({
-      type: 'updateStatus',
-      room: roomId,
-      status
-    }));
-  };
 
   return (
     <div className="min-h-screen w-full pb-16 md:pb-0 bg-gray-50/50">

@@ -12,10 +12,11 @@ const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
-};
+} as const;
 
+// WebSocket server
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+  console.log(`Connected client. Total clients: ${wss.clients.size}`);
 
   // Send initial status
   ws.send(JSON.stringify({
@@ -26,43 +27,51 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
-      console.log('Received message:', data);
+      console.log('Received:', data);
 
       if (data.type === 'updateStatus') {
         const { room, status } = data;
-        if (rooms[room]) {
-          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          console.log('Updated room:', room, 'to status:', rooms[room].status);
 
-          // Send update to ALL clients
-          const updateMessage = JSON.stringify({
+        if (rooms[room]) {
+          // Update status
+          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+
+          // Create update message
+          const updateMsg = {
             type: 'statusUpdated',
             room,
             status: rooms[room].status
-          });
+          };
 
-          wss.clients.forEach((client) => {
+          // Send to ALL clients
+          console.log(`Broadcasting update to ${wss.clients.size} clients:`, updateMsg);
+          wss.clients.forEach(client => {
             if (client.readyState === WebSocket.OPEN) {
-              client.send(updateMessage);
+              client.send(JSON.stringify(updateMsg));
             }
           });
         }
       }
     } catch (error) {
-      console.error('Error processing message:', error);
+      console.error('Message processing error:', error);
     }
   });
+
+  ws.on('error', console.error);
+  ws.on('close', () => console.log(`Disconnected client. Remaining: ${wss.clients.size}`));
 });
 
-// Serve static files
+// Static files
 app.use(express.static(path.join(process.cwd(), 'dist/public')));
 
-// All routes serve index.html
+// All routes -> index.html
 app.get('*', (_, res) => {
   res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, '0.0.0.0', () => {
+// Start server
+const PORT = 5000;
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`WebSocket server ready at ws://localhost:${PORT}/ws`);
 });

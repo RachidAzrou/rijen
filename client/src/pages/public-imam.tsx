@@ -26,34 +26,31 @@ export default function PublicImamDashboard() {
     'garage': 'grey'
   });
 
+  // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
     function handleMessage(event: MessageEvent) {
       try {
         const data = JSON.parse(event.data);
-        console.log('Public Imam received:', data);
+        console.log('Received message:', data);
 
         if (data.type === 'statusUpdated') {
-          console.log('Updating status:', data.room, data.status);
           setRoomStatuses(prev => ({
             ...prev,
             [data.room]: data.status
           }));
           setLastUpdate(new Date());
         } else if (data.type === 'initialStatus') {
-          console.log('Setting initial status:', data.data);
-          setRoomStatuses(prev => ({
-            ...prev,
-            ...Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
-              ...acc,
-              [room]: info.status
-            }), {})
-          }));
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+            ...acc,
+            [room]: info.status
+          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          setRoomStatuses(newStatuses);
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('Error handling WebSocket message:', error);
+        console.error('Error handling message:', error);
       }
     }
 
