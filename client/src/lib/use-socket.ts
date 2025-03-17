@@ -1,133 +1,96 @@
-import { useEffect, useRef, useState } from 'react';
-
-const ROOM_STATUSES_KEY = 'room_statuses';
+import { useEffect, useRef, useState, useCallback } from 'react';
 
 export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
   const messageQueueRef = useRef<string[]>([]);
 
   const getWebSocketUrl = () => {
-    // Development environment
-    if (process.env.NODE_ENV === 'development') {
-      return `ws://${window.location.hostname}:5000/ws`;
-    }
-
-    // Production environment - Vercel or Firebase
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    // Check if we're on Vercel
-    if (process.env.VERCEL) {
-      return `${protocol}//${window.location.host}/ws`;
-    }
-    // Default to Firebase
     return `${protocol}//${window.location.host}/ws`;
   };
 
-  const loadStoredStatuses = () => {
-    try {
-      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch (error) {
-      console.error('Error loading stored statuses:', error);
-      return null;
-    }
-  };
-
-  const saveStatuses = (statuses: Record<string, string>) => {
-    try {
-      localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(statuses));
-    } catch (error) {
-      console.error('Error saving statuses:', error);
-    }
-  };
-
-  const sendQueuedMessages = () => {
+  const connect = useCallback(() => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      messageQueueRef.current.forEach(message => {
-        socketRef.current?.send(message);
-      });
-      messageQueueRef.current = [];
+      return;
     }
-  };
 
-  useEffect(() => {
-    const wsUrl = getWebSocketUrl();
-    console.log('Connecting to WebSocket at:', wsUrl);
-
-    const connect = () => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        return;
-      }
+    try {
+      const wsUrl = getWebSocketUrl();
+      console.log('[WebSocket] Connecting to:', wsUrl);
 
       socketRef.current = new WebSocket(wsUrl);
 
       socketRef.current.onopen = () => {
-        console.log('WebSocket connected successfully');
+        console.log('[WebSocket] Connected successfully');
         setIsConnected(true);
-        sendQueuedMessages();
 
-        // Request initial status
-        const storedStatuses = loadStoredStatuses();
-        if (storedStatuses) {
-          socketRef.current?.send(JSON.stringify({
-            type: "syncStatus",
-            data: storedStatuses
-          }));
-        } else {
-          socketRef.current?.send(JSON.stringify({ type: "getInitialStatus" }));
+        // Send any queued messages
+        while (messageQueueRef.current.length > 0) {
+          const message = messageQueueRef.current.shift();
+          if (message) socketRef.current?.send(message);
         }
       };
 
       socketRef.current.onclose = () => {
-        console.log('WebSocket connection closed');
+        console.log('[WebSocket] Connection closed');
         setIsConnected(false);
-        setTimeout(connect, 2000);
+
+        // Clear any existing reconnect timeout
+        if (reconnectTimeoutRef.current) {
+          clearTimeout(reconnectTimeoutRef.current);
+        }
+
+        // Attempt to reconnect after 2 seconds
+        reconnectTimeoutRef.current = setTimeout(() => {
+          console.log('[WebSocket] Attempting to reconnect...');
+          connect();
+        }, 2000);
       };
 
       socketRef.current.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error('[WebSocket] Error:', error);
       };
 
-      socketRef.current.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log('Received WebSocket message:', data);
+    } catch (error) {
+      console.error('[WebSocket] Setup error:', error);
+    }
+  }, []);
 
-          if (data.type === "initialStatus" || data.type === "statusUpdated") {
-            const statuses = data.type === "initialStatus" ? data.data : {
-              [data.room]: data.status
-            };
-            saveStatuses(statuses);
-          }
-        } catch (error) {
-          console.error('Error processing WebSocket message:', error);
-        }
-      };
-    };
-
+  useEffect(() => {
     connect();
 
     return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+
       if (socketRef.current) {
         socketRef.current.close();
+        socketRef.current = null;
       }
     };
-  }, []);
+  }, [connect]);
 
-  const sendMessage = (message: string) => {
-    console.log('Attempting to send message:', message);
+  const sendMessage = useCallback((message: string) => {
+    console.log('[WebSocket] Sending message:', message);
+
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(message);
     } else {
+      console.log('[WebSocket] Queueing message for later');
       messageQueueRef.current.push(message);
+
+      // If socket is closed, attempt to reconnect
       if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
-        const wsUrl = getWebSocketUrl();
-        socketRef.current = new WebSocket(wsUrl);
+        connect();
       }
     }
-  };
+  }, [connect]);
 
   return {
+    socket: socketRef.current,
     isConnected,
     sendMessage
   };

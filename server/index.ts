@@ -1,25 +1,44 @@
 import express from "express";
 import http from "http";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import path from "path";
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
+type RoomStatus = 'green' | 'red' | 'grey';
+type Room = {
+  id: string;
+  title: string;
+  status: RoomStatus;
+};
+
 // Store room statuses
-const rooms = {
+const rooms: Record<string, Room> = {
   'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
+};
+
+// Helper function to broadcast updates to all connected clients
+const broadcastUpdate = (data: any) => {
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(data));
+    }
+  });
 };
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   console.log('New WebSocket connection established');
 
-  // Send initial status to new clients
-  ws.send(JSON.stringify({ type: 'initialStatus', data: rooms }));
+  // Send initial status to new client
+  ws.send(JSON.stringify({ 
+    type: 'initialStatus', 
+    data: rooms 
+  }));
   console.log('Sent initial status:', rooms);
 
   ws.on('message', (message) => {
@@ -30,25 +49,30 @@ wss.on('connection', (ws) => {
       if (data.type === 'updateStatus') {
         const { room, status } = data;
         if (rooms[room]) {
+          // Update room status
           rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
 
           // Broadcast the update to all clients
-          wss.clients.forEach((client) => {
-            if (client.readyState === ws.OPEN) {
-              client.send(JSON.stringify({
-                type: 'statusUpdated',
-                room,
-                status: rooms[room].status
-              }));
-            }
+          broadcastUpdate({
+            type: 'statusUpdated',
+            room,
+            status: rooms[room].status
           });
         }
       } else if (data.type === 'getInitialStatus') {
-        ws.send(JSON.stringify({ type: 'initialStatus', data: rooms }));
+        ws.send(JSON.stringify({ 
+          type: 'initialStatus', 
+          data: rooms 
+        }));
       }
     } catch (error) {
       console.error('Error processing message:', error);
     }
+  });
+
+  // Handle client disconnection
+  ws.on('close', () => {
+    console.log('Client disconnected');
   });
 });
 
