@@ -11,13 +11,14 @@ import PublicImamDashboard from "@/pages/public-imam";
 import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
 import { useState, useEffect } from "react";
-import { auth } from "@/lib/firebase";
-import { useLocation, useLocation as useLocationHook } from "wouter";
+import { getAuth } from "firebase/auth";
+import { useLocation } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [location, setLocation] = useLocationHook();
+  const [location, setLocation] = useLocation();
+  const auth = getAuth();
 
   useEffect(() => {
     if (window.innerWidth < 768) {
