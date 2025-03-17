@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { FaPray } from "react-icons/fa";
 
 // Version stamp for debugging
-const VERSION = "DEBUG_V1"; // Added for debugging
+const VERSION = "DEBUG_V1.1"; // Changed version number
 console.log("Room Select Component loaded:", VERSION, new Date().toISOString());
 
 const rooms = [
@@ -27,7 +27,7 @@ export default function RoomSelect() {
       <div className="container mx-auto px-4 py-6">
         {/* Debug indicator */}
         <div className="fixed top-0 right-0 bg-yellow-200 text-yellow-800 px-2 py-1 text-xs">
-          Debug v1: {new Date().toLocaleTimeString()}
+          Debug v1.1: {new Date().toLocaleTimeString()}
         </div>
 
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
@@ -37,7 +37,7 @@ export default function RoomSelect() {
                 <FaPray className="h-8 w-8 text-[#963E56]" />
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                TEST - Selecteer een Ruimte
+                !!! TEST - DEBUGGING SERVER RELOAD !!!
               </h1>
             </div>
           </CardContent>
