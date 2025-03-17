@@ -1,47 +1,46 @@
 import { Server } from 'ws';
 import { createServer } from 'http';
 
-const roomStatuses: { [key: string]: 'OK' | 'NOK' | 'OFF' } = {
-  'prayer-ground': 'OFF',
-  'prayer-first': 'OFF',
-  'garage': 'OFF'
+const rooms = {
+  'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
+  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
-const server = createServer();
-const wss = new Server({ server });
+const wss = new Server({ noServer: true });
 
 wss.on('connection', (ws) => {
   // Send initial status
   ws.send(JSON.stringify({
     type: 'initialStatus',
-    data: roomStatuses
+    data: rooms
   }));
 
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
 
-      if (data.type === 'getInitialStatus') {
-        ws.send(JSON.stringify({
-          type: 'initialStatus',
-          data: roomStatuses
-        }));
-      } else if (data.type === 'updateStatus') {
+      if (data.type === 'updateStatus') {
         const { room, status } = data;
-        if (room && status && roomStatuses.hasOwnProperty(room)) {
-          roomStatuses[room] = status;
-          
+        if (rooms[room]) {
+          rooms[room].status = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
+
           // Broadcast to all clients
           wss.clients.forEach((client) => {
             if (client.readyState === ws.OPEN) {
               client.send(JSON.stringify({
                 type: 'statusUpdated',
                 room,
-                status
+                status: rooms[room].status
               }));
             }
           });
         }
+      } else if (data.type === 'getInitialStatus') {
+        ws.send(JSON.stringify({
+          type: 'initialStatus',
+          data: rooms
+        }));
       }
     } catch (error) {
       console.error('WebSocket message error:', error);

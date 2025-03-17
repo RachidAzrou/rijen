@@ -7,7 +7,22 @@ export function useSocket() {
   const socketRef = useRef<WebSocket | null>(null);
   const messageQueueRef = useRef<string[]>([]);
 
-  // Load initial statuses from localStorage
+  const getWebSocketUrl = () => {
+    // Development environment
+    if (process.env.NODE_ENV === 'development') {
+      return `ws://${window.location.hostname}:5000/ws`;
+    }
+
+    // Production environment - Vercel or Firebase
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    // Check if we're on Vercel
+    if (process.env.VERCEL) {
+      return `${protocol}//${window.location.host}/ws`;
+    }
+    // Default to Firebase
+    return `${protocol}//${window.location.host}/ws`;
+  };
+
   const loadStoredStatuses = () => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
@@ -18,7 +33,6 @@ export function useSocket() {
     }
   };
 
-  // Save statuses to localStorage
   const saveStatuses = (statuses: Record<string, string>) => {
     try {
       localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(statuses));
@@ -37,8 +51,7 @@ export function useSocket() {
   };
 
   useEffect(() => {
-    // Use the same port as the Express server
-    const wsUrl = `ws://${window.location.hostname}:5000/ws`;
+    const wsUrl = getWebSocketUrl();
     console.log('Connecting to WebSocket at:', wsUrl);
 
     const connect = () => {
@@ -108,8 +121,7 @@ export function useSocket() {
     } else {
       messageQueueRef.current.push(message);
       if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
-        socketRef.current = null;
-        const wsUrl = `ws://${window.location.hostname}:5000/ws`;
+        const wsUrl = getWebSocketUrl();
         socketRef.current = new WebSocket(wsUrl);
       }
     }
