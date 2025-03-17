@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { LayoutDashboard } from "lucide-react";
 import { FaPray } from "react-icons/fa";
 
 const rooms = [
@@ -22,7 +23,7 @@ export default function RoomSelect() {
         <Card className="mb-6 bg-white shadow-lg border border-[#963E56]/10">
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
-              <FaPray className="h-8 w-8 text-[#963E56]" />
+              <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
                 Dashboard Ruimtes
               </h1>
@@ -38,7 +39,9 @@ export default function RoomSelect() {
             >
               <CardContent className="p-6">
                 <div className="flex items-center gap-3">
-                  <FaPray className="h-5 w-5 text-[#963E56]" />
+                  <div className="bg-[#963E56]/10 p-2 rounded-full">
+                    <FaPray className="h-5 w-5 text-[#963E56]" />
+                  </div>
                   <span className="font-medium text-[#963E56]">{room.name}</span>
                 </div>
 
