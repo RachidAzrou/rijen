@@ -5,6 +5,10 @@
   "installCommand": "npm install",
   "routes": [
     { 
+      "src": "/ws",
+      "dest": "/api/ws"
+    },
+    { 
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
     },

@@ -1,79 +1,38 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { WebSocketServer, WebSocket } from 'ws';
+import express from "express";
+
+console.log('Starting server initialization...');
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Store room statuses with correct room IDs matching the client
-const roomStatuses: { [key: string]: 'OK' | 'NOK' | 'OFF' } = {
-  'prayer-ground': 'OFF',
-  'prayer-first': 'OFF',
-  'garage': 'OFF'
-};
+// Basic health check endpoint
+app.get('/health', (_, res) => res.json({ status: 'ok' }));
 
-async function startServer(): Promise<void> {
-  try {
-    const server = await registerRoutes(app);
+// Simple API endpoint to test server functionality
+app.get('/api/status', (_, res) => {
+  res.json({ 
+    message: 'Server is running',
+    timestamp: new Date().toISOString()
+  });
+});
 
-    // Set up WebSocket server
-    const wss = new WebSocketServer({ server, path: '/ws' });
+const port = process.env.PORT || 5000;
 
-    // Broadcast to all clients
-    function broadcast(message: string) {
-      wss.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(message);
-        }
-      });
-    }
-
-    wss.on('connection', (ws) => {
-      // Send initial status on connection
-      ws.send(JSON.stringify({
-        type: 'initialStatus',
-        data: roomStatuses
-      }));
-
-      ws.on('message', (message) => {
-        try {
-          const data = JSON.parse(message.toString());
-
-          if (data.type === 'getInitialStatus') {
-            ws.send(JSON.stringify({
-              type: 'initialStatus',
-              data: roomStatuses
-            }));
-          } else if (data.type === 'updateStatus') {
-            const { room, status } = data;
-            if (room && status && roomStatuses.hasOwnProperty(room)) {
-              roomStatuses[room] = status;
-              broadcast(JSON.stringify({
-                type: 'statusUpdated',
-                room,
-                status
-              }));
-            }
-          }
-        } catch (error) {
-          console.error('WebSocket message error:', error);
-        }
-      });
-    });
-
-    const port = 8080;
-    server.listen(port, "0.0.0.0", () => {
-      console.log(`Server started on port ${port}`);
-    });
-
-  } catch (error) {
-    console.error('Failed to start server:', error);
-    process.exit(1);
-  }
-}
-
-startServer().catch(error => {
-  console.error('Server startup failed:', error);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server started successfully on port ${port}`);
+  console.log(`Health check available at: http://localhost:${port}/health`);
+  console.log(`Status endpoint available at: http://localhost:${port}/api/status`);
+}).on('error', (error) => {
+  console.error('Failed to start server:', error);
   process.exit(1);
+});
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received, shutting down gracefully');
+  app.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });
