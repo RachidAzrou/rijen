@@ -95,13 +95,7 @@ const PublicImamDashboard = () => {
 
       if (stored) {
         const parsedStatuses = JSON.parse(stored);
-        console.log('[PublicImam] Parsed stored statuses:', parsedStatuses);
-        // Ensure we only use valid room IDs
-        const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
-          ...acc,
-          [roomId]: parsedStatuses[roomId] || 'grey'
-        }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-        return validStatuses;
+        return parsedStatuses;
       }
       return defaultStatuses;
     } catch (error) {
@@ -125,43 +119,33 @@ const PublicImamDashboard = () => {
         console.log('[PublicImam] Received WebSocket message:', data);
 
         if (data.type === "initialStatus") {
-          console.log('[PublicImam] Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
-          Object.entries(data.data).forEach(([room, status]: [string, any]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              console.log(`[PublicImam] Setting status for room ${room} to ${status.status}`);
-              newStatuses[room as RoomId] = status.status;
-            }
+          Object.entries(data.data).forEach(([room, roomData]: [string, any]) => {
+            newStatuses[room as RoomId] = roomData.status;
           });
-          console.log('[PublicImam] Final room statuses:', newStatuses);
+          console.log('[PublicImam] Setting room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`[PublicImam] Processing status update:`, data);
-          if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
-            setRoomStatuses(prev => {
-              const newStatuses = {
-                ...prev,
-                [data.room]: data.status
-              };
-              console.log('[PublicImam] Updated room statuses:', newStatuses);
-              localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-              return newStatuses;
-            });
-          }
+          setRoomStatuses(prev => {
+            const newStatuses = {
+              ...prev,
+              [data.room]: data.status
+            };
+            console.log('[PublicImam] Updating room status:', newStatuses);
+            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+            return newStatuses;
+          });
         }
       } catch (error) {
         console.error('[PublicImam] Error handling WebSocket message:', error);
       }
     };
 
-    console.log('[PublicImam] Setting up WebSocket handler');
     socket.addEventListener('message', handleMessage);
-    console.log('[PublicImam] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => {
-      console.log('[PublicImam] Cleaning up WebSocket handler');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket, isConnected, sendMessage]);
