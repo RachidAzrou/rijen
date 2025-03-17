@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { FaPray } from "react-icons/fa";
+import { LayoutDashboard } from "lucide-react";
 
 // Version stamp for debugging
 const VERSION = "DEBUG_V1.1"; // Changed version number
@@ -23,7 +24,7 @@ export default function RoomSelect() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50/50">
+    <div className="min-h-screen w-full bg-gray-50/50 flex items-center">
       <div className="container mx-auto px-4 py-6">
         {/* Debug indicator */}
         <div className="fixed top-0 right-0 bg-yellow-200 text-yellow-800 px-2 py-1 text-xs">
@@ -34,10 +35,10 @@ export default function RoomSelect() {
           <CardContent className="p-6">
             <div className="flex items-center gap-4">
               <div className="bg-[#963E56]/10 p-3 rounded-full">
-                <FaPray className="h-8 w-8 text-[#963E56]" />
+                <LayoutDashboard className="h-8 w-8 text-[#963E56]" />
               </div>
               <h1 className="text-2xl lg:text-3xl font-bold text-[#963E56]">
-                !!! TEST - DEBUGGING SERVER RELOAD !!!
+                Ruimte Dashboard
               </h1>
             </div>
           </CardContent>
@@ -50,23 +51,23 @@ export default function RoomSelect() {
               className="bg-white shadow hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-[#963E56]/10 p-2 rounded-full">
+                      <LayoutDashboard className="h-5 w-5 text-[#963E56]" />
+                    </div>
+                    {/*<FaPray className="h-5 w-5 text-[#963E56]" />*/}
+                  </div>
                   <h2 className="text-lg font-semibold text-[#963E56]">
                     {room.name}
                   </h2>
-                  <div className="bg-[#963E56]/10 p-2 rounded-full">
-                    <FaPray className="h-5 w-5 text-[#963E56]" />
-                  </div>
                 </div>
 
                 <Button 
                   className="w-full bg-[#963E56] hover:bg-[#963E56]/90 text-white"
                   onClick={() => handleRoomSelect(room.id)}
                 >
-                  <div className="flex items-center justify-center gap-2">
-                    <FaPray className="h-4 w-4" />
-                    <span>Beheer Ruimte</span>
-                  </div>
+                  Beheer Ruimte
                 </Button>
               </CardContent>
             </Card>
