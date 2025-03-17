@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, User, ChevronDown } from "lucide-react";
 import { FaPray } from "react-icons/fa";
 
 const rooms = [
@@ -35,15 +35,16 @@ export default function RoomSelect() {
           <CardContent className="p-4 md:p-6">
             <Button
               variant="ghost"
-              className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white rounded-lg shadow-sm border border-[#963E56]/10"
+              className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white rounded-lg shadow-sm border border-[#963E56]/10 mb-4"
             >
               <div className="flex items-center gap-3">
-                <FaPray className="h-6 w-6" />
+                <User className="h-6 w-6" />
                 <span>Status Gebedsruimtes</span>
               </div>
+              <ChevronDown className="h-5 w-5" />
             </Button>
 
-            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {rooms.map((room) => (
                 <Card
                   key={room.id}
