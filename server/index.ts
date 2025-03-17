@@ -3,7 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { WebSocketServer, WebSocket } from 'ws';
 
-console.log('Starting server initialization...');
+console.log('Starting server initialization...', new Date().toISOString());
 
 const app = express();
 app.use(express.json());
@@ -18,40 +18,13 @@ const roomStatuses: { [key: string]: 'OK' | 'NOK' | 'OFF' } = {
 
 console.log('Initialized room statuses:', roomStatuses);
 
-app.use((req, res, next) => {
-  const start = Date.now();
-  const path = req.path;
-  let capturedJsonResponse: Record<string, any> | undefined = undefined;
-
-  const originalResJson = res.json;
-  res.json = function (bodyJson, ...args) {
-    capturedJsonResponse = bodyJson;
-    return originalResJson.apply(res, [bodyJson, ...args]);
-  };
-
-  res.on("finish", () => {
-    const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
-      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
-      if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
-      }
-
-      if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "…";
-      }
-
-      log(logLine);
-    }
-  });
-
-  next();
-});
-
-async function startServer(retries = 3, delay = 2000, preferredPort = 5000): Promise<void> {
+async function startServer(): Promise<void> {
   try {
-    console.log('Starting server setup...');
+    const startTime = Date.now();
+    console.log('Starting server setup...', new Date().toISOString());
+
     const server = await registerRoutes(app);
+    console.log('Routes registered in', Date.now() - startTime, 'ms');
 
     // Set up WebSocket server
     const wss = new WebSocketServer({ server, path: '/ws' });
@@ -75,7 +48,6 @@ async function startServer(retries = 3, delay = 2000, preferredPort = 5000): Pro
         type: 'initialStatus',
         data: roomStatuses
       });
-      console.log('Sending initial status:', initialStatusMessage);
       ws.send(initialStatusMessage);
 
       ws.on('message', (message) => {
@@ -84,99 +56,63 @@ async function startServer(retries = 3, delay = 2000, preferredPort = 5000): Pro
           console.log('Received message:', data);
 
           if (data.type === 'getInitialStatus') {
-            const response = JSON.stringify({
+            ws.send(JSON.stringify({
               type: 'initialStatus',
               data: roomStatuses
-            });
-            console.log('Sending initial status response:', response);
-            ws.send(response);
+            }));
           } else if (data.type === 'updateStatus') {
             const { room, status } = data;
             if (room && status && roomStatuses.hasOwnProperty(room)) {
-              console.log(`Updating status for room ${room} to ${status}`);
               roomStatuses[room] = status;
-              // Broadcast the update to all clients
-              const updateMessage = JSON.stringify({
+              broadcast(JSON.stringify({
                 type: 'statusUpdated',
                 room,
                 status
-              });
-              console.log('Broadcasting status update:', updateMessage);
-              broadcast(updateMessage);
+              }));
             }
           }
         } catch (error) {
           console.error('WebSocket message error:', error);
         }
       });
-
-      ws.on('close', () => {
-        console.log('Client disconnected');
-      });
     });
 
-    // Add graceful shutdown handlers
-    process.on('SIGINT', () => {
-      console.log('Received SIGINT, closing server...');
-      wss.close();
-      server.close(() => {
-        console.log('Server closed, exiting...');
-        process.exit(0);
-      });
-    });
-
-    process.on('SIGTERM', () => {
-      console.log('Received SIGTERM, closing server...');
-      wss.close();
-      server.close(() => {
-        console.log('Server closed, exiting...');
-        process.exit(0);
-      });
-    });
-
-    const port = process.env.PORT || preferredPort;
-    console.log(`Attempting to start server on port ${port}...`);
+    const port = process.env.PORT || 5000;
+    console.log(`Starting server on port ${port}...`, new Date().toISOString());
 
     return new Promise((resolve, reject) => {
-      server.listen({
-        port,
-        host: "0.0.0.0",
-        reuseAddr: true,
-      }, () => {
-        console.log(`Server started successfully, listening on port ${port}`);
-        console.log('Current room statuses:', roomStatuses);
-        resolve();
-      }).on('error', async (error: any) => {
-        if (error.code === 'EADDRINUSE' && retries > 0) {
-          if (port === 5000) {
-            // Try alternate port
-            console.log(`Port ${port} is in use, trying alternate port 3000...`);
-            await startServer(retries - 1, delay, 3000);
-          } else {
-            console.log(`Port ${port} is in use, waiting ${delay}ms before retry... (${retries} retries left)`);
-            await new Promise(resolve => setTimeout(resolve, Number(delay)));
-            await startServer(retries - 1, delay * 2, port); // Exponential backoff
-          }
-        } else if (error.code === 'EADDRINUSE') {
-          console.error(`Port ${port} is still in use after all retries. Please ensure no other instance is running.`);
-          process.exit(1);
-        } else {
-          console.error('Server failed to start:', error);
-          reject(error);
-        }
-      });
+      let retries = 3;
+      const tryListen = () => {
+        console.log(`Attempt ${4 - retries} to start server on port ${port}`);
+
+        server.listen(port, "0.0.0.0")
+          .once('listening', () => {
+            console.log(`Server started successfully on port ${port} in ${Date.now() - startTime}ms`);
+            console.log('Current room statuses:', roomStatuses);
+            resolve();
+          })
+          .once('error', (err: any) => {
+            if (err.code === 'EADDRINUSE' && retries > 0) {
+              console.log(`Port ${port} in use, retrying in 1 second... (${retries} retries left)`);
+              retries--;
+              setTimeout(tryListen, 1000);
+            } else {
+              console.error('Server failed to start:', err);
+              reject(err);
+            }
+          });
+      };
+
+      tryListen();
     });
+
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
-(async () => {
-  try {
-    await startServer();
-  } catch (error) {
-    console.error('Server startup failed:', error);
-    process.exit(1);
-  }
-})();
+startServer().catch(error => {
+  console.error('Server startup failed:', error);
+  process.exit(1);
+});
