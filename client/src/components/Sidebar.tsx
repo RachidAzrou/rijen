@@ -68,7 +68,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
           {isOpen && (
             <div className="w-full p-2 flex justify-center items-center">
               <img
-                src="/static/Naamloos2.png"
+                src="/static/sufuf-icon.png"
                 alt="MEFEN Logo"
                 className="h-20 w-auto object-contain"
               />
