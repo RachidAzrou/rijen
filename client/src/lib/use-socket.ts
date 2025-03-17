@@ -37,8 +37,9 @@ export function useSocket() {
   };
 
   useEffect(() => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    // Use the same port as the Express server
+    const wsUrl = `ws://${window.location.hostname}:5000/ws`;
+    console.log('Connecting to WebSocket at:', wsUrl);
 
     const connect = () => {
       if (socketRef.current?.readyState === WebSocket.OPEN) {
@@ -48,6 +49,7 @@ export function useSocket() {
       socketRef.current = new WebSocket(wsUrl);
 
       socketRef.current.onopen = () => {
+        console.log('WebSocket connected successfully');
         setIsConnected(true);
         sendQueuedMessages();
 
@@ -64,6 +66,7 @@ export function useSocket() {
       };
 
       socketRef.current.onclose = () => {
+        console.log('WebSocket connection closed');
         setIsConnected(false);
         setTimeout(connect, 2000);
       };
@@ -75,6 +78,7 @@ export function useSocket() {
       socketRef.current.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
+          console.log('Received WebSocket message:', data);
 
           if (data.type === "initialStatus" || data.type === "statusUpdated") {
             const statuses = data.type === "initialStatus" ? data.data : {
@@ -98,14 +102,14 @@ export function useSocket() {
   }, []);
 
   const sendMessage = (message: string) => {
+    console.log('Attempting to send message:', message);
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(message);
     } else {
       messageQueueRef.current.push(message);
       if (!socketRef.current || socketRef.current.readyState === WebSocket.CLOSED) {
         socketRef.current = null;
-        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}/ws`;
+        const wsUrl = `ws://${window.location.hostname}:5000/ws`;
         socketRef.current = new WebSocket(wsUrl);
       }
     }
