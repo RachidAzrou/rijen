@@ -54,8 +54,8 @@ export default function PublicImamDashboard() {
           Object.entries(data).forEach(([room, status]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
               newStatuses[room as RoomId] = status === 'OK' ? 'green' :
-                                           status === 'NOK' ? 'red' :
-                                           'grey';
+                                             status === 'NOK' ? 'red' :
+                                             'grey';
             }
           });
 
@@ -92,8 +92,8 @@ export default function PublicImamDashboard() {
   const t = translations[language];
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-6 space-y-6 flex-grow">
+    <div className="h-[100dvh] flex flex-col overflow-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="flex-1 container mx-auto px-4 py-6 space-y-6 overflow-y-auto">
         {/* Header */}
         <div className="rounded-xl p-4 md:p-5 bg-white border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
@@ -119,7 +119,7 @@ export default function PublicImamDashboard() {
           </div>
         </div>
 
-        <Card className="bg-gradient-to-br from-[#963E56]/[0.02] to-transparent border border-[#963E56]/5 shadow-none">
+        <Card className="bg-white/80 backdrop-blur-sm border border-[#963E56]/5 shadow-none">
           <CardContent className="p-4 md:p-6">
             {language === 'nl' ? (
               <blockquote className="space-y-3 md:space-y-4 text-center">
@@ -153,7 +153,7 @@ export default function PublicImamDashboard() {
           {Object.entries(rooms).map(([id, room]) => (
             <Card
               key={id}
-              className="overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              className="overflow-hidden hover:shadow-xl transition-all duration-300 bg-white/80 backdrop-blur-sm border border-[#963E56]/10"
             >
               <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className={`flex items-center gap-3 text-lg font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>

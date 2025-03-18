@@ -113,9 +113,9 @@ export default function ImamDashboard() {
   }, [socket, isConnected, sendMessage]);
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
-      <div className="container mx-auto px-4 py-6 space-y-6 flex-grow">
-        <div className="space-y-4">
+    <div className="h-[100dvh] flex flex-col overflow-hidden bg-gray-50/50">
+      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6 overflow-y-auto">
+        <div className="space-y-4 md:space-y-6">
           <div className="bg-white shadow-lg p-4 md:p-6 border border-[#963E56]/10 rounded-xl">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -127,13 +127,13 @@ export default function ImamDashboard() {
             </div>
           </div>
 
-          <Card className="bg-white border border-[#963E56]/10 overflow-hidden">
+          <Card className="bg-white/80 backdrop-blur-sm border border-[#963E56]/10 overflow-hidden">
             <CardContent className="p-3 md:p-4">
               <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.values(rooms).map((room) => (
                   <div
                     key={room.id}
-                    className="bg-white rounded-lg border border-[#963E56]/10 p-3 md:p-4"
+                    className="bg-white/90 backdrop-blur-sm rounded-lg border border-[#963E56]/10 p-3 md:p-4"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2 md:gap-3">

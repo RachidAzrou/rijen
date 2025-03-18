@@ -53,7 +53,7 @@ export default function Login() {
 
   return (
     <div 
-      className="min-h-screen w-full flex items-center justify-center p-4"
+      className="h-[100dvh] w-full flex items-center justify-center p-4 bg-fixed overflow-hidden"
       style={{
         background: `url('/static/123.jpg') center center/cover no-repeat fixed`
       }}
