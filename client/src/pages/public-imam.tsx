@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
-import { FaPray } from "react-icons/fa";
+import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 import { database } from "@/lib/firebase";
@@ -17,10 +17,10 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-// Prayer icon component met biddend mannetje
+// Prayer icon component met moskee icoon
 const PrayerIcon = () => (
   <div className="bg-[#963E56]/10 w-8 h-8 rounded-full flex items-center justify-center">
-    <FaPray className="w-5 h-5 text-[#963E56]" />
+    <PiMosqueDuotone className="w-5 h-5 text-[#963E56]" />
   </div>
 );
 
@@ -93,33 +93,61 @@ export default function PublicImamDashboard() {
 
   return (
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-4 py-8 space-y-6">
         {/* Header */}
-        <div className="rounded-xl p-6 bg-white border border-[#963E56]/10">
+        <div className="rounded-xl p-4 md:p-5 bg-white border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
               <>
-                <div className="bg-[#963E56]/10 p-3 rounded-full">
-                  <FaPray className="h-8 w-8 text-[#963E56]" />
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
                 </div>
-                <h1 className="text-3xl lg:text-4xl font-bold text-[#963E56]">
+                <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
               </>
             ) : (
               <div className="flex flex-row-reverse items-center gap-4">
-                <h1 className="text-3xl lg:text-4xl font-bold text-[#963E56]">
+                <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
-                <div className="bg-[#963E56]/10 p-3 rounded-full">
-                  <FaPray className="h-8 w-8 text-[#963E56]" />
+                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                  <PiMosqueDuotone className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        <HadiethCard t={t} language={language} />
+        <Card className="bg-gradient-to-br from-[#963E56]/[0.02] to-transparent border border-[#963E56]/5 shadow-none">
+          <CardContent className="p-4 md:p-6">
+            {language === 'nl' ? (
+              <blockquote className="space-y-3 md:space-y-4 text-center">
+                <p className="text-base text-[#963E56]/70 font-medium">
+                  De Profeet ﷺ zei:
+                </p>
+                <p className="text-base text-[#963E56]/80 leading-relaxed font-medium">
+                  {t.hadithText}
+                </p>
+                <footer className="text-sm text-[#963E56]/60 mt-2">
+                  — {t.hadithSource}
+                </footer>
+              </blockquote>
+            ) : (
+              <div className="space-y-3 md:space-y-4 text-center" dir="rtl">
+                <p className="text-base text-[#963E56]/70 font-medium">
+                  {t.hadithTitle}
+                </p>
+                <p className="text-base text-[#963E56]/80 leading-relaxed font-medium">
+                  {t.hadithText}
+                </p>
+                <p className="text-sm text-[#963E56]/60 mt-2">
+                  {t.hadithSource}
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(rooms).map(([id, room]) => (
@@ -215,36 +243,4 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
       العربية
     </Button>
   </div>
-);
-
-const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
-  <Card className="bg-gradient-to-br from-[#963E56]/[0.02] to-transparent border border-[#963E56]/5 shadow-none">
-    <CardContent className="p-6 md:p-8">
-      {language === 'nl' ? (
-        <blockquote className="space-y-4 md:space-y-6 text-center">
-          <p className="text-base md:text-lg text-[#963E56]/70 font-medium">
-            De Profeet ﷺ zei:
-          </p>
-          <p className="text-base md:text-lg text-[#963E56]/80 leading-relaxed font-medium">
-            {t.hadithText}
-          </p>
-          <footer className="text-sm md:text-base text-[#963E56]/60 mt-4">
-            — {t.hadithSource}
-          </footer>
-        </blockquote>
-      ) : (
-        <div className="space-y-4 md:space-y-6 text-center" dir="rtl">
-          <p className="text-base md:text-lg text-[#963E56]/70 font-medium">
-            {t.hadithTitle}
-          </p>
-          <p className="text-base md:text-lg text-[#963E56]/80 leading-relaxed font-medium">
-            {t.hadithText}
-          </p>
-          <p className="text-sm md:text-base text-[#963E56]/60 mt-4">
-            {t.hadithSource}
-          </p>
-        </div>
-      )}
-    </CardContent>
-  </Card>
 );
