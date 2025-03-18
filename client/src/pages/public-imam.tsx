@@ -54,8 +54,8 @@ export default function PublicImamDashboard() {
           Object.entries(data).forEach(([room, status]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
               newStatuses[room as RoomId] = status === 'OK' ? 'green' :
-                                         status === 'NOK' ? 'red' :
-                                         'grey';
+                                           status === 'NOK' ? 'red' :
+                                           'grey';
             }
           });
 
@@ -218,29 +218,29 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
 );
 
 const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
-  <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border border-[#963E56]/10 shadow-sm">
-    <CardContent className="p-8 md:p-10">
+  <Card className="bg-gradient-to-br from-[#963E56]/[0.02] to-transparent border border-[#963E56]/5 shadow-none">
+    <CardContent className="p-6 md:p-8">
       {language === 'nl' ? (
-        <blockquote className="space-y-6 md:space-y-8 text-center">
-          <p className="text-lg md:text-xl text-[#963E56] font-medium">
+        <blockquote className="space-y-4 md:space-y-6 text-center">
+          <p className="text-base md:text-lg text-[#963E56]/70 font-medium">
             De Profeet ﷺ zei:
           </p>
-          <p className="text-lg md:text-xl text-[#963E56] leading-relaxed font-medium italic">
+          <p className="text-base md:text-lg text-[#963E56]/80 leading-relaxed font-medium">
             {t.hadithText}
           </p>
-          <footer className="text-base text-[#963E56]/80 mt-6">
+          <footer className="text-sm md:text-base text-[#963E56]/60 mt-4">
             — {t.hadithSource}
           </footer>
         </blockquote>
       ) : (
-        <div className="space-y-6 md:space-y-8 text-center" dir="rtl">
-          <p className="text-lg md:text-xl text-[#963E56] font-medium">
+        <div className="space-y-4 md:space-y-6 text-center" dir="rtl">
+          <p className="text-base md:text-lg text-[#963E56]/70 font-medium">
             {t.hadithTitle}
           </p>
-          <p className="text-lg md:text-xl text-[#963E56] leading-relaxed font-medium">
+          <p className="text-base md:text-lg text-[#963E56]/80 leading-relaxed font-medium">
             {t.hadithText}
           </p>
-          <p className="text-base text-[#963E56]/80 mt-6">
+          <p className="text-sm md:text-base text-[#963E56]/60 mt-4">
             {t.hadithSource}
           </p>
         </div>
