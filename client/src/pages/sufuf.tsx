@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, X, User, ChevronDown } from "lucide-react";
+import { Check, X, User, ChevronDown, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaPray } from "react-icons/fa";
 import { auth, database } from "@/lib/firebase";
@@ -60,13 +60,13 @@ export function SufufPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden">
-      <div className="container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6 flex-grow">
+    <div className="flex flex-col min-h-[100dvh] bg-gray-50">
+      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6 overflow-y-auto">
         {/* Header */}
         <div className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
           <div className="flex items-center gap-3">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-              <FaPray className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
+              <LayoutDashboard className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
@@ -80,45 +80,50 @@ export function SufufPage() {
         </div>
 
         {/* Status Cards Grid */}
-        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-          {Object.values(rooms).map((room) => (
-            <Card
-              key={room.id}
-              className="group bg-white hover:shadow-lg transition-all duration-300 border border-[#963E56]/10"
-            >
-              <CardHeader className="p-3 md:p-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="flex items-center gap-2 md:gap-3 text-base md:text-lg font-semibold text-[#963E56]">
-                  <div className="bg-[#963E56]/10 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center">
-                    <FaPray className="w-4 h-4 md:w-5 md:h-5 text-[#963E56]" />
+        <Card className="bg-white border border-[#963E56]/10 overflow-hidden">
+          <CardContent className="p-3 md:p-4">
+            <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              {Object.values(rooms).map((room) => (
+                <div
+                  key={room.id}
+                  className="bg-white rounded-lg border border-[#963E56]/10 p-3 md:p-4"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 md:gap-3">
+                      <div className="bg-[#963E56]/10 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center">
+                        <FaPray className="w-4 h-4 md:w-5 md:h-5 text-[#963E56]" />
+                      </div>
+                      <span className="text-base md:text-lg font-semibold text-[#963E56]">
+                        {room.title}
+                      </span>
+                    </div>
+                    <div className={`
+                      relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500
+                      ${roomStatuses[room.id] === 'green'
+                        ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50'
+                        : roomStatuses[room.id] === 'red'
+                          ? 'bg-red-500 shadow-lg shadow-red-500/50'
+                          : 'bg-gray-300'
+                      }
+                    `}>
+                      {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 md:w-7 md:h-7 text-white" />}
+                      {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 md:w-7 md:h-7 text-white" />}
+                    </div>
                   </div>
-                  {room.title}
-                </CardTitle>
-                <div className={`
-                  relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500
-                  ${roomStatuses[room.id] === 'green'
-                    ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50 group-hover:scale-110'
-                    : roomStatuses[room.id] === 'red'
-                      ? 'bg-red-500 shadow-lg shadow-red-500/50 group-hover:scale-110'
-                      : 'bg-gray-300 group-hover:bg-gray-400'}
-                `}>
-                  {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 md:w-7 md:h-7 text-white" />}
-                  {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 md:w-7 md:h-7 text-white" />}
+                  <div className="mt-3 h-2 md:h-3 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${
+                        roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
+                          roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
+                            'w-0'
+                      }`}
+                    />
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-3 md:p-4 pt-2">
-                <div className="mt-3 h-2 md:h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-500 ${
-                      roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
-                        roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
-                          'w-0'
-                    }`}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Vrijwilligersacties sectie */}
         <div className="space-y-4 md:space-y-6">
@@ -155,8 +160,8 @@ export function SufufPage() {
                     flex items-center justify-center
                     transform group-hover:scale-105
                     ${roomStatuses[roomId] === 'green'
-                      ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/30'
-                      : 'bg-[#963E56]/5 group-hover:bg-[#6BB85C]/10'
+                      ? 'bg-[#6BB85C]'
+                      : 'bg-white border-2 border-[#6BB85C]/20 hover:border-[#6BB85C]/40'
                     }
                   `}>
                     <Check className={`
@@ -198,8 +203,8 @@ export function SufufPage() {
                     flex items-center justify-center
                     transform group-hover:scale-105
                     ${roomStatuses[roomId] === 'red'
-                      ? 'bg-red-500 shadow-lg shadow-red-500/30'
-                      : 'bg-[#963E56]/5 group-hover:bg-red-500/10'
+                      ? 'bg-red-500'
+                      : 'bg-white border-2 border-red-500/20 hover:border-red-500/40'
                     }
                   `}>
                     <X className={`
