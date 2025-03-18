@@ -10,10 +10,10 @@ export default function DelenPage() {
   const publicDashboardUrl = `${currentUrl}/public-imam`;
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="container mx-auto px-4 pt-4 pb-8 space-y-6 md:space-y-8">
+    <div className="min-h-screen w-full flex flex-col">
+      <div className="container mx-auto px-4 pt-4 pb-8 space-y-6 md:space-y-8 flex-grow">
         {/* Header */}
-        <div className="shadow-lg p-4 md:p-6 border border-[#963E56]/10 rounded-xl">
+        <div className="bg-white shadow-lg p-4 md:p-6 border border-[#963E56]/10 rounded-xl">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <Share2 className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
@@ -33,7 +33,7 @@ export default function DelenPage() {
           <CardContent className="flex flex-col items-center space-y-6 p-4 md:p-8">
             <button
               onClick={() => setShowFullscreenQR(true)}
-              className="p-4 md:p-6 rounded-xl shadow-lg border border-[#963E56]/10 hover:shadow-xl transition-all duration-300 cursor-pointer"
+              className="p-4 md:p-6 rounded-xl shadow-lg border border-[#963E56]/10 hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
             >
               <QRCodeSVG 
                 value={publicDashboardUrl} 
@@ -64,7 +64,7 @@ export default function DelenPage() {
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" 
             onClick={() => setShowFullscreenQR(false)}
           >
-            <div className="p-6 md:p-8 rounded-xl relative max-w-xl w-full mx-4 shadow-lg border border-[#963E56]/10">
+            <div className="p-6 md:p-8 rounded-xl relative max-w-xl w-full mx-4 bg-white shadow-lg border border-[#963E56]/10">
               <Button
                 variant="ghost"
                 size="icon"
