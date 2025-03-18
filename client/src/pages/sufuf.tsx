@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FaPray } from "react-icons/fa";
-import { auth } from "@/lib/firebase";
+import { auth, database } from "@/lib/firebase";
 import { useLocation, useRoute } from "wouter";
 import { useRoomStatus } from "@/lib/use-room-status";
+import { ref, set } from "firebase/database";
 
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
@@ -27,8 +28,16 @@ export function SufufPage() {
 
   // Handle authentication and cleanup
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (!user) {
+        // Reset all rooms to OFF on logout
+        try {
+          for (const roomId of VALID_ROOM_IDS) {
+            await set(ref(database, `rooms/${roomId}`), 'OFF');
+          }
+        } catch (error) {
+          console.error('[Firebase] Error resetting room statuses:', error);
+        }
         setLocation("/login");
       }
     });
@@ -42,15 +51,19 @@ export function SufufPage() {
       return;
     }
 
-    console.log(`[Firebase] Updating status for ${roomId}: ${newStatus}`);
-    await updateStatus(roomId, newStatus);
+    try {
+      console.log(`[Firebase] Updating status for ${roomId}: ${newStatus}`);
+      await updateStatus(roomId, newStatus);
+    } catch (error) {
+      console.error('[Firebase] Error updating status:', error);
+    }
   };
 
   return (
     <div className="min-h-screen w-full pb-16 md:pb-0">
       <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+        <div className="rounded-xl p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />
@@ -66,7 +79,7 @@ export function SufufPage() {
           {/* Ruimtes Sectie Titel */}
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-[#963E56]/10"
+            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 rounded-lg shadow-sm border border-[#963E56]/10"
           >
             <div className="flex items-center gap-3">
               <User className="h-6 w-6" />
@@ -79,7 +92,7 @@ export function SufufPage() {
             {Object.values(rooms).map((room) => (
               <Card
                 key={room.id}
-                className="group bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+                className="group hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
               >
                 <CardHeader className="p-4 md:p-6 pb-2 md:pb-4 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56]">
@@ -118,7 +131,7 @@ export function SufufPage() {
         <div className="space-y-4">
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 bg-white/80 backdrop-blur-sm rounded-lg shadow-sm border border-[#963E56]/10"
+            className="w-full flex items-center justify-between p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 rounded-lg shadow-sm border border-[#963E56]/10"
             onClick={() => setIsVolunteerSectionOpen(!isVolunteerSectionOpen)}
           >
             <div className="flex items-center gap-3">
@@ -135,7 +148,7 @@ export function SufufPage() {
                 className={`
                   relative h-24 md:h-28 rounded-xl transition-all duration-300
                   hover:shadow-lg active:scale-[0.98] touch-manipulation
-                  bg-white/80 backdrop-blur-sm border-2
+                  border-2
                   ${roomStatuses[roomId] === 'green'
                     ? 'border-[#6BB85C] shadow-md'
                     : 'border-gray-200 hover:border-[#6BB85C]'
@@ -168,7 +181,7 @@ export function SufufPage() {
                 className={`
                   relative h-24 md:h-28 rounded-xl transition-all duration-300
                   hover:shadow-lg active:scale-[0.98] touch-manipulation
-                  bg-white/80 backdrop-blur-sm border-2
+                  border-2
                   ${roomStatuses[roomId] === 'red'
                     ? 'border-red-500 shadow-md'
                     : 'border-gray-200 hover:border-red-500'

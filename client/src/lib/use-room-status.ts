@@ -10,84 +10,70 @@ interface RoomStatuses {
   [key: string]: DisplayStatus;
 }
 
-const ROOM_STATUSES_KEY = 'sufuf_room_statuses';
-
 function convertServerToDisplayStatus(status: ServerStatus): DisplayStatus {
   switch (status) {
     case 'OK': return 'green';
     case 'NOK': return 'red';
-    case 'OFF': return 'grey';
+    default: return 'grey';
   }
 }
 
 export function useRoomStatus() {
   const [isConnected, setIsConnected] = useState(false);
-  const [roomStatuses, setRoomStatuses] = useState<RoomStatuses>(() => {
-    try {
-      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (error) {
-      console.error('[Storage] Error loading statuses:', error);
-    }
-    return {};
-  });
+  const [roomStatuses, setRoomStatuses] = useState<RoomStatuses>({});
 
   useEffect(() => {
     const roomsRef = ref(database, 'rooms');
-    
-    onValue(roomsRef, (snapshot) => {
-      setIsConnected(true);
-      
-      const data = snapshot.val();
-      if (data) {
-        setRoomStatuses(prev => {
-          const newStatuses = { ...prev };
-          Object.entries(data).forEach(([room, status]) => {
-            // Only update if we don't have a local non-grey status
-            if (!prev[room] || prev[room] === 'grey') {
-              newStatuses[room] = convertServerToDisplayStatus(status as ServerStatus);
-            }
-          });
-          return newStatuses;
-        });
+    setIsConnected(true);
+
+    const handleStatusChange = (snapshot: any) => {
+      try {
+        const data = snapshot.val();
+        if (data) {
+          const newStatuses = Object.entries(data).reduce((acc, [room, status]) => ({
+            ...acc,
+            [room]: convertServerToDisplayStatus(status as ServerStatus)
+          }), {} as RoomStatuses);
+
+          console.log('[Firebase] Room status update:', newStatuses);
+          setRoomStatuses(newStatuses);
+        } else {
+          // If no data, set all rooms to grey
+          const defaultStatuses = ['prayer-first', 'prayer-ground', 'garage'].reduce(
+            (acc, room) => ({ ...acc, [room]: 'grey' as DisplayStatus }),
+            {} as RoomStatuses
+          );
+          setRoomStatuses(defaultStatuses);
+        }
+      } catch (error) {
+        console.error('[Firebase] Error processing status update:', error);
+        setIsConnected(false);
       }
-    }, (error) => {
-      console.error('[Firebase] Error:', error);
+    };
+
+    onValue(roomsRef, handleStatusChange, (error) => {
+      console.error('[Firebase] Database error:', error);
       setIsConnected(false);
     });
 
+    // Cleanup function
     return () => {
       off(roomsRef);
+      setIsConnected(false);
     };
   }, []);
 
   const updateStatus = async (roomId: RoomId, status: ServerStatus) => {
     if (!isConnected) {
-      console.warn('[Firebase] Cannot update - not connected');
-      return;
+      throw new Error('Not connected to Firebase');
     }
 
     try {
-      const displayStatus = convertServerToDisplayStatus(status);
-      
-      // Update local state first
-      const newStatuses = {
-        ...roomStatuses,
-        [roomId]: displayStatus
-      };
-      
-      // Save to localStorage
-      localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
-      setRoomStatuses(newStatuses);
-
-      // Update Firebase
       await set(ref(database, `rooms/${roomId}`), status);
-      
-      console.log(`[Firebase] Updated ${roomId} status to ${status}`);
+      console.log(`[Firebase] Successfully updated ${roomId} status to ${status}`);
     } catch (error) {
       console.error('[Firebase] Error updating status:', error);
+      throw error;
     }
   };
 
