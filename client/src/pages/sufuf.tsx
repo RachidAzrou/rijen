@@ -6,7 +6,7 @@ import { FaPray } from "react-icons/fa";
 import { auth, database } from "@/lib/firebase";
 import { useLocation, useRoute } from "wouter";
 import { useRoomStatus } from "@/lib/use-room-status";
-import { ref, set } from "firebase/database";
+import { ref, set, onValue } from "firebase/database";
 
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
@@ -32,9 +32,11 @@ export function SufufPage() {
       if (!user) {
         // Reset all rooms to OFF on logout
         try {
+          console.log('[Firebase] Resetting all room statuses to OFF');
           for (const roomId of VALID_ROOM_IDS) {
             await set(ref(database, `rooms/${roomId}`), 'OFF');
           }
+          console.log('[Firebase] Successfully reset all room statuses');
         } catch (error) {
           console.error('[Firebase] Error resetting room statuses:', error);
         }
@@ -52,8 +54,10 @@ export function SufufPage() {
     }
 
     try {
-      console.log(`[Firebase] Updating status for ${roomId}: ${newStatus}`);
-      await updateStatus(roomId, newStatus);
+      console.log(`[Firebase] Updating status for ${roomId} to ${newStatus}`);
+      const roomRef = ref(database, `rooms/${roomId}`);
+      await set(roomRef, newStatus);
+      console.log(`[Firebase] Successfully updated ${roomId} status to ${newStatus}`);
     } catch (error) {
       console.error('[Firebase] Error updating status:', error);
     }

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
-import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
 import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
+import { database } from "@/lib/firebase";
+import { ref, onValue, DataSnapshot } from "firebase/database";
 
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
@@ -17,7 +18,6 @@ const rooms = {
 } as const;
 
 export default function PublicImamDashboard() {
-  const { socket } = useSocket();
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [statusMap, setStatusMap] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
@@ -27,48 +27,60 @@ export default function PublicImamDashboard() {
   });
 
   useEffect(() => {
-    if (!socket) return;
+    console.log('[Firebase] Setting up room status listener');
+    const roomsRef = ref(database, 'rooms');
 
-    const handleMessage = (event: MessageEvent) => {
+    const handleSnapshot = (snapshot: DataSnapshot) => {
       try {
-        const data = JSON.parse(event.data);
-        console.log('[WebSocket] Received:', data);
+        const data = snapshot.val();
+        console.log('[Firebase] Received room data:', data);
 
-        if (data.type === 'statusUpdated') {
-          setStatusMap(prev => {
-            const newStatus = {
-              ...prev,
-              [data.room]: data.status
-            };
-            console.log('[WebSocket] Updated status map:', newStatus);
-            return newStatus;
+        if (data) {
+          const newStatuses = {} as Record<RoomId, 'green' | 'red' | 'grey'>;
+
+          // Initialize all rooms to grey first
+          VALID_ROOM_IDS.forEach(id => {
+            newStatuses[id] = 'grey';
           });
-          setLastUpdate(new Date());
-        }
 
-        if (data.type === 'initialStatus') {
-          console.log('[WebSocket] Received initial status:', data.data);
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
-            ...acc,
-            [room]: status
-          }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          console.log('[WebSocket] Setting initial status map:', newStatuses);
+          // Update with received data
+          Object.entries(data).forEach(([room, status]) => {
+            if (VALID_ROOM_IDS.includes(room as RoomId)) {
+              newStatuses[room as RoomId] = status === 'OK' ? 'green' : 
+                                          status === 'NOK' ? 'red' : 
+                                          'grey';
+            }
+          });
+
+          console.log('[Firebase] Updated room statuses:', newStatuses);
           setStatusMap(newStatuses);
+          setLastUpdate(new Date());
+        } else {
+          console.log('[Firebase] No data received, setting all rooms to grey');
+          const defaultStatuses = VALID_ROOM_IDS.reduce(
+            (acc, id) => ({ ...acc, [id]: 'grey' }),
+            {} as Record<RoomId, 'green' | 'red' | 'grey'>
+          );
+          setStatusMap(defaultStatuses);
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('[WebSocket] Error handling message:', error);
+        console.error('[Firebase] Error processing snapshot:', error);
       }
     };
 
-    console.log('[WebSocket] Adding message handler');
-    socket.addEventListener('message', handleMessage);
+    const handleError = (error: Error) => {
+      console.error('[Firebase] Database error:', error);
+    };
+
+    console.log('[Firebase] Attaching onValue listener to:', roomsRef.toString());
+    const unsubscribe = onValue(roomsRef, handleSnapshot, handleError);
 
     return () => {
-      console.log('[WebSocket] Removing message handler');
-      socket.removeEventListener('message', handleMessage);
+      console.log('[Firebase] Cleaning up room status listener');
+      unsubscribe();
     };
-  }, [socket]);
+  }, []);
 
   const t = translations[language];
 
@@ -76,7 +88,7 @@ export default function PublicImamDashboard() {
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 md:py-8 space-y-6">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+        <div className="rounded-xl p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
               <>
@@ -106,7 +118,7 @@ export default function PublicImamDashboard() {
           {Object.entries(rooms).map(([id, room]) => (
             <Card
               key={id}
-              className="overflow-hidden bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              className="overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardHeader className="p-4 md:p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className={`flex items-center gap-3 text-base md:text-lg font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
@@ -172,7 +184,7 @@ export default function PublicImamDashboard() {
 }
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
-  <div className="fixed bottom-4 left-4 flex gap-1 bg-white/80 backdrop-blur-sm p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
+  <div className="fixed bottom-4 left-4 flex gap-1 p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
     <Button
       variant={language === 'nl' ? 'default' : 'ghost'}
       onClick={() => setLanguage('nl')}
@@ -189,7 +201,7 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
       onClick={() => setLanguage('ar')}
       className={`px-4 py-2 text-sm font-medium transition-all duration-300 ${
         language === 'ar'
-          ? 'bg-[#963E56] text.white hover:bg-[#963E56]/90'
+          ? 'bg-[#963E56] text-white hover:bg-[#963E56]/90'
           : 'text-[#963E56] hover:bg-[#963E56]/10'
       }`}
     >

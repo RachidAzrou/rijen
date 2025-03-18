@@ -35,20 +35,21 @@ function Router() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
-      if (!user && location !== '/login') {
+      // Only redirect to login if not on public-imam page and not logged in
+      if (!user && location !== '/login' && location !== '/public-imam') {
         setLocation('/login');
       }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [location]);
 
   // Don't show sidebar on login and public pages
   const showSidebar = isLoggedIn && 
     !['/login', '/public-imam', '/room-select'].includes(location);
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
+    <div className="min-h-screen w-full">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
