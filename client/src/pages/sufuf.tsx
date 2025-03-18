@@ -12,8 +12,12 @@ type RoomId = typeof VALID_ROOM_IDS[number];
 
 const ROOM_STATUSES_KEY = 'sufuf_room_statuses';
 
-type RoomStatus = 'OK' | 'NOK' | 'OFF';
+type ServerStatus = 'OK' | 'NOK' | 'OFF';
 type DisplayStatus = 'green' | 'red' | 'grey';
+
+interface RoomStatuses {
+  [key: string]: DisplayStatus;
+}
 
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
@@ -21,7 +25,7 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-function convertStatusToDisplay(status: RoomStatus): DisplayStatus {
+function convertServerToDisplayStatus(status: ServerStatus): DisplayStatus {
   switch (status) {
     case 'OK': return 'green';
     case 'NOK': return 'red';
@@ -36,49 +40,95 @@ export function SufufPage() {
   const roomId = params?.roomId as RoomId;
   const currentRoom = rooms[roomId];
 
-  // Status state with session persistence
-  const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, DisplayStatus>>(() => {
+  // Load initial statuses from sessionStorage
+  const [roomStatuses, setRoomStatuses] = useState<RoomStatuses>(() => {
     try {
       const stored = sessionStorage.getItem(ROOM_STATUSES_KEY);
+      console.log('[Session] Loading stored statuses:', stored);
+
       if (stored) {
         const parsed = JSON.parse(stored);
-        // Validate stored data
-        const isValid = VALID_ROOM_IDS.every(id => 
-          id in parsed && ['green', 'red', 'grey'].includes(parsed[id])
-        );
-        if (isValid) {
-          console.log('[Session] Loaded valid stored statuses:', parsed);
-          return parsed;
+        if (typeof parsed === 'object' && parsed !== null) {
+          // Validate each room status
+          const validStatuses = Object.entries(parsed).reduce((acc, [room, status]) => {
+            if (VALID_ROOM_IDS.includes(room as RoomId) && ['green', 'red', 'grey'].includes(status as DisplayStatus)) {
+              acc[room] = status as DisplayStatus;
+            } else {
+              acc[room] = 'grey';
+            }
+            return acc;
+          }, {} as RoomStatuses);
+
+          console.log('[Session] Loaded valid statuses:', validStatuses);
+          return validStatuses;
         }
       }
     } catch (error) {
-      console.error('[Session] Error loading stored statuses:', error);
+      console.error('[Session] Error loading statuses:', error);
     }
-    // Default statuses if storage is empty or invalid
-    return VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {}) as Record<RoomId, DisplayStatus>;
-  });
 
-  const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
+    // Default statuses if storage is empty or invalid
+    const defaultStatuses = VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {} as RoomStatuses);
+    console.log('[Session] Using default statuses:', defaultStatuses);
+    return defaultStatuses;
+  });
 
   // Save status changes to sessionStorage
   useEffect(() => {
     try {
+      console.log('[Session] Saving statuses:', roomStatuses);
       sessionStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(roomStatuses));
-      console.log('[Session] Saved statuses:', roomStatuses);
     } catch (error) {
       console.error('[Session] Error saving statuses:', error);
     }
   }, [roomStatuses]);
 
+  // Handle WebSocket messages
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessage = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('[WebSocket] Received:', data);
+
+        if (data.type === 'statusUpdated') {
+          setRoomStatuses(prev => {
+            const newStatus = convertServerToDisplayStatus(data.status as ServerStatus);
+            const newStatuses = { ...prev, [data.room]: newStatus };
+            console.log('[WebSocket] Updating statuses:', newStatuses);
+            return newStatuses;
+          });
+        } else if (data.type === 'initialStatus') {
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
+            ...acc,
+            [room]: convertServerToDisplayStatus(status as ServerStatus)
+          }), {} as RoomStatuses);
+          console.log('[WebSocket] Setting initial statuses:', newStatuses);
+          setRoomStatuses(newStatuses);
+        }
+      } catch (error) {
+        console.error('[WebSocket] Error handling message:', error);
+      }
+    };
+
+    socket.addEventListener('message', handleMessage);
+
+    // Request initial status
+    console.log('[WebSocket] Requesting initial status');
+    sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
+
+    return () => socket.removeEventListener('message', handleMessage);
+  }, [socket, sendMessage]);
+
   // Handle authentication and cleanup
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        // Clear session storage and reset statuses on logout
         console.log('[Auth] User logged out, clearing session');
         sessionStorage.removeItem(ROOM_STATUSES_KEY);
+        setRoomStatuses(VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {} as RoomStatuses));
 
-        // Reset all statuses and notify server
         if (socket && isConnected) {
           VALID_ROOM_IDS.forEach(room => {
             sendMessage(JSON.stringify({
@@ -95,64 +145,19 @@ export function SufufPage() {
     return () => unsubscribe();
   }, [socket, isConnected, sendMessage, setLocation]);
 
-  // Handle WebSocket messages
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('[WebSocket] Received:', data);
-
-        if (data.type === 'statusUpdated') {
-          setRoomStatuses(prev => {
-            const newStatuses = {
-              ...prev,
-              [data.room]: convertStatusToDisplay(data.status)
-            };
-            console.log('[WebSocket] Updated room statuses:', newStatuses);
-            return newStatuses;
-          });
-        } else if (data.type === 'initialStatus') {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
-            ...acc,
-            [room]: convertStatusToDisplay(status as RoomStatus)
-          }), {} as Record<RoomId, DisplayStatus>);
-          console.log('[WebSocket] Setting initial statuses:', newStatuses);
-          setRoomStatuses(newStatuses);
-        }
-      } catch (error) {
-        console.error('[WebSocket] Error handling message:', error);
-      }
-    };
-
-    socket.addEventListener('message', handleMessage);
-
-    // Request initial status
-    const success = sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
-    if (!success) {
-      console.warn('[WebSocket] Failed to request initial status');
-    }
-
-    return () => socket.removeEventListener('message', handleMessage);
-  }, [socket, sendMessage]);
-
   // Handle status updates
-  const handleStatusUpdate = (status: RoomStatus) => {
+  const handleStatusUpdate = (newStatus: ServerStatus) => {
     if (!isConnected) {
       console.warn('[WebSocket] Cannot update - not connected');
       return;
     }
 
-    const success = sendMessage(JSON.stringify({
+    console.log(`[WebSocket] Sending status update for ${roomId}: ${newStatus}`);
+    sendMessage(JSON.stringify({
       type: 'updateStatus',
       room: roomId,
-      status
+      status: newStatus
     }));
-
-    if (!success) {
-      console.error('[WebSocket] Failed to send status update');
-    }
   };
 
   return (
