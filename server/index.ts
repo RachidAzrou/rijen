@@ -31,6 +31,15 @@ function broadcast(message: any) {
   });
 }
 
+// Helper function to validate room and status
+function isValidRoom(room: string): boolean {
+  return ['prayer-ground', 'prayer-first', 'garage'].includes(room);
+}
+
+function isValidStatus(status: string): status is 'OK' | 'NOK' | 'OFF' {
+  return ['OK', 'NOK', 'OFF'].includes(status);
+}
+
 // WebSocket connection handling
 wss.on('connection', (ws) => {
   console.log('[WebSocket] New client connected');
@@ -49,23 +58,31 @@ wss.on('connection', (ws) => {
       if (data.type === 'updateStatus') {
         const { room, status } = data;
 
-        // Update status if room exists
-        if (room in roomStatuses) {
-          const newStatus = status === 'OK' ? 'green' : 
-                          status === 'NOK' ? 'red' : 
-                          'grey';
-
-          // Update status in memory
-          roomStatuses[room] = newStatus;
-          console.log(`[WebSocket] Updated ${room} status to ${newStatus}`);
-
-          // Broadcast update to all clients immediately
-          broadcast({
-            type: 'statusUpdated',
-            room,
-            status: newStatus
-          });
+        // Validate input
+        if (!isValidRoom(room)) {
+          console.error(`[WebSocket] Invalid room: ${room}`);
+          return;
         }
+
+        if (!isValidStatus(status)) {
+          console.error(`[WebSocket] Invalid status: ${status}`);
+          return;
+        }
+
+        // Update status in memory
+        const newStatus = status === 'OK' ? 'green' : 
+                         status === 'NOK' ? 'red' : 
+                         'grey';
+
+        roomStatuses[room] = newStatus;
+        console.log(`[WebSocket] Updated ${room} status to ${newStatus}`);
+
+        // Broadcast update to all clients immediately
+        broadcast({
+          type: 'statusUpdated',
+          room,
+          status: newStatus
+        });
       } else if (data.type === 'getInitialStatus') {
         // Send current status to requesting client
         ws.send(JSON.stringify({

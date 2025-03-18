@@ -4,10 +4,17 @@ export function useSocket() {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>();
+  const reconnectAttemptsRef = useRef(0);
+  const MAX_RECONNECT_ATTEMPTS = 5;
 
   const connect = useCallback(() => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       console.log('[WebSocket] Already connected');
+      return;
+    }
+
+    if (reconnectAttemptsRef.current >= MAX_RECONNECT_ATTEMPTS) {
+      console.log('[WebSocket] Max reconnection attempts reached');
       return;
     }
 
@@ -21,12 +28,12 @@ export function useSocket() {
     socket.onopen = () => {
       console.log('[WebSocket] Connected');
       setIsConnected(true);
+      reconnectAttemptsRef.current = 0;
+
       // Clear any existing reconnect timeout
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
       }
-      // Request initial status
-      socket.send(JSON.stringify({ type: 'getInitialStatus' }));
     };
 
     socket.onclose = () => {
@@ -34,16 +41,21 @@ export function useSocket() {
       setIsConnected(false);
       socketRef.current = null;
 
-      // Attempt to reconnect after 2 seconds
+      // Increment reconnection attempts
+      reconnectAttemptsRef.current += 1;
+
+      // Attempt to reconnect with exponential backoff
+      const timeout = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 10000);
+      console.log(`[WebSocket] Attempting to reconnect in ${timeout}ms (attempt ${reconnectAttemptsRef.current})`);
+
       reconnectTimeoutRef.current = setTimeout(() => {
-        console.log('[WebSocket] Attempting to reconnect...');
         connect();
-      }, 2000);
+      }, timeout);
     };
 
     socket.onerror = (error) => {
       console.error('[WebSocket] Error:', error);
-      socket.close(); // This will trigger onclose and the reconnection attempt
+      socket.close();
     };
   }, []);
 
@@ -65,14 +77,16 @@ export function useSocket() {
   const sendMessage = useCallback((message: string) => {
     if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
       console.warn('[WebSocket] Cannot send - not connected');
-      return;
+      return false;
     }
 
     try {
       console.log('[WebSocket] Sending:', JSON.parse(message));
       socketRef.current.send(message);
+      return true;
     } catch (error) {
       console.error('[WebSocket] Failed to send:', error);
+      return false;
     }
   }, []);
 

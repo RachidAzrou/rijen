@@ -10,6 +10,8 @@ import { useLocation, useRoute } from "wouter";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
+const ROOM_STATUSES_KEY = 'sufuf_room_statuses';
+
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
@@ -23,51 +25,49 @@ export function SufufPage() {
   const roomId = params?.roomId as RoomId;
   const currentRoom = rooms[roomId];
 
-  // Status state met sessie persistence
+  // Load initial statuses from sessionStorage
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
-    // Probeer de status uit sessionStorage te laden
     try {
-      const storedStatuses = sessionStorage.getItem('room_statuses');
-      if (storedStatuses) {
-        return JSON.parse(storedStatuses);
+      const stored = sessionStorage.getItem(ROOM_STATUSES_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        // Validate stored data
+        const isValid = VALID_ROOM_IDS.every(id => 
+          id in parsed && ['green', 'red', 'grey'].includes(parsed[id])
+        );
+        if (isValid) {
+          console.log('[Session] Loaded valid stored statuses:', parsed);
+          return parsed;
+        }
       }
     } catch (error) {
-      console.error('Error loading from sessionStorage:', error);
+      console.error('[Session] Error loading stored statuses:', error);
     }
-    return {
-      'prayer-first': 'grey',
-      'prayer-ground': 'grey',
-      'garage': 'grey'
-    };
+    // Default statuses if storage is empty or invalid
+    return VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {}) as Record<RoomId, 'green' | 'red' | 'grey'>;
   });
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // Sla status op in sessionStorage wanneer deze verandert
+  // Save status changes to sessionStorage
   useEffect(() => {
     try {
-      sessionStorage.setItem('room_statuses', JSON.stringify(roomStatuses));
+      sessionStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(roomStatuses));
+      console.log('[Session] Saved statuses:', roomStatuses);
     } catch (error) {
-      console.error('Error saving to sessionStorage:', error);
+      console.error('[Session] Error saving statuses:', error);
     }
   }, [roomStatuses]);
 
-  // Auth check en cleanup
+  // Handle authentication and cleanup
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        // Verwijder status uit sessionStorage bij uitloggen
-        sessionStorage.removeItem('room_statuses');
+        // Clear session storage and reset statuses on logout
+        console.log('[Auth] User logged out, clearing session');
+        sessionStorage.removeItem(ROOM_STATUSES_KEY);
 
-        // Reset alle statussen
-        const resetStatuses = {
-          'prayer-first': 'grey',
-          'prayer-ground': 'grey',
-          'garage': 'grey'
-        };
-        setRoomStatuses(resetStatuses);
-
-        // Stuur reset naar server als we verbonden zijn
+        // Reset all statuses and notify server
         if (socket && isConnected) {
           VALID_ROOM_IDS.forEach(room => {
             sendMessage(JSON.stringify({
@@ -77,13 +77,14 @@ export function SufufPage() {
             }));
           });
         }
+
         setLocation("/login");
       }
     });
     return () => unsubscribe();
   }, [socket, isConnected, sendMessage, setLocation]);
 
-  // WebSocket message handler
+  // Handle WebSocket messages
   useEffect(() => {
     if (!socket) return;
 
@@ -98,11 +99,7 @@ export function SufufPage() {
               ...prev,
               [data.room]: data.status
             };
-            try {
-              sessionStorage.setItem('room_statuses', JSON.stringify(newStatuses));
-            } catch (error) {
-              console.error('Error saving to sessionStorage:', error);
-            }
+            console.log('[WebSocket] Updated room statuses:', newStatuses);
             return newStatuses;
           });
         } else if (data.type === 'initialStatus') {
@@ -110,12 +107,8 @@ export function SufufPage() {
             ...acc,
             [room]: status
           }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+          console.log('[WebSocket] Setting initial statuses:', newStatuses);
           setRoomStatuses(newStatuses);
-          try {
-            sessionStorage.setItem('room_statuses', JSON.stringify(newStatuses));
-          } catch (error) {
-            console.error('Error saving to sessionStorage:', error);
-          }
         }
       } catch (error) {
         console.error('[WebSocket] Error handling message:', error);
@@ -125,11 +118,12 @@ export function SufufPage() {
     socket.addEventListener('message', handleMessage);
 
     // Request initial status
-    sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
+    const success = sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
+    if (!success) {
+      console.warn('[WebSocket] Failed to request initial status');
+    }
 
-    return () => {
-      socket.removeEventListener('message', handleMessage);
-    };
+    return () => socket.removeEventListener('message', handleMessage);
   }, [socket, sendMessage]);
 
   // Handle status updates
@@ -139,11 +133,15 @@ export function SufufPage() {
       return;
     }
 
-    sendMessage(JSON.stringify({
+    const success = sendMessage(JSON.stringify({
       type: 'updateStatus',
       room: roomId,
       status
     }));
+
+    if (!success) {
+      console.error('[WebSocket] Failed to send status update');
+    }
   };
 
   return (
