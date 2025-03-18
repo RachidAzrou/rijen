@@ -1,16 +1,16 @@
 import { Server } from 'ws';
-import { createServer } from 'http';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const rooms = {
-  'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
+  'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 };
 
 const wss = new Server({ noServer: true });
 
 wss.on('connection', (ws) => {
-  // Send initial status
+  // Send initial status to new clients
   ws.send(JSON.stringify({
     type: 'initialStatus',
     data: rooms
@@ -36,11 +36,6 @@ wss.on('connection', (ws) => {
             }
           });
         }
-      } else if (data.type === 'getInitialStatus') {
-        ws.send(JSON.stringify({
-          type: 'initialStatus',
-          data: rooms
-        }));
       }
     } catch (error) {
       console.error('WebSocket message error:', error);
@@ -48,7 +43,7 @@ wss.on('connection', (ws) => {
   });
 });
 
-export default function handler(req, res) {
+export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.headers.upgrade?.toLowerCase() !== 'websocket') {
     res.status(426).send('Upgrade Required');
     return;
