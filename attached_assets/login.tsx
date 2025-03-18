@@ -93,15 +93,17 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-no-repeat bg-cover bg-center relative px-4 py-8 md:p-4"
-      style={{
-        backgroundImage: `url('/static/123.jpg')`
-      }}
-    >
-      <div className="absolute inset-0 bg-black/30" />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <div
+        className="absolute inset-0 bg-no-repeat bg-cover bg-center"
+        style={{
+          backgroundImage: `url('/static/123.jpg')`
+        }}
+      >
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
 
-      <div className="relative z-10 w-full max-w-[500px]">
+      <div className="relative z-10 w-full max-w-[500px] px-4 py-8 md:py-0">
         <Card className="bg-white border-0 shadow-2xl overflow-hidden">
           <CardContent className="pt-8 px-4 sm:px-8">
             <div className="text-center mb-8">

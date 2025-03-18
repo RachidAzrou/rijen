@@ -35,7 +35,6 @@ function Router() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
-      // Only redirect to login if not on public-imam page and not logged in
       if (!user && location !== '/login' && location !== '/public-imam') {
         setLocation('/login');
       }
@@ -44,22 +43,21 @@ function Router() {
     return () => unsubscribe();
   }, [location]);
 
-  // Don't show sidebar on login and public pages
   const showSidebar = isLoggedIn && 
     !['/login', '/public-imam', '/room-select'].includes(location);
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
-      <main className={`relative transition-all duration-300
-        ${showSidebar ? (
+      <main className={`relative flex-grow ${
+        showSidebar ? (
           isSidebarOpen ? 
             'md:ml-56' : 
             'md:ml-16'
-        ) : ''}`}
-      >
+        ) : ''
+      }`}>
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/" component={RoomSelect} />

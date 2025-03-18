@@ -92,9 +92,9 @@ export default function PublicImamDashboard() {
   const t = translations[language];
 
   return (
-    <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        {/* Header - Using Mosque Icon */}
+    <div className="min-h-screen flex flex-col overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <div className="container mx-auto px-4 py-6 space-y-6 flex-grow">
+        {/* Header */}
         <div className="rounded-xl p-4 md:p-5 bg-white border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
@@ -208,18 +208,18 @@ export default function PublicImamDashboard() {
           ))}
         </div>
 
-        <div className="text-center text-base text-[#963E56]/70 mt-8">
+        <div className="text-center text-base text-[#963E56]/70">
           {t.lastUpdate}: {lastUpdate.toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
-
-        <LanguageSwitcher language={language} setLanguage={setLanguage} />
       </div>
+
+      <LanguageSwitcher language={language} setLanguage={setLanguage} />
     </div>
   );
 }
 
 const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLanguage: (lang: Language) => void }) => (
-  <div className="fixed bottom-4 left-4 flex gap-1 p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50">
+  <div className="fixed bottom-4 left-4 flex gap-1 p-1 rounded-lg shadow-lg border border-[#963E56]/10 z-50 bg-white">
     <Button
       variant={language === 'nl' ? 'default' : 'ghost'}
       onClick={() => setLanguage('nl')}

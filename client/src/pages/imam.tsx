@@ -24,7 +24,6 @@ export default function ImamDashboard() {
   const { socket, isConnected, sendMessage } = useSocket();
   const [_, setLocation] = useLocation();
 
-  // Load initial statuses from localStorage or use default
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
@@ -37,7 +36,6 @@ export default function ImamDashboard() {
       if (stored) {
         const parsedStatuses = JSON.parse(stored);
         console.log('[ImamDashboard] Parsed stored statuses:', parsedStatuses);
-        // Ensure we only use valid room IDs
         const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
           ...acc,
           [roomId]: parsedStatuses[roomId] || 'grey'
@@ -118,8 +116,8 @@ export default function ImamDashboard() {
   }, [socket, isConnected, sendMessage]);
 
   return (
-    <div className="min-h-screen w-full">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
+      <div className="container mx-auto px-4 py-6 space-y-6 flex-grow">
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-[#963E56] flex items-center gap-2">
             <FaPray className="h-5 w-5" />
@@ -133,7 +131,9 @@ export default function ImamDashboard() {
               >
                 <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="flex items-center gap-3 text-lg font-semibold text-[#963E56]">
-                    <FaPray className="h-5 w-5" />
+                    <div className="bg-[#963E56]/10 w-8 h-8 rounded-full flex items-center justify-center">
+                      <FaPray className="w-5 h-5 text-[#963E56]" />
+                    </div>
                     {room.title}
                   </CardTitle>
                   <div className={`
