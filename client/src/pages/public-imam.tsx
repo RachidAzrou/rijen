@@ -1,25 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
-import { PiMosqueDuotone } from "react-icons/pi";
+import { FaPray } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
 import { database } from "@/lib/firebase";
 import { ref, onValue, DataSnapshot } from "firebase/database";
 
-const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
+const VALID_ROOM_IDS = ['prayer-ground', 'prayer-first', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
+// Herordende rooms array met Moskee +0 eerst
 const rooms = {
-  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
+  'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-// Importeer het prayer icon component
+// Prayer icon component met biddend mannetje
 const PrayerIcon = () => (
   <div className="bg-[#963E56]/10 w-8 h-8 rounded-full flex items-center justify-center">
-    <PiMosqueDuotone className="w-5 h-5 text-[#963E56]" />
+    <FaPray className="w-5 h-5 text-[#963E56]" />
   </div>
 );
 
@@ -27,8 +28,8 @@ export default function PublicImamDashboard() {
   const [language, setLanguage] = useState<Language>('nl');
   const [lastUpdate, setLastUpdate] = useState(new Date());
   const [statusMap, setStatusMap] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>({
-    'prayer-first': 'grey',
     'prayer-ground': 'grey',
+    'prayer-first': 'grey',
     'garage': 'grey'
   });
 
@@ -99,7 +100,7 @@ export default function PublicImamDashboard() {
             {language === 'nl' ? (
               <>
                 <div className="bg-[#963E56]/10 p-3 rounded-full">
-                  <PiMosqueDuotone className="h-8 w-8 text-[#963E56]" />
+                  <FaPray className="h-8 w-8 text-[#963E56]" />
                 </div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-[#963E56]">
                   {t.pageTitle}
@@ -111,7 +112,7 @@ export default function PublicImamDashboard() {
                   {t.pageTitle}
                 </h1>
                 <div className="bg-[#963E56]/10 p-3 rounded-full">
-                  <PiMosqueDuotone className="h-8 w-8 text-[#963E56]" />
+                  <FaPray className="h-8 w-8 text-[#963E56]" />
                 </div>
               </div>
             )}
@@ -218,28 +219,28 @@ const LanguageSwitcher = ({ language, setLanguage }: { language: Language, setLa
 
 const HadiethCard = ({ t, language }: { t: typeof translations.nl, language: Language }) => (
   <Card className="bg-gradient-to-br from-[#963E56]/5 to-transparent border border-[#963E56]/10 shadow-sm">
-    <CardContent className="p-8">
+    <CardContent className="p-8 md:p-10">
       {language === 'nl' ? (
-        <blockquote className="space-y-4 text-center">
-          <p className="text-2xl lg:text-3xl text-[#963E56] font-medium">
+        <blockquote className="space-y-6 md:space-y-8 text-center">
+          <p className="text-lg md:text-xl text-[#963E56] font-medium">
             De Profeet ﷺ zei:
           </p>
-          <p className="text-2xl lg:text-3xl text-[#963E56] leading-relaxed font-medium italic">
+          <p className="text-lg md:text-xl text-[#963E56] leading-relaxed font-medium italic">
             {t.hadithText}
           </p>
-          <footer className="text-base text-[#963E56]/80 mt-4">
+          <footer className="text-base text-[#963E56]/80 mt-6">
             — {t.hadithSource}
           </footer>
         </blockquote>
       ) : (
-        <div className="space-y-6 text-center" dir="rtl">
-          <p className="text-2xl lg:text-3xl text-[#963E56] leading-relaxed font-medium">
+        <div className="space-y-6 md:space-y-8 text-center" dir="rtl">
+          <p className="text-lg md:text-xl text-[#963E56] font-medium">
             {t.hadithTitle}
           </p>
-          <p className="text-2xl lg:text-3xl text-[#963E56] leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-[#963E56] leading-relaxed font-medium">
             {t.hadithText}
           </p>
-          <p className="text-base text-[#963E56]/80 mt-4">
+          <p className="text-base text-[#963E56]/80 mt-6">
             {t.hadithSource}
           </p>
         </div>
