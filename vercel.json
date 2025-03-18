@@ -4,14 +4,13 @@
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "functions": {
-    "api/websocket.ts": {
-      "runtime": "nodejs18.x",
-      "memory": 1024
+    "api/websocket": {
+      "runtime": "nodejs18.x"
     }
   },
   "rewrites": [
     { 
-      "source": "/ws",
+      "source": "/api/websocket",
       "destination": "/api/websocket"
     },
     { 
