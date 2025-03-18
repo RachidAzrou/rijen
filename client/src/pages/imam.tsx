@@ -113,21 +113,25 @@ export default function ImamDashboard() {
   }, [socket, isConnected, sendMessage]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden bg-gray-50/50">
-      <div className="absolute inset-0 flex flex-col">
-        <div className="w-full max-h-full px-3 md:px-4 py-4 md:py-6">
-          <div className="flex flex-col h-full space-y-4 md:space-y-6">
-            <div className="flex-none rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <LayoutDashboard className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
-                </div>
-                <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
-                  Imam Dashboard
-                </h1>
+    <div className="absolute inset-0 flex flex-col overflow-hidden bg-gray-50/50">
+      <div className="absolute inset-x-0 inset-y-0 flex flex-col">
+        <div className="flex-none px-3 md:px-4 py-4">
+          {/* Header */}
+          <div className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
+            <div className="flex items-center gap-3">
+              <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+                <LayoutDashboard className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
               </div>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
+                Imam Dashboard
+              </h1>
             </div>
+          </div>
+        </div>
 
+        <div className="flex-1 px-3 md:px-4 py-2 min-h-0">
+          <div className="h-full flex flex-col gap-4 md:gap-6">
+            {/* Status Cards Container */}
             <Card className="flex-none bg-white/80 backdrop-blur-sm border-[#963E56]/10">
               <CardContent className="p-3 md:p-4">
                 <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
