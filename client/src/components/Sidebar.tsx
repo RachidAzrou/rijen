@@ -49,7 +49,7 @@ export function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
       {/* Desktop Sidebar */}
       <div className={`
-        hidden md:flex fixed top-0 left-0 h-full bg-white/95 backdrop-blur-sm border-r border-gray-200 
+        hidden md:flex fixed top-0 left-0 h-full bg-white border-r border-gray-200 
         transition-all duration-300 z-40 flex-col
         ${isOpen ? 'w-56' : 'w-12'}
       `}>

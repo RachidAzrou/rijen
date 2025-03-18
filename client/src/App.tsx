@@ -56,7 +56,7 @@ function Router() {
       <main className={`relative transition-all duration-300
         ${showSidebar ? (
           isSidebarOpen ? 
-            'md:ml-64' : 
+            'md:ml-56' : 
             'md:ml-16'
         ) : ''}`}
       >
