@@ -60,9 +60,9 @@ export function SufufPage() {
   };
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden bg-gray-50/50">
-      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6 overflow-y-auto">
-        <div className="space-y-4 md:space-y-6">
+    <div className="fixed inset-0 flex flex-col bg-gray-50/50">
+      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6">
+        <div className="h-full overflow-hidden space-y-4 md:space-y-6">
           {/* Header */}
           <div className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
             <div className="flex items-center gap-3">
@@ -81,7 +81,7 @@ export function SufufPage() {
           </div>
 
           {/* Status Cards Container - Now transparent */}
-          <Card className="bg-white/80 backdrop-blur-sm border-[#963E56]/10 overflow-hidden">
+          <Card className="bg-white/80 backdrop-blur-sm border-[#963E56]/10">
             <CardContent className="p-3 md:p-4">
               <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.values(rooms).map((room) => (

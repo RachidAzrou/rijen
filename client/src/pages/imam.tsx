@@ -113,9 +113,9 @@ export default function ImamDashboard() {
   }, [socket, isConnected, sendMessage]);
 
   return (
-    <div className="h-[100dvh] flex flex-col overflow-hidden bg-gray-50/50">
-      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6 overflow-y-auto">
-        <div className="space-y-4 md:space-y-6">
+    <div className="fixed inset-0 flex flex-col bg-gray-50/50">
+      <div className="flex-1 container mx-auto px-3 md:px-4 py-4 md:py-6">
+        <div className="h-full overflow-hidden space-y-4 md:space-y-6">
           <div className="bg-white shadow-lg p-4 md:p-6 border border-[#963E56]/10 rounded-xl">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -127,7 +127,7 @@ export default function ImamDashboard() {
             </div>
           </div>
 
-          <Card className="bg-white/80 backdrop-blur-sm border border-[#963E56]/10 overflow-hidden">
+          <Card className="bg-white/80 backdrop-blur-sm border border-[#963E56]/10">
             <CardContent className="p-3 md:p-4">
               <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                 {Object.values(rooms).map((room) => (
