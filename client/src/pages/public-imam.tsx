@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X } from "lucide-react";
+import { FaPray } from "react-icons/fa";
 import { PiMosqueDuotone } from "react-icons/pi";
 import { Button } from "@/components/ui/button";
 import { translations, type Language } from "@/lib/translations";
@@ -10,17 +11,16 @@ import { ref, onValue, DataSnapshot } from "firebase/database";
 const VALID_ROOM_IDS = ['prayer-ground', 'prayer-first', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
-// Herordende rooms array met Moskee +0 eerst
 const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-// Prayer icon component met moskee icoon
+// Prayer icon component met biddend mannetje in cirkel
 const PrayerIcon = () => (
   <div className="bg-[#963E56]/10 w-8 h-8 rounded-full flex items-center justify-center">
-    <PiMosqueDuotone className="w-5 h-5 text-[#963E56]" />
+    <FaPray className="w-5 h-5 text-[#963E56]" />
   </div>
 );
 
@@ -94,7 +94,7 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen w-full" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-8 space-y-6">
-        {/* Header */}
+        {/* Header - Using Mosque Icon */}
         <div className="rounded-xl p-4 md:p-5 bg-white border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
