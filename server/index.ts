@@ -8,16 +8,16 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
 // Store room statuses in memory with proper typing
-type RoomStatus = 'green' | 'red' | 'grey';
+type RoomStatus = 'OK' | 'NOK' | 'OFF';
 interface RoomState {
   [key: string]: RoomStatus;
 }
 
 // In-memory status store
 let roomStatuses: RoomState = {
-  'prayer-ground': 'grey',
-  'prayer-first': 'grey',
-  'garage': 'grey'
+  'prayer-ground': 'OFF',
+  'prayer-first': 'OFF',
+  'garage': 'OFF'
 };
 
 // Helper function to broadcast to all clients
@@ -36,7 +36,7 @@ function isValidRoom(room: string): boolean {
   return ['prayer-ground', 'prayer-first', 'garage'].includes(room);
 }
 
-function isValidStatus(status: string): status is 'OK' | 'NOK' | 'OFF' {
+function isValidStatus(status: string): status is RoomStatus {
   return ['OK', 'NOK', 'OFF'].includes(status);
 }
 
@@ -70,18 +70,14 @@ wss.on('connection', (ws) => {
         }
 
         // Update status in memory
-        const newStatus = status === 'OK' ? 'green' : 
-                         status === 'NOK' ? 'red' : 
-                         'grey';
-
-        roomStatuses[room] = newStatus;
-        console.log(`[WebSocket] Updated ${room} status to ${newStatus}`);
+        roomStatuses[room] = status;
+        console.log(`[WebSocket] Updated ${room} status to ${status}`);
 
         // Broadcast update to all clients immediately
         broadcast({
           type: 'statusUpdated',
           room,
-          status: newStatus
+          status
         });
       } else if (data.type === 'getInitialStatus') {
         // Send current status to requesting client
