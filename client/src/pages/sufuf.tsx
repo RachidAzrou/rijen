@@ -149,88 +149,88 @@ export function SufufPage() {
           {isVolunteerSectionOpen && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <button
-                onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'green' ? "OK" : "OFF")}
-                className={`
-                  relative h-32 rounded-xl transition-all duration-300 
-                  hover:shadow-xl active:scale-[0.98] touch-manipulation
-                  border-2 bg-white overflow-hidden
-                  ${roomStatuses[roomId] === 'green'
-                    ? 'border-[#6BB85C] shadow-md hover:shadow-[#6BB85C]/20'
-                    : 'border-gray-200 hover:border-[#6BB85C]/60'
-                  }
-                `}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`
-                    w-24 h-24 rounded-2xl transition-all duration-300 
-                    flex items-center justify-center bg-white
-                    transform hover:scale-105
+                  onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'green' ? "OK" : "OFF")}
+                  className={`
+                    relative h-32 rounded-xl transition-all duration-300 
+                    hover:shadow-xl active:scale-[0.98] touch-manipulation
+                    border-2 bg-white overflow-hidden
                     ${roomStatuses[roomId] === 'green'
-                      ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/30'
-                      : 'bg-[#6BB85C]/5 hover:bg-[#6BB85C]/10'
+                      ? 'border-[#6BB85C] shadow-lg hover:shadow-[#6BB85C]/20'
+                      : 'border-gray-200 hover:border-[#6BB85C]/60'
                     }
-                  `}>
-                    <Check className={`
-                      w-12 h-12 stroke-[2.5] transition-all duration-300
+                  `}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`
+                      w-24 h-24 rounded-2xl transition-all duration-300 
+                      flex items-center justify-center
+                      transform hover:scale-105
                       ${roomStatuses[roomId] === 'green'
-                        ? 'text-white scale-110'
-                        : 'text-[#6BB85C]'
+                        ? 'bg-[#6BB85C]'
+                        : 'bg-white border-2 border-[#6BB85C]/20 hover:border-[#6BB85C]/40'
                       }
-                    `} />
+                    `}>
+                      <Check className={`
+                        w-12 h-12 stroke-[2.5] transition-all duration-300
+                        ${roomStatuses[roomId] === 'green'
+                          ? 'text-white'
+                          : 'text-[#6BB85C]'
+                        }
+                      `} />
+                    </div>
                   </div>
-                </div>
-                {roomStatuses[roomId] === 'green' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="h-3 w-3 rounded-full bg-[#6BB85C] 
-                      ring-4 ring-[#6BB85C]/20 
-                      shadow-[0_0_10px_rgba(107,184,92,0.5)]
-                      animate-pulse"
-                    />
-                  </div>
-                )}
-              </button>
+                  {roomStatuses[roomId] === 'green' && (
+                    <div className="absolute top-3 right-3">
+                      <div className="h-3 w-3 rounded-full bg-[#6BB85C] 
+                        ring-4 ring-[#6BB85C]/20 
+                        shadow-[0_0_10px_rgba(107,184,92,0.5)]
+                        animate-pulse"
+                      />
+                    </div>
+                  )}
+                </button>
 
-              <button
-                onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'red' ? "NOK" : "OFF")}
-                className={`
-                  relative h-32 rounded-xl transition-all duration-300
-                  hover:shadow-xl active:scale-[0.98] touch-manipulation
-                  border-2 bg-white overflow-hidden
-                  ${roomStatuses[roomId] === 'red'
-                    ? 'border-red-500 shadow-md hover:shadow-red-500/20'
-                    : 'border-gray-200 hover:border-red-500/60'
-                  }
-                `}
-              >
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`
-                    w-24 h-24 rounded-2xl transition-all duration-300 
-                    flex items-center justify-center bg-white
-                    transform hover:scale-105
+                <button
+                  onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'red' ? "NOK" : "OFF")}
+                  className={`
+                    relative h-32 rounded-xl transition-all duration-300
+                    hover:shadow-xl active:scale-[0.98] touch-manipulation
+                    border-2 bg-white overflow-hidden
                     ${roomStatuses[roomId] === 'red'
-                      ? 'bg-red-500 shadow-lg shadow-red-500/30'
-                      : 'bg-red-500/5 hover:bg-red-500/10'
+                      ? 'border-red-500 shadow-lg hover:shadow-red-500/20'
+                      : 'border-gray-200 hover:border-red-500/60'
                     }
-                  `}>
-                    <X className={`
-                      w-12 h-12 stroke-[2.5] transition-all duration-300
+                  `}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`
+                      w-24 h-24 rounded-2xl transition-all duration-300 
+                      flex items-center justify-center
+                      transform hover:scale-105
                       ${roomStatuses[roomId] === 'red'
-                        ? 'text-white scale-110'
-                        : 'text-red-500'
+                        ? 'bg-red-500'
+                        : 'bg-white border-2 border-red-500/20 hover:border-red-500/40'
                       }
-                    `} />
+                    `}>
+                      <X className={`
+                        w-12 h-12 stroke-[2.5] transition-all duration-300
+                        ${roomStatuses[roomId] === 'red'
+                          ? 'text-white'
+                          : 'text-red-500'
+                        }
+                      `} />
+                    </div>
                   </div>
-                </div>
-                {roomStatuses[roomId] === 'red' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="h-3 w-3 rounded-full bg-red-500 
-                      ring-4 ring-red-500/20 
-                      shadow-[0_0_10px_rgba(239,68,68,0.5)]
-                      animate-pulse"
-                    />
-                  </div>
-                )}
-              </button>
+                  {roomStatuses[roomId] === 'red' && (
+                    <div className="absolute top-3 right-3">
+                      <div className="h-3 w-3 rounded-full bg-red-500 
+                        ring-4 ring-red-500/20 
+                        shadow-[0_0_10px_rgba(239,68,68,0.5)]
+                        animate-pulse"
+                      />
+                    </div>
+                  )}
+                </button>
 
             </div>
           )}
