@@ -8,11 +8,9 @@ import { useLocation, useRoute } from "wouter";
 import { useRoomStatus } from "@/lib/use-room-status";
 import { ref, set } from "firebase/database";
 
-// Reordered room IDs
 const VALID_ROOM_IDS = ['prayer-ground', 'prayer-first', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
-// Reordered rooms object
 const rooms = {
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
@@ -63,18 +61,18 @@ export function SufufPage() {
 
   return (
     <div className="min-h-screen flex flex-col pb-16 md:pb-0">
-      <div className="container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8 flex-grow">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6 flex-grow">
         {/* Header */}
-        <div className="rounded-xl p-6 bg-white border border-[#963E56]/10">
-          <div className="flex items-center gap-4">
-            <div className="bg-[#963E56]/10 p-3 rounded-full">
-              <FaPray className="h-8 w-8 text-[#963E56]" />
+        <div className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
+              <FaPray className="h-6 w-6 md:h-7 md:w-7 text-[#963E56]" />
             </div>
-            <div className="space-y-1">
-              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-[#963E56]">
+            <div>
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#963E56]">
                 {currentRoom?.title}
               </h1>
-              <p className="text-base text-[#963E56]/70">
+              <p className="text-sm md:text-base text-[#963E56]/70">
                 Status en beheer
               </p>
             </div>
@@ -82,33 +80,33 @@ export function SufufPage() {
         </div>
 
         {/* Status Cards Grid */}
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {Object.values(rooms).map((room) => (
             <Card
               key={room.id}
-              className="group bg-white hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
+              className="group bg-white hover:shadow-lg transition-all duration-300 border border-[#963E56]/10"
             >
-              <CardHeader className="p-6 pb-4 flex flex-row items-center justify-between space-y-0">
-                <CardTitle className="flex items-center gap-3 text-lg font-semibold text-[#963E56]">
-                  <div className="bg-[#963E56]/10 w-8 h-8 rounded-full flex items-center justify-center">
-                    <FaPray className="w-5 h-5 text-[#963E56]" />
+              <CardHeader className="p-3 md:p-4 flex flex-row items-center justify-between space-y-0">
+                <CardTitle className="flex items-center gap-2 md:gap-3 text-base md:text-lg font-semibold text-[#963E56]">
+                  <div className="bg-[#963E56]/10 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center">
+                    <FaPray className="w-4 h-4 md:w-5 md:h-5 text-[#963E56]" />
                   </div>
                   {room.title}
                 </CardTitle>
                 <div className={`
-                  relative w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500
+                  relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500
                   ${roomStatuses[room.id] === 'green'
                     ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50 group-hover:scale-110'
                     : roomStatuses[room.id] === 'red'
                       ? 'bg-red-500 shadow-lg shadow-red-500/50 group-hover:scale-110'
                       : 'bg-gray-300 group-hover:bg-gray-400'}
                 `}>
-                  {roomStatuses[room.id] === 'green' && <Check className="w-7 h-7 text-white" />}
-                  {roomStatuses[room.id] === 'red' && <X className="w-7 h-7 text-white" />}
+                  {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 md:w-7 md:h-7 text-white" />}
+                  {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 md:w-7 md:h-7 text-white" />}
                 </div>
               </CardHeader>
-              <CardContent className="p-6 pt-2">
-                <div className="mt-4 h-3 w-full bg-gray-100 rounded-full overflow-hidden">
+              <CardContent className="p-3 md:p-4 pt-2">
+                <div className="mt-3 h-2 md:h-3 w-full bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-500 ${
                       roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
@@ -123,26 +121,26 @@ export function SufufPage() {
         </div>
 
         {/* Vrijwilligersacties sectie */}
-        <div className="space-y-8">
+        <div className="space-y-4 md:space-y-6">
           <Button
             variant="ghost"
-            className="w-full flex items-center justify-between p-5 text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 rounded-xl bg-white shadow-sm border border-[#963E56]/10"
+            className="w-full flex items-center justify-between p-3 md:p-4 text-lg md:text-xl font-semibold text-[#963E56] hover:bg-[#963E56]/5 rounded-lg md:rounded-xl bg-white shadow-sm border border-[#963E56]/10"
             onClick={() => setIsVolunteerSectionOpen(!isVolunteerSectionOpen)}
           >
-            <div className="flex items-center gap-3">
-              <User className="h-6 w-6" />
+            <div className="flex items-center gap-2 md:gap-3">
+              <User className="h-5 w-5 md:h-6 md:w-6" />
               <span>Vrijwilliger Acties</span>
             </div>
-            <ChevronDown className={`h-6 w-6 transition-transform duration-200 ${isVolunteerSectionOpen ? 'transform rotate-180' : ''}`} />
+            <ChevronDown className={`h-5 w-5 md:h-6 md:w-6 transition-transform duration-200 ${isVolunteerSectionOpen ? 'transform rotate-180' : ''}`} />
           </Button>
 
           {isVolunteerSectionOpen && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
               {/* OK Button */}
               <button
                 onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'green' ? "OK" : "OFF")}
                 className={`
-                  relative h-36 md:h-32 rounded-xl transition-all duration-300 
+                  relative h-28 md:h-32 rounded-xl transition-all duration-300 
                   hover:shadow-xl active:scale-[0.98] touch-manipulation
                   border-2 bg-white overflow-hidden
                   ${roomStatuses[roomId] === 'green'
@@ -153,7 +151,7 @@ export function SufufPage() {
               >
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className={`
-                    w-28 h-28 md:w-24 md:h-24 rounded-2xl transition-all duration-300 
+                    w-20 h-20 md:w-24 md:h-24 rounded-2xl transition-all duration-300 
                     flex items-center justify-center
                     transform hover:scale-105
                     ${roomStatuses[roomId] === 'green'
@@ -162,7 +160,7 @@ export function SufufPage() {
                     }
                   `}>
                     <Check className={`
-                      w-14 h-14 md:w-12 md:h-12 stroke-[2.5] transition-all duration-300
+                      w-12 h-12 md:w-14 md:h-14 stroke-[2.5] transition-all duration-300
                       ${roomStatuses[roomId] === 'green'
                         ? 'text-white'
                         : 'text-[#6BB85C]'
@@ -171,8 +169,8 @@ export function SufufPage() {
                   </div>
                 </div>
                 {roomStatuses[roomId] === 'green' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="h-3 w-3 rounded-full bg-[#6BB85C] 
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3">
+                    <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-[#6BB85C] 
                       ring-4 ring-[#6BB85C]/20 
                       shadow-[0_0_10px_rgba(107,184,92,0.5)]
                       animate-pulse"
@@ -185,7 +183,7 @@ export function SufufPage() {
               <button
                 onClick={() => handleStatusUpdate(roomStatuses[roomId] !== 'red' ? "NOK" : "OFF")}
                 className={`
-                  relative h-36 md:h-32 rounded-xl transition-all duration-300
+                  relative h-28 md:h-32 rounded-xl transition-all duration-300
                   hover:shadow-xl active:scale-[0.98] touch-manipulation
                   border-2 bg-white overflow-hidden
                   ${roomStatuses[roomId] === 'red'
@@ -196,7 +194,7 @@ export function SufufPage() {
               >
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className={`
-                    w-28 h-28 md:w-24 md:h-24 rounded-2xl transition-all duration-300 
+                    w-20 h-20 md:w-24 md:h-24 rounded-2xl transition-all duration-300 
                     flex items-center justify-center
                     transform hover:scale-105
                     ${roomStatuses[roomId] === 'red'
@@ -205,7 +203,7 @@ export function SufufPage() {
                     }
                   `}>
                     <X className={`
-                      w-14 h-14 md:w-12 md:h-12 stroke-[2.5] transition-all duration-300
+                      w-12 h-12 md:w-14 md:h-14 stroke-[2.5] transition-all duration-300
                       ${roomStatuses[roomId] === 'red'
                         ? 'text-white'
                         : 'text-red-500'
@@ -214,8 +212,8 @@ export function SufufPage() {
                   </div>
                 </div>
                 {roomStatuses[roomId] === 'red' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="h-3 w-3 rounded-full bg-red-500 
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3">
+                    <div className="h-2 w-2 md:h-3 md:w-3 rounded-full bg-red-500 
                       ring-4 ring-red-500/20 
                       shadow-[0_0_10px_rgba(239,68,68,0.5)]
                       animate-pulse"
