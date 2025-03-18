@@ -2,22 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, X, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
 import { auth } from "@/lib/firebase";
 import { useLocation, useRoute } from "wouter";
+import { useRoomStatus } from "@/lib/use-room-status";
 
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
-
-const ROOM_STATUSES_KEY = 'sufuf_room_statuses';
-
-type ServerStatus = 'OK' | 'NOK' | 'OFF';
-type DisplayStatus = 'green' | 'red' | 'grey';
-
-interface RoomStatuses {
-  [key: string]: DisplayStatus;
-}
 
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
@@ -25,139 +16,34 @@ const rooms = {
   'garage': { id: 'garage', title: 'Garage', status: 'grey' }
 } as const;
 
-function convertServerToDisplayStatus(status: ServerStatus): DisplayStatus {
-  switch (status) {
-    case 'OK': return 'green';
-    case 'NOK': return 'red';
-    case 'OFF': return 'grey';
-  }
-}
-
 export function SufufPage() {
-  const { socket, isConnected, sendMessage } = useSocket();
   const [_, setLocation] = useLocation();
   const [match, params] = useRoute('/dashboard/:roomId');
   const roomId = params?.roomId as RoomId;
   const currentRoom = rooms[roomId];
+  const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // Load initial statuses from sessionStorage
-  const [roomStatuses, setRoomStatuses] = useState<RoomStatuses>(() => {
-    try {
-      const stored = sessionStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('[Session] Loading stored statuses:', stored);
-
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (typeof parsed === 'object' && parsed !== null) {
-          // Validate each room status
-          const validStatuses = Object.entries(parsed).reduce((acc, [room, status]) => {
-            if (VALID_ROOM_IDS.includes(room as RoomId) && ['green', 'red', 'grey'].includes(status as DisplayStatus)) {
-              acc[room] = status as DisplayStatus;
-            } else {
-              acc[room] = 'grey';
-            }
-            return acc;
-          }, {} as RoomStatuses);
-
-          console.log('[Session] Loaded valid statuses:', validStatuses);
-          return validStatuses;
-        }
-      }
-    } catch (error) {
-      console.error('[Session] Error loading statuses:', error);
-    }
-
-    // Default statuses if storage is empty or invalid
-    const defaultStatuses = VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {} as RoomStatuses);
-    console.log('[Session] Using default statuses:', defaultStatuses);
-    return defaultStatuses;
-  });
-
-  // Save status changes to sessionStorage
-  useEffect(() => {
-    try {
-      console.log('[Session] Saving statuses:', roomStatuses);
-      sessionStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(roomStatuses));
-    } catch (error) {
-      console.error('[Session] Error saving statuses:', error);
-    }
-  }, [roomStatuses]);
-
-  // Handle WebSocket messages
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleMessage = (event: MessageEvent) => {
-      try {
-        const data = JSON.parse(event.data);
-        console.log('[WebSocket] Received:', data);
-
-        if (data.type === 'statusUpdated') {
-          setRoomStatuses(prev => {
-            const newStatus = convertServerToDisplayStatus(data.status as ServerStatus);
-            const newStatuses = { ...prev, [data.room]: newStatus };
-            console.log('[WebSocket] Updating statuses:', newStatuses);
-            return newStatuses;
-          });
-        } else if (data.type === 'initialStatus') {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
-            ...acc,
-            [room]: convertServerToDisplayStatus(status as ServerStatus)
-          }), {} as RoomStatuses);
-          console.log('[WebSocket] Setting initial statuses:', newStatuses);
-          setRoomStatuses(newStatuses);
-        }
-      } catch (error) {
-        console.error('[WebSocket] Error handling message:', error);
-      }
-    };
-
-    socket.addEventListener('message', handleMessage);
-
-    // Request initial status
-    console.log('[WebSocket] Requesting initial status');
-    sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
-
-    return () => socket.removeEventListener('message', handleMessage);
-  }, [socket, sendMessage]);
+  const { isConnected, roomStatuses, updateStatus } = useRoomStatus();
 
   // Handle authentication and cleanup
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (!user) {
-        console.log('[Auth] User logged out, clearing session');
-        sessionStorage.removeItem(ROOM_STATUSES_KEY);
-        setRoomStatuses(VALID_ROOM_IDS.reduce((acc, id) => ({ ...acc, [id]: 'grey' }), {} as RoomStatuses));
-
-        if (socket && isConnected) {
-          VALID_ROOM_IDS.forEach(room => {
-            sendMessage(JSON.stringify({
-              type: 'updateStatus',
-              room,
-              status: 'OFF'
-            }));
-          });
-        }
-
         setLocation("/login");
       }
     });
     return () => unsubscribe();
-  }, [socket, isConnected, sendMessage, setLocation]);
+  }, [setLocation]);
 
-  // Handle status updates
-  const handleStatusUpdate = (newStatus: ServerStatus) => {
+  // Handle status updates from user
+  const handleStatusUpdate = async (newStatus: 'OK' | 'NOK' | 'OFF') => {
     if (!isConnected) {
-      console.warn('[WebSocket] Cannot update - not connected');
+      console.warn('[Firebase] Cannot update - not connected');
       return;
     }
 
-    console.log(`[WebSocket] Sending status update for ${roomId}: ${newStatus}`);
-    sendMessage(JSON.stringify({
-      type: 'updateStatus',
-      room: roomId,
-      status: newStatus
-    }));
+    console.log(`[Firebase] Updating status for ${roomId}: ${newStatus}`);
+    await updateStatus(roomId, newStatus);
   };
 
   return (

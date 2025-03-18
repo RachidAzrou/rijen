@@ -3,20 +3,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
-  "functions": {
-    "api/websocket": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
-    { 
-      "source": "/api/websocket",
-      "destination": "/api/websocket"
-    },
-    { 
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
