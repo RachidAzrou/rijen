@@ -32,43 +32,40 @@ export default function PublicImamDashboard() {
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Ontvangen bericht:', data);
+        console.log('[WebSocket] Received:', data);
 
         if (data.type === 'statusUpdated') {
-          console.log('Status update ontvangen:', data);
-          // Direct de state bijwerken
           setStatusMap(prev => {
             const newStatus = {
               ...prev,
               [data.room]: data.status
             };
-            console.log('Nieuwe status map:', newStatus);
+            console.log('[WebSocket] Updated status map:', newStatus);
             return newStatus;
           });
           setLastUpdate(new Date());
         }
 
         if (data.type === 'initialStatus') {
-          console.log('Initiële status ontvangen:', data.data);
-          // Initiële status verwerken
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+          console.log('[WebSocket] Received initial status:', data.data);
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
             ...acc,
-            [room]: info.status
+            [room]: status
           }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-          console.log('Initiële status map:', newStatuses);
+          console.log('[WebSocket] Setting initial status map:', newStatuses);
           setStatusMap(newStatuses);
           setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('Fout bij verwerken bericht:', error);
+        console.error('[WebSocket] Error handling message:', error);
       }
     };
 
-    console.log('WebSocket message handler toevoegen');
+    console.log('[WebSocket] Adding message handler');
     socket.addEventListener('message', handleMessage);
 
     return () => {
-      console.log('WebSocket message handler verwijderen');
+      console.log('[WebSocket] Removing message handler');
       socket.removeEventListener('message', handleMessage);
     };
   }, [socket]);

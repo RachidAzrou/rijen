@@ -10,8 +10,6 @@ import { useLocation, useRoute } from "wouter";
 const VALID_ROOM_IDS = ['prayer-first', 'prayer-ground', 'garage'] as const;
 type RoomId = typeof VALID_ROOM_IDS[number];
 
-const ROOM_STATUSES_KEY = 'room_statuses';
-
 const rooms = {
   'prayer-first': { id: 'prayer-first', title: 'Gebedsruimte +1', status: 'grey' },
   'prayer-ground': { id: 'prayer-ground', title: 'Gebedsruimte +0', status: 'grey' },
@@ -25,54 +23,74 @@ export function SufufPage() {
   const roomId = params?.roomId as RoomId;
   const currentRoom = rooms[roomId];
 
-  // Load initial statuses from localStorage or use default
+  // Status state met sessie persistence
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
+    // Probeer de status uit sessionStorage te laden
     try {
-      const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('Loading stored statuses:', stored);
-      const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
-        ...acc, 
-        [key]: 'grey' 
-      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-
-      if (stored) {
-        const parsedStatuses = JSON.parse(stored);
-        console.log('Parsed stored statuses:', parsedStatuses);
-        // Ensure we only use valid room IDs
-        const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
-          ...acc,
-          [roomId]: parsedStatuses[roomId] || 'grey'
-        }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
-        return validStatuses;
+      const storedStatuses = sessionStorage.getItem('room_statuses');
+      if (storedStatuses) {
+        return JSON.parse(storedStatuses);
       }
-      return defaultStatuses;
     } catch (error) {
-      console.error('Error loading stored statuses:', error);
-      return Object.keys(rooms).reduce((acc, key) => ({ 
-        ...acc, 
-        [key]: 'grey' 
-      }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
+      console.error('Error loading from sessionStorage:', error);
     }
+    return {
+      'prayer-first': 'grey',
+      'prayer-ground': 'grey',
+      'garage': 'grey'
+    };
   });
 
   const [isVolunteerSectionOpen, setIsVolunteerSectionOpen] = useState(true);
 
-  // Authentication check
+  // Sla status op in sessionStorage wanneer deze verandert
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('room_statuses', JSON.stringify(roomStatuses));
+    } catch (error) {
+      console.error('Error saving to sessionStorage:', error);
+    }
+  }, [roomStatuses]);
+
+  // Auth check en cleanup
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user) setLocation("/login");
+      if (!user) {
+        // Verwijder status uit sessionStorage bij uitloggen
+        sessionStorage.removeItem('room_statuses');
+
+        // Reset alle statussen
+        const resetStatuses = {
+          'prayer-first': 'grey',
+          'prayer-ground': 'grey',
+          'garage': 'grey'
+        };
+        setRoomStatuses(resetStatuses);
+
+        // Stuur reset naar server als we verbonden zijn
+        if (socket && isConnected) {
+          VALID_ROOM_IDS.forEach(room => {
+            sendMessage(JSON.stringify({
+              type: 'updateStatus',
+              room,
+              status: 'OFF'
+            }));
+          });
+        }
+        setLocation("/login");
+      }
     });
     return () => unsubscribe();
-  }, [setLocation]);
+  }, [socket, isConnected, sendMessage, setLocation]);
 
   // WebSocket message handler
   useEffect(() => {
     if (!socket) return;
 
-    function handleMessage(event: MessageEvent) {
+    const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log('Received message:', data);
+        console.log('[WebSocket] Received:', data);
 
         if (data.type === 'statusUpdated') {
           setRoomStatuses(prev => {
@@ -80,53 +98,59 @@ export function SufufPage() {
               ...prev,
               [data.room]: data.status
             };
-            // Save to localStorage whenever statuses change
-            localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+            try {
+              sessionStorage.setItem('room_statuses', JSON.stringify(newStatuses));
+            } catch (error) {
+              console.error('Error saving to sessionStorage:', error);
+            }
             return newStatuses;
           });
         } else if (data.type === 'initialStatus') {
-          const newStatuses = Object.entries(data.data).reduce((acc, [room, info]: [string, any]) => ({
+          const newStatuses = Object.entries(data.data).reduce((acc, [room, status]) => ({
             ...acc,
-            [room]: info.status
+            [room]: status
           }), {} as Record<RoomId, 'green' | 'red' | 'grey'>);
           setRoomStatuses(newStatuses);
-          // Save initial statuses to localStorage
-          localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
+          try {
+            sessionStorage.setItem('room_statuses', JSON.stringify(newStatuses));
+          } catch (error) {
+            console.error('Error saving to sessionStorage:', error);
+          }
         }
       } catch (error) {
-        console.error('Error handling message:', error);
+        console.error('[WebSocket] Error handling message:', error);
       }
-    }
+    };
 
     socket.addEventListener('message', handleMessage);
+
+    // Request initial status
+    sendMessage(JSON.stringify({ type: 'getInitialStatus' }));
 
     return () => {
       socket.removeEventListener('message', handleMessage);
     };
-  }, [socket]);
+  }, [socket, sendMessage]);
 
   // Handle status updates
   const handleStatusUpdate = (status: "OK" | "NOK" | "OFF") => {
     if (!isConnected) {
-      console.log('Cannot update - WebSocket not connected');
+      console.warn('[WebSocket] Cannot update - not connected');
       return;
     }
 
-    const message = {
+    sendMessage(JSON.stringify({
       type: 'updateStatus',
       room: roomId,
       status
-    };
-
-    console.log('Sending status update:', message);
-    sendMessage(JSON.stringify(message));
+    }));
   };
 
   return (
-    <div className="min-h-screen w-full pb-16 md:pb-0 bg-gray-50/50">
+    <div className="min-h-screen w-full pb-16 md:pb-0">
       <div className="container mx-auto px-4 py-4 md:py-6 space-y-4 md:space-y-6">
         {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
+        <div className="bg-white rounded-xl shadow-lg p-4 md:p-6 border border-[#963E56]/10">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
               <FaPray className="h-6 w-6 md:h-8 md:w-8 text-[#963E56]" />

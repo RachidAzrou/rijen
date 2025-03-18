@@ -2,100 +2,100 @@ import express from "express";
 import { createServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import path from "path";
-import fs from "fs";
 
 const app = express();
 const server = createServer(app);
 const wss = new WebSocketServer({ server, path: '/ws' });
 
-// Key for storing room statuses
-const ROOM_STATUSES_FILE = path.join(process.cwd(), 'room_statuses.json');
+// Store room statuses in memory with proper typing
+type RoomStatus = 'green' | 'red' | 'grey';
+interface RoomState {
+  [key: string]: RoomStatus;
+}
 
-// Default room statuses
-const defaultRooms = {
-  'prayer-ground': { id: 'prayer-ground', title: 'Moskee +0', status: 'grey' },
-  'prayer-first': { id: 'prayer-first', title: 'Moskee +1', status: 'grey' },
-  'garage': { id: 'garage', title: 'Garage', status: 'grey' }
+// In-memory status store
+let roomStatuses: RoomState = {
+  'prayer-ground': 'grey',
+  'prayer-first': 'grey',
+  'garage': 'grey'
 };
 
-// Load room statuses from file or use defaults
-let rooms = defaultRooms;
-try {
-  if (fs.existsSync(ROOM_STATUSES_FILE)) {
-    const data = fs.readFileSync(ROOM_STATUSES_FILE, 'utf8');
-    rooms = JSON.parse(data);
-    console.log('Loaded room statuses from file:', rooms);
-  } else {
-    fs.writeFileSync(ROOM_STATUSES_FILE, JSON.stringify(defaultRooms, null, 2));
-    console.log('Created new room statuses file with defaults');
-  }
-} catch (error) {
-  console.error('Error loading room statuses:', error);
+// Helper function to broadcast to all clients
+function broadcast(message: any) {
+  const messageStr = JSON.stringify(message);
+  console.log('[WebSocket] Broadcasting:', message);
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(messageStr);
+    }
+  });
 }
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
-  console.log('New client connected');
+  console.log('[WebSocket] New client connected');
 
-  // Send initial status
-  const initialMessage = {
+  // Send initial status immediately
+  ws.send(JSON.stringify({
     type: 'initialStatus',
-    data: rooms
-  };
-  console.log('Sending initial status:', initialMessage);
-  ws.send(JSON.stringify(initialMessage));
+    data: roomStatuses
+  }));
 
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message.toString());
-      console.log('Received message:', data);
+      console.log('[WebSocket] Received message:', data);
 
       if (data.type === 'updateStatus') {
         const { room, status } = data;
-        console.log('Processing status update for room:', room, 'new status:', status);
 
-        if (rooms[room]) {
-          const newStatus = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-          rooms[room].status = newStatus;
-          console.log(`Updated ${room} status to ${newStatus}`);
+        // Update status if room exists
+        if (room in roomStatuses) {
+          const newStatus = status === 'OK' ? 'green' : 
+                          status === 'NOK' ? 'red' : 
+                          'grey';
 
-          // Save to file
-          fs.writeFileSync(ROOM_STATUSES_FILE, JSON.stringify(rooms, null, 2));
+          // Update status in memory
+          roomStatuses[room] = newStatus;
+          console.log(`[WebSocket] Updated ${room} status to ${newStatus}`);
 
-          // Create update message
-          const updateMessage = {
+          // Broadcast update to all clients immediately
+          broadcast({
             type: 'statusUpdated',
             room,
             status: newStatus
-          };
-
-          // Log before broadcasting
-          console.log('Broadcasting to clients:', updateMessage);
-          console.log('Number of connected clients:', wss.clients.size);
-
-          // Broadcast to all clients
-          wss.clients.forEach((client) => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(updateMessage));
-            }
           });
         }
+      } else if (data.type === 'getInitialStatus') {
+        // Send current status to requesting client
+        ws.send(JSON.stringify({
+          type: 'initialStatus',
+          data: roomStatuses
+        }));
       }
     } catch (error) {
-      console.error('Error processing message:', error);
+      console.error('[WebSocket] Error processing message:', error);
     }
+  });
+
+  ws.on('close', () => {
+    console.log('[WebSocket] Client disconnected');
+  });
+
+  ws.on('error', (error) => {
+    console.error('[WebSocket] Client error:', error);
   });
 });
 
 // Serve static files
 app.use(express.static(path.join(process.cwd(), 'dist/public')));
 
-// All routes -> index.html
+// Catch-all route to serve index.html
 app.get('*', (_, res) => {
   res.sendFile(path.join(process.cwd(), 'dist/public/index.html'));
 });
 
 const PORT = 5000;
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`[Server] Running on port ${PORT}`);
 });
