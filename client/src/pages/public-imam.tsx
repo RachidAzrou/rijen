@@ -19,8 +19,8 @@ const rooms = {
 
 // Prayer icon component met biddend mannetje in cirkel
 const PrayerIcon = () => (
-  <div className="bg-[#963E56]/10 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center">
-    <FaPray className="w-8 h-8 md:w-9 md:h-9 text-[#963E56]" />
+  <div className="bg-[#963E56]/10 w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center">
+    <FaPray className="w-7 h-7 md:w-8 md:h-8 text-[#963E56]" />
   </div>
 );
 
@@ -54,8 +54,8 @@ export default function PublicImamDashboard() {
           Object.entries(data).forEach(([room, status]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
               newStatuses[room as RoomId] = status === 'OK' ? 'green' :
-                                               status === 'NOK' ? 'red' :
-                                               'grey';
+                                                 status === 'NOK' ? 'red' :
+                                                 'grey';
             }
           });
 
@@ -158,15 +158,15 @@ export default function PublicImamDashboard() {
               className="overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
               <CardContent className="p-4 md:p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4 flex-grow">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3 flex-grow">
                     <PrayerIcon />
-                    <h3 className="text-2xl md:text-3xl font-bold text-[#963E56]">
+                    <h3 className="text-xl md:text-2xl font-bold text-[#963E56]">
                       {t.rooms[id as keyof typeof t.rooms]}
                     </h3>
                   </div>
                   <div className={`
-                    relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center
+                    relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center
                     transition-all duration-500 shadow-lg
                     ${statusMap[id as RoomId] === 'green'
                       ? 'bg-[#6BB85C] shadow-[#6BB85C]/30'
@@ -176,15 +176,15 @@ export default function PublicImamDashboard() {
                     }
                   `}>
                     {statusMap[id as RoomId] === 'green' && 
-                      <Check className="w-9 h-9 md:w-10 md:h-10 text-white" />
+                      <Check className="w-7 h-7 md:w-8 md:h-8 text-white" />
                     }
                     {statusMap[id as RoomId] === 'red' && 
-                      <X className="w-9 h-9 md:w-10 md:h-10 text-white" />
+                      <X className="w-7 h-7 md:w-8 md:h-8 text-white" />
                     }
                   </div>
                 </div>
 
-                <div className="mt-6 space-y-4">
+                <div className="mt-4 space-y-3">
                   <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                     <div
                       className={`h-full transition-all duration-500 ${
@@ -197,7 +197,7 @@ export default function PublicImamDashboard() {
                   {statusMap[id as RoomId] !== 'grey' && (
                     <div className="text-center">
                       <span className={`
-                        inline-block px-6 py-2 rounded-full text-lg font-medium
+                        inline-block px-5 py-1.5 rounded-full text-base font-medium
                         ${statusMap[id as RoomId] === 'green'
                           ? 'bg-[#6BB85C]/10 text-[#6BB85C]'
                           : 'bg-red-500/10 text-red-500'
