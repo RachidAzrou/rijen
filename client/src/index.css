@@ -50,8 +50,25 @@
 }
 
 @layer base {
-  html, body, #root {
-    height: 100%;
+  /* Strict no-scroll rules */
+  html, body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    touch-action: none;
+    -webkit-overflow-scrolling: none;
+    overscroll-behavior: none;
+    user-select: none;
+  }
+
+  #root {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
   }
 
   /* Login page specific */
@@ -61,8 +78,9 @@
 
   /* Other pages */
   #root > div:not(.login-page) {
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
     background: linear-gradient(135deg, rgba(245, 247, 250, 0.7), rgba(195, 207, 226, 0.7)), url('/static/123.jpg') center center/cover no-repeat fixed;
   }
 }

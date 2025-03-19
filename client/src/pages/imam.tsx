@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Check, X, LayoutDashboard } from "lucide-react";
 import { useSocket } from "@/lib/use-socket";
 import { FaPray } from "react-icons/fa";
@@ -24,7 +24,6 @@ export default function ImamDashboard() {
   const [roomStatuses, setRoomStatuses] = useState<Record<RoomId, 'green' | 'red' | 'grey'>>(() => {
     try {
       const stored = localStorage.getItem(ROOM_STATUSES_KEY);
-      console.log('[ImamDashboard] Loading stored statuses:', stored);
       const defaultStatuses = Object.keys(rooms).reduce((acc, key) => ({ 
         ...acc, 
         [key]: 'grey' 
@@ -32,7 +31,6 @@ export default function ImamDashboard() {
 
       if (stored) {
         const parsedStatuses = JSON.parse(stored);
-        console.log('[ImamDashboard] Parsed stored statuses:', parsedStatuses);
         const validStatuses = VALID_ROOM_IDS.reduce((acc, roomId) => ({
           ...acc,
           [roomId]: parsedStatuses[roomId] || 'grey'
@@ -41,7 +39,7 @@ export default function ImamDashboard() {
       }
       return defaultStatuses;
     } catch (error) {
-      console.error('[ImamDashboard] Error loading stored statuses:', error);
+      console.error('[Firebase] Error loading stored statuses:', error);
       return Object.keys(rooms).reduce((acc, key) => ({ 
         ...acc, 
         [key]: 'grey' 
@@ -59,64 +57,49 @@ export default function ImamDashboard() {
   }, [setLocation]);
 
   useEffect(() => {
-    if (!socket || !isConnected) {
-      console.log('[ImamDashboard] Socket not connected yet');
-      return;
-    }
+    if (!socket || !isConnected) return;
 
     const handleMessage = (event: MessageEvent) => {
       try {
         const data = JSON.parse(event.data);
-        console.log("[ImamDashboard] Received WebSocket message:", data);
 
         if (data.type === "initialStatus") {
-          console.log('[ImamDashboard] Processing initial status:', data.data);
           const newStatuses = { ...roomStatuses };
           Object.entries(data.data).forEach(([room, status]: [string, any]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
-              console.log(`[ImamDashboard] Setting status for room ${room} to ${status}`);
               newStatuses[room as RoomId] = status === 'OK' ? 'green' : status === 'NOK' ? 'red' : 'grey';
-            } else {
-              console.warn(`[ImamDashboard] Received status for unknown room: ${room}`);
             }
           });
-          console.log('[ImamDashboard] Final room statuses:', newStatuses);
           setRoomStatuses(newStatuses);
           localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
         } else if (data.type === "statusUpdated") {
-          console.log(`[ImamDashboard] Processing status update for room ${data.room}: ${data.status}`);
           if (VALID_ROOM_IDS.includes(data.room as RoomId)) {
             setRoomStatuses(prev => {
               const newStatuses = {
                 ...prev,
                 [data.room as RoomId]: data.status === 'OK' ? 'green' : data.status === 'NOK' ? 'red' : 'grey'
               };
-              console.log('[ImamDashboard] Updated room statuses:', newStatuses);
               localStorage.setItem(ROOM_STATUSES_KEY, JSON.stringify(newStatuses));
               return newStatuses;
             });
-          } else {
-            console.warn(`[ImamDashboard] Received status update for unknown room: ${data.room}`);
           }
         }
       } catch (error) {
-        console.error('[ImamDashboard] Error handling WebSocket message:', error);
+        console.error('[WebSocket] Error handling message:', error);
       }
     };
 
-    console.log('[ImamDashboard] Setting up WebSocket handler for rooms:', VALID_ROOM_IDS);
     socket.addEventListener('message', handleMessage);
-    console.log('[ImamDashboard] Requesting initial status');
     sendMessage(JSON.stringify({ type: "getInitialStatus" }));
 
     return () => socket.removeEventListener('message', handleMessage);
   }, [socket, isConnected, sendMessage]);
 
   return (
-    <div className="absolute inset-0 flex flex-col overflow-hidden bg-gray-50/50">
-      <div className="absolute inset-x-0 inset-y-0 flex flex-col">
-        <div className="flex-none px-3 md:px-4 py-4">
-          {/* Header */}
+    <div className="fixed inset-0 touch-none bg-gray-50/50">
+      <div className="absolute inset-0 flex flex-col">
+        {/* Header - Fixed Height */}
+        <div className="flex-none px-3 md:px-4 pt-4">
           <div className="rounded-lg md:rounded-xl p-3 md:p-4 bg-white border border-[#963E56]/10">
             <div className="flex items-center gap-3">
               <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
@@ -129,54 +112,68 @@ export default function ImamDashboard() {
           </div>
         </div>
 
-        <div className="flex-1 px-3 md:px-4 py-2 min-h-0">
-          <div className="h-full flex flex-col gap-4 md:gap-6">
-            {/* Status Cards Container */}
-            <Card className="flex-none bg-white/80 backdrop-blur-sm border-[#963E56]/10">
-              <CardContent className="p-3 md:p-4">
-                <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                  {Object.values(rooms).map((room) => (
-                    <div
-                      key={room.id}
-                      className="bg-white/90 backdrop-blur-sm rounded-lg border border-[#963E56]/10 p-3 md:p-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 md:gap-3">
-                          <div className="bg-[#963E56]/10 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center">
-                            <FaPray className="w-4 h-4 md:w-5 md:h-5 text-[#963E56]" />
-                          </div>
-                          <span className="text-base md:text-lg font-semibold text-[#963E56]">
-                            {room.title}
-                          </span>
+        {/* Content - Fill Remaining Space */}
+        <div className="flex-1 px-3 md:px-4 py-4 grid grid-rows-[auto_1fr_auto] gap-2">
+          {/* Status Cards */}
+          <Card className="bg-white/80 backdrop-blur-sm border-[#963E56]/10">
+            <CardContent className="p-3 md:p-4">
+              <div className="grid gap-3 md:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                {Object.values(rooms).map((room) => (
+                  <div
+                    key={room.id}
+                    className="bg-white/90 backdrop-blur-sm rounded-lg border border-[#963E56]/10 p-3 md:p-4"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 md:gap-3">
+                        <div className="bg-[#963E56]/10 w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center">
+                          <FaPray className="w-4 h-4 md:w-5 md:h-5 text-[#963E56]" />
                         </div>
-                        <div className={`
-                          relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500
-                          ${roomStatuses[room.id] === 'green'
-                            ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50'
-                            : roomStatuses[room.id] === 'red'
-                              ? 'bg-red-500 shadow-lg shadow-red-500/50'
-                              : 'bg-gray-300'
-                          }
-                        `}>
-                          {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 md:w-7 md:h-7 text-white" />}
-                          {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 md:w-7 md:h-7 text-white" />}
-                        </div>
+                        <span className="text-base md:text-lg font-semibold text-[#963E56]">
+                          {room.title}
+                        </span>
                       </div>
-                      <div className="mt-3 h-2 md:h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full transition-all duration-500 ${
-                            roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
-                              roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
-                                'w-0'
-                          }`}
-                        />
+                      <div className={`
+                        relative w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-500
+                        ${roomStatuses[room.id] === 'green'
+                          ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50'
+                          : roomStatuses[room.id] === 'red'
+                            ? 'bg-red-500 shadow-lg shadow-red-500/50'
+                            : 'bg-gray-300'
+                        }
+                      `}>
+                        {roomStatuses[room.id] === 'green' && <Check className="w-6 h-6 md:w-7 md:h-7 text-white" />}
+                        {roomStatuses[room.id] === 'red' && <X className="w-6 h-6 md:w-7 md:h-7 text-white" />}
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                    <div className="mt-3 h-2 md:h-3 w-full bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 ${
+                          roomStatuses[room.id] === 'green' ? 'w-full bg-[#6BB85C]' :
+                            roomStatuses[room.id] === 'red' ? 'w-full bg-red-500' :
+                              'w-0'
+                        }`}
+                      />
+                    </div>
+
+                    {/* Status Text */}
+                    <p className={`text-center mt-4 font-medium ${
+                      roomStatuses[room.id] === 'green'
+                        ? 'text-[#6BB85C]'
+                        : roomStatuses[room.id] === 'red'
+                          ? 'text-red-500'
+                          : 'text-gray-400'
+                    }`}>
+                      {roomStatuses[room.id] === 'green'
+                        ? 'Rijen zijn in orde'
+                        : roomStatuses[room.id] === 'red'
+                          ? 'Rijen zijn niet in orde'
+                          : '—'}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
