@@ -53,94 +53,86 @@ export default function Login() {
 
   return (
     <div 
-      className="fixed inset-0 flex flex-col items-center justify-center bg-white"
+      className="min-h-screen w-full flex items-center justify-center p-4"
+      style={{
+        background: `url('/static/123.jpg') center center/cover no-repeat fixed`
+      }}
     >
-      <div className="w-full max-w-[420px] px-4">
-        <Card className="bg-white border shadow-xl">
-          <CardContent className="pt-8 px-6">
-            <div className="text-center mb-8">
-              <div className="w-full flex justify-center items-center">
-                <img
-                  src="/static/Naamloos2.png"
-                  alt="MEFEN"
-                  className="h-32 sm:h-40 mx-auto mb-6"
-                />
-              </div>
-              <h1 className="text-2xl font-bold text-[#963E56] mb-2">
-                Sufuf App
-              </h1>
-              <p className="text-gray-600">
-                Beheer je gebedsruimtes
-              </p>
+      <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
+        <CardContent className="pt-8 px-6">
+          <div className="text-center mb-8">
+            <div className="w-full flex justify-center items-center">
+              <img
+                src="/static/Naamloos2.png"
+                alt="MEFEN"
+                className="h-32 sm:h-40 mx-auto mb-6"
+              />
             </div>
+            <h1 className="text-2xl font-bold text-[#963E56] mb-2">
+              Sufuf App
+            </h1>
+            <p className="text-gray-600">
+              Beheer je gebedsruimtes
+            </p>
+          </div>
 
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="E-mailadres"
-                            className="h-11 pl-10 bg-white border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
-                            disabled={isLoading}
-                            {...field}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="E-mailadres"
+                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          disabled={isLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className="relative">
-                        <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
-                        <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="Wachtwoord"
-                            className="h-11 pl-10 bg-white border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
-                            disabled={isLoading}
-                            {...field}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="relative">
+                      <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#963E56]" />
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Wachtwoord"
+                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          disabled={isLoading}
+                          {...field}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                <Button
-                  type="submit"
-                  className="w-full h-11 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Bezig met inloggen..." : "Inloggen"}
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
-
-        <div className="text-center space-y-1 mt-6">
-          <p className="text-[#963E56]/90 text-sm font-medium">
-            MEFEN Vrijwilligers Management Systeem
-          </p>
-          <p className="text-[#963E56]/70 text-xs">
-            Versie 2.2.7
-          </p>
-        </div>
-      </div>
+              <Button
+                type="submit"
+                className="w-full h-11 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
+                disabled={isLoading}
+              >
+                {isLoading ? "Bezig met inloggen..." : "Inloggen"}
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
