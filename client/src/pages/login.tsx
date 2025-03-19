@@ -53,15 +53,10 @@ export default function Login() {
 
   return (
     <div 
-      className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden bg-fixed"
-      style={{
-        background: `url('/static/123.jpg') center center/cover no-repeat fixed`
-      }}
+      className="fixed inset-0 flex flex-col items-center justify-center bg-white"
     >
-      <div className="absolute inset-0 bg-black/30" />
-
-      <div className="relative z-10 w-full max-w-[420px] px-4">
-        <Card className="bg-white/80 backdrop-blur-md border-0 shadow-xl">
+      <div className="w-full max-w-[420px] px-4">
+        <Card className="bg-white border shadow-xl">
           <CardContent className="pt-8 px-6">
             <div className="text-center mb-8">
               <div className="w-full flex justify-center items-center">
@@ -92,7 +87,7 @@ export default function Login() {
                           <Input
                             type="email"
                             placeholder="E-mailadres"
-                            className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                            className="h-11 pl-10 bg-white border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
                             disabled={isLoading}
                             {...field}
                           />
@@ -114,7 +109,7 @@ export default function Login() {
                           <Input
                             type="password"
                             placeholder="Wachtwoord"
-                            className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                            className="h-11 pl-10 bg-white border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
                             disabled={isLoading}
                             {...field}
                           />
@@ -138,10 +133,10 @@ export default function Login() {
         </Card>
 
         <div className="text-center space-y-1 mt-6">
-          <p className="text-white/90 text-sm font-medium">
+          <p className="text-[#963E56]/90 text-sm font-medium">
             MEFEN Vrijwilligers Management Systeem
           </p>
-          <p className="text-white/70 text-xs">
+          <p className="text-[#963E56]/70 text-xs">
             Versie 2.2.7
           </p>
         </div>

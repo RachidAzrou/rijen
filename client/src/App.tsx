@@ -12,12 +12,12 @@ import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { useLocation } from "wouter";
+import { useLocation, useLocation as useLocationHook } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [location, setLocation] = useLocation();
+  const [location, setLocation] = useLocationHook();
   const auth = getAuth();
 
   useEffect(() => {
@@ -43,11 +43,12 @@ function Router() {
     return () => unsubscribe();
   }, [location]);
 
-  const showSidebar = isLoggedIn && 
-    !['/login', '/public-imam', '/room-select'].includes(location);
+  // Determine if sidebar should be shown
+  const publicRoutes = ['/login', '/public-imam', '/room-select', '/'];
+  const showSidebar = isLoggedIn && !publicRoutes.includes(location);
 
   return (
-    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
+    <div className="fixed inset-0 flex bg-gray-50/50">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
@@ -55,7 +56,7 @@ function Router() {
         showSidebar ? (
           isSidebarOpen ? 
             'md:ml-56' : 
-            'md:ml-16'
+            'md:ml-12'
         ) : ''
       }`}>
         <Switch>
