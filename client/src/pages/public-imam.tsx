@@ -19,8 +19,8 @@ const rooms = {
 
 // Prayer icon component met biddend mannetje in cirkel
 const PrayerIcon = () => (
-  <div className="bg-[#963E56]/10 w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center">
-    <FaPray className="w-6 h-6 md:w-7 md:h-7 text-[#963E56]" />
+  <div className="bg-[#963E56]/10 w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center">
+    <FaPray className="w-8 h-8 md:w-9 md:h-9 text-[#963E56]" />
   </div>
 );
 
@@ -54,8 +54,8 @@ export default function PublicImamDashboard() {
           Object.entries(data).forEach(([room, status]) => {
             if (VALID_ROOM_IDS.includes(room as RoomId)) {
               newStatuses[room as RoomId] = status === 'OK' ? 'green' :
-                                             status === 'NOK' ? 'red' :
-                                             'grey';
+                                               status === 'NOK' ? 'red' :
+                                               'grey';
             }
           });
 
@@ -94,54 +94,55 @@ export default function PublicImamDashboard() {
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="container mx-auto px-4 py-6 space-y-6 flex-grow">
-        {/* Header */}
+        {/* Header Section */}
         <div className="rounded-xl p-4 md:p-5 bg-white border border-[#963E56]/10">
           <div className="flex items-center justify-center gap-4">
             {language === 'nl' ? (
               <>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-8 w-8 md:h-9 md:w-9 text-[#963E56]" />
+                <div className="bg-[#963E56]/10 p-3 md:p-4 rounded-full">
+                  <PiMosqueDuotone className="h-10 w-10 md:h-12 md:w-12 text-[#963E56]" />
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
+                <h1 className="text-3xl md:text-4xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
               </>
             ) : (
               <div className="flex flex-row-reverse items-center gap-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-[#963E56]">
+                <h1 className="text-3xl md:text-4xl font-bold text-[#963E56]">
                   {t.pageTitle}
                 </h1>
-                <div className="bg-[#963E56]/10 p-2 md:p-3 rounded-full">
-                  <PiMosqueDuotone className="h-8 w-8 md:h-9 md:w-9 text-[#963E56]" />
+                <div className="bg-[#963E56]/10 p-3 md:p-4 rounded-full">
+                  <PiMosqueDuotone className="h-10 w-10 md:h-12 md:w-12 text-[#963E56]" />
                 </div>
               </div>
             )}
           </div>
         </div>
 
+        {/* Hadith Card */}
         <Card className="bg-gradient-to-br from-[#963E56]/[0.02] to-transparent border border-[#963E56]/5 shadow-none">
           <CardContent className="p-4 md:p-6">
             {language === 'nl' ? (
               <blockquote className="space-y-3 md:space-y-4 text-center">
-                <p className="text-base text-[#963E56]/70 font-medium">
+                <p className="text-lg text-[#963E56]/70 font-medium">
                   De Profeet ﷺ zei:
                 </p>
-                <p className="text-base text-[#963E56]/80 leading-relaxed font-medium">
+                <p className="text-xl text-[#963E56]/80 leading-relaxed font-medium">
                   {t.hadithText}
                 </p>
-                <footer className="text-sm text-[#963E56]/60 mt-2">
+                <footer className="text-base text-[#963E56]/60 mt-2">
                   — {t.hadithSource}
                 </footer>
               </blockquote>
             ) : (
               <div className="space-y-3 md:space-y-4 text-center" dir="rtl">
-                <p className="text-base text-[#963E56]/70 font-medium">
+                <p className="text-lg text-[#963E56]/70 font-medium">
                   {t.hadithTitle}
                 </p>
-                <p className="text-base text-[#963E56]/80 leading-relaxed font-medium">
+                <p className="text-xl text-[#963E56]/80 leading-relaxed font-medium">
                   {t.hadithText}
                 </p>
-                <p className="text-sm text-[#963E56]/60 mt-2">
+                <p className="text-base text-[#963E56]/60 mt-2">
                   {t.hadithSource}
                 </p>
               </div>
@@ -149,64 +150,62 @@ export default function PublicImamDashboard() {
           </CardContent>
         </Card>
 
+        {/* Room Status Cards */}
         <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {Object.entries(rooms).map(([id, room]) => (
             <Card
               key={id}
               className="overflow-hidden hover:shadow-xl transition-all duration-300 border border-[#963E56]/10"
             >
-              <CardHeader className="p-4 md:p-5">
-                <div className="flex items-center justify-between">
-                  <CardTitle className={`flex items-center gap-3 text-xl md:text-2xl font-semibold text-[#963E56] ${language === 'ar' ? 'flex-row-reverse' : ''}`}>
-                    {language === 'nl' ? (
-                      <>
-                        <PrayerIcon />
-                        <span className="ml-2">{t.rooms[id as keyof typeof t.rooms]}</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="mr-2">{t.rooms[id as keyof typeof t.rooms]}</span>
-                        <PrayerIcon />
-                      </>
-                    )}
-                  </CardTitle>
+              <CardContent className="p-4 md:p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 flex-grow">
+                    <PrayerIcon />
+                    <h3 className="text-2xl md:text-3xl font-bold text-[#963E56]">
+                      {t.rooms[id as keyof typeof t.rooms]}
+                    </h3>
+                  </div>
                   <div className={`
-                    relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-500
+                    relative w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center
+                    transition-all duration-500 shadow-lg
                     ${statusMap[id as RoomId] === 'green'
-                      ? 'bg-[#6BB85C] shadow-lg shadow-[#6BB85C]/50'
+                      ? 'bg-[#6BB85C] shadow-[#6BB85C]/30'
                       : statusMap[id as RoomId] === 'red'
-                        ? 'bg-red-500 shadow-lg shadow-red-500/50'
-                        : 'bg-gray-300'}
+                        ? 'bg-red-500 shadow-red-500/30'
+                        : 'bg-gray-300'
+                    }
                   `}>
-                    {statusMap[id as RoomId] === 'green' && <Check className="w-8 h-8 md:w-9 md:h-9 text-white" />}
-                    {statusMap[id as RoomId] === 'red' && <X className="w-8 h-8 md:w-9 md:h-9 text-white" />}
+                    {statusMap[id as RoomId] === 'green' && 
+                      <Check className="w-9 h-9 md:w-10 md:h-10 text-white" />
+                    }
+                    {statusMap[id as RoomId] === 'red' && 
+                      <X className="w-9 h-9 md:w-10 md:h-10 text-white" />
+                    }
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="px-4 pb-4 md:px-5 md:pb-5">
-                <div className="mt-4 h-3 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full transition-all duration-500 ${
-                      statusMap[id as RoomId] === 'green' ? 'w-full bg-[#6BB85C]' :
-                      statusMap[id as RoomId] === 'red' ? 'w-full bg-red-500' :
-                      'w-0'
-                    }`}
-                  />
-                </div>
-                <div className="mt-4 text-center">
+
+                <div className="mt-6 space-y-4">
+                  <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full transition-all duration-500 ${
+                        statusMap[id as RoomId] === 'green' ? 'w-full bg-[#6BB85C]' :
+                          statusMap[id as RoomId] === 'red' ? 'w-full bg-red-500' :
+                            'w-0'
+                      }`}
+                    />
+                  </div>
                   {statusMap[id as RoomId] !== 'grey' && (
-                    <span className={`
-                      inline-block px-6 py-2 rounded-full text-base font-medium
-                      ${statusMap[id as RoomId] === 'green'
-                        ? 'bg-[#6BB85C]/10 text-[#6BB85C]'
-                        : statusMap[id as RoomId] === 'red'
-                          ? 'bg-red-500/10 text-red-500'
-                          : 'bg-gray-100 text-gray-500'}
-                    `}>
-                      {statusMap[id as RoomId] === 'green' ? t.available :
-                        statusMap[id as RoomId] === 'red' ? t.unavailable :
-                        ''}
-                    </span>
+                    <div className="text-center">
+                      <span className={`
+                        inline-block px-6 py-2 rounded-full text-lg font-medium
+                        ${statusMap[id as RoomId] === 'green'
+                          ? 'bg-[#6BB85C]/10 text-[#6BB85C]'
+                          : 'bg-red-500/10 text-red-500'
+                        }
+                      `}>
+                        {statusMap[id as RoomId] === 'green' ? t.available : t.unavailable}
+                      </span>
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -214,7 +213,7 @@ export default function PublicImamDashboard() {
           ))}
         </div>
 
-        <div className="text-center text-base text-[#963E56]/70">
+        <div className="text-center text-lg text-[#963E56]/70">
           {t.lastUpdate}: {lastUpdate.toLocaleTimeString(language === 'nl' ? 'nl-NL' : 'ar-SA')}
         </div>
       </div>

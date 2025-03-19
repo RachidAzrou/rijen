@@ -55,7 +55,7 @@ export default function Login() {
     <div 
       className="min-h-screen w-full flex items-center justify-center p-4"
       style={{
-        background: `url('/static/123.jpg') center center/cover no-repeat fixed`
+        background: `url('/static/123.jpg') center/cover no-repeat fixed`
       }}
     >
       <Card className="w-full max-w-[420px] bg-white/80 backdrop-blur-md border-0 shadow-xl">
@@ -89,7 +89,7 @@ export default function Login() {
                         <Input
                           type="email"
                           placeholder="E-mailadres"
-                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          className="h-11 pl-10 bg-white/50 border-[#963E56] focus:border-[#963E56] focus:ring-[#963E56]"
                           disabled={isLoading}
                           {...field}
                         />
@@ -111,7 +111,7 @@ export default function Login() {
                         <Input
                           type="password"
                           placeholder="Wachtwoord"
-                          className="h-11 pl-10 bg-white/50 border-[#D9A347] focus:border-[#6BB85C] focus:ring-[#6BB85C]"
+                          className="h-11 pl-10 bg-white/50 border-[#963E56] focus:border-[#963E56] focus:ring-[#963E56]"
                           disabled={isLoading}
                           {...field}
                         />
@@ -124,7 +124,7 @@ export default function Login() {
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-[#963E56] hover:bg-[#6BB85C] transition-colors"
+                className="w-full h-11 bg-[#963E56] hover:bg-[#963E56]/90 transition-colors"
                 disabled={isLoading}
               >
                 {isLoading ? "Bezig met inloggen..." : "Inloggen"}
