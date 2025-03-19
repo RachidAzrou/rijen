@@ -10,6 +10,9 @@ interface RoomStatuses {
   [key: string]: DisplayStatus;
 }
 
+// Reset timeout after 10 minutes
+const RESET_TIMEOUT = 10 * 60 * 1000;
+
 function convertServerToDisplayStatus(status: ServerStatus): DisplayStatus {
   switch (status) {
     case 'OK': return 'green';
@@ -21,6 +24,7 @@ function convertServerToDisplayStatus(status: ServerStatus): DisplayStatus {
 export function useRoomStatus() {
   const [isConnected, setIsConnected] = useState(false);
   const [roomStatuses, setRoomStatuses] = useState<RoomStatuses>({});
+  const [resetTimers, setResetTimers] = useState<{ [key: string]: NodeJS.Timeout }>({});
 
   useEffect(() => {
     const roomsRef = ref(database, 'rooms');
@@ -37,6 +41,27 @@ export function useRoomStatus() {
 
           console.log('[Firebase] Room status update:', newStatuses);
           setRoomStatuses(newStatuses);
+
+          // Set reset timers for each active status
+          Object.entries(newStatuses).forEach(([room, status]) => {
+            if (status !== 'grey') {
+              // Clear existing timer if any
+              if (resetTimers[room]) {
+                clearTimeout(resetTimers[room]);
+              }
+
+              // Set new timer
+              const timer = setTimeout(() => {
+                console.log(`[Timer] Resetting status for ${room} to grey`);
+                set(ref(database, `rooms/${room}`), 'OFF');
+              }, RESET_TIMEOUT);
+
+              setResetTimers(prev => ({
+                ...prev,
+                [room]: timer
+              }));
+            }
+          });
         } else {
           // If no data, set all rooms to grey
           const defaultStatuses = ['prayer-first', 'prayer-ground', 'garage'].reduce(
@@ -60,6 +85,8 @@ export function useRoomStatus() {
     return () => {
       off(roomsRef);
       setIsConnected(false);
+      // Clear all existing timers
+      Object.values(resetTimers).forEach(timer => clearTimeout(timer));
     };
   }, []);
 
