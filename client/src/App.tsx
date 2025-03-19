@@ -12,12 +12,12 @@ import DelenPage from "@/pages/delen";
 import { Sidebar } from "@/components/Sidebar";
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { useLocation, useLocation as useLocationHook } from "wouter";
+import { useLocation } from "wouter";
 
 function Router() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [location, setLocation] = useLocationHook();
+  const [location, setLocation] = useLocation();
   const auth = getAuth();
 
   useEffect(() => {
@@ -27,36 +27,33 @@ function Router() {
   }, []);
 
   useEffect(() => {
-    if (window.innerWidth < 768) {
-      setIsSidebarOpen(false);
-    }
-  }, [location]);
-
-  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
-      if (!user && location !== '/login' && location !== '/public-imam') {
+      if (!user && !publicRoutes.includes(location)) {
         setLocation('/login');
       }
     });
 
     return () => unsubscribe();
-  }, [location]);
+  }, [location, setLocation]);
 
-  // Determine if sidebar should be shown
-  const publicRoutes = ['/login', '/public-imam', '/room-select', '/'];
-  const showSidebar = isLoggedIn && !publicRoutes.includes(location);
+  // Define public routes that don't need the sidebar
+  const publicRoutes = ['/login', '/public-imam', '/room-select', '/', '/register'];
+
+  // Show sidebar when user is logged in and not on a public route
+  const isDashboardRoute = location.startsWith('/dashboard/') || location === '/imam' || location === '/delen';
+  const showSidebar = isLoggedIn && isDashboardRoute;
 
   return (
-    <div className="fixed inset-0 flex bg-gray-50/50">
+    <div className="fixed inset-0 flex overflow-hidden bg-gray-50/50">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
       <main className={`relative flex-grow ${
         showSidebar ? (
           isSidebarOpen ? 
-            'md:ml-56' : 
-            'md:ml-12'
+            'md:ml-56 transition-all duration-300' : 
+            'md:ml-12 transition-all duration-300'
         ) : ''
       }`}>
         <Switch>
