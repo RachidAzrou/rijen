@@ -27,33 +27,35 @@ function Router() {
   }, []);
 
   useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, [location]);
+
+  useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setIsLoggedIn(!!user);
-      if (!user && !publicRoutes.includes(location)) {
+      if (!user && location !== '/login' && location !== '/public-imam') {
         setLocation('/login');
       }
     });
 
     return () => unsubscribe();
-  }, [location, setLocation]);
+  }, [location]);
 
-  // Define public routes that don't need the sidebar
-  const publicRoutes = ['/login', '/public-imam', '/room-select', '/', '/register'];
-
-  // Show sidebar when user is logged in and not on a public route
-  const isDashboardRoute = location.startsWith('/dashboard/') || location === '/imam' || location === '/delen';
-  const showSidebar = isLoggedIn && isDashboardRoute;
+  const showSidebar = isLoggedIn && 
+    !['/login', '/public-imam'].includes(location);
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden bg-gray-50/50">
+    <div className="min-h-screen flex flex-col w-full overflow-x-hidden">
       {showSidebar && (
         <Sidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
       )}
       <main className={`relative flex-grow ${
         showSidebar ? (
           isSidebarOpen ? 
-            'md:ml-56 transition-all duration-300' : 
-            'md:ml-12 transition-all duration-300'
+            'md:ml-56' : 
+            'md:ml-16'
         ) : ''
       }`}>
         <Switch>

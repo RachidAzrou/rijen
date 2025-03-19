@@ -5,7 +5,7 @@ export const translations = {
     available: 'Rijen zijn goed',
     unavailable: 'Rijen zijn niet goed',
     lastUpdate: 'Laatste update',
-    hadithTitle: 'Hadieth',
+    hadithTitle: 'De Profeet ﷺ zei:',
     hadithText: "Houd de rijen recht, want het recht houden van de rijen is deel van het perfect verrichten van het gebed.",
     hadithSource: "Overgeleverd door Bukhari & Muslim",
     rooms: {
@@ -19,7 +19,7 @@ export const translations = {
     available: 'الصفوف منتظمة',
     unavailable: 'الصفوف غير منتظمة',
     lastUpdate: 'آخر تحديث',
-    hadithTitle: 'قال رسول الله ﷺ',
+    hadithTitle: 'قال رسول الله ﷺ :',
     hadithText: 'سَوُّوا صُفُوفَكُمْ، فَإِنَّ تَسْوِيَةَ الصُّفُوفِ مِنْ تَمَامِ الصَّلَاةِ',
     hadithSource: 'رواه البخاري ومسلم',
     rooms: {
